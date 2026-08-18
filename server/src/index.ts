@@ -582,7 +582,7 @@ app.get("/api/rounds/:id", authMiddleware, (c) => {
 // ═══════════════ REPLAY ═══════════════
 
 import { validateRound, type ValidatedRound } from "../../engine/validation.js";
-import { replay, DEFAULTS, type Player, type Round, type Participant, brierScore, logLoss } from "../../engine/index.js";
+import { replay, DEFAULTS, alphaMatchFromFactor, type Player, type Round, type Participant, brierScore, logLoss } from "../../engine/index.js";
 import { seed } from "./db/seed.js";
 
 function buildReplayData(userId: string) {
@@ -1117,6 +1117,17 @@ app.patch("/api/config", authMiddleware, adminMiddleware, async (c) => {
   const existing = db.prepare("SELECT value FROM config WHERE key = 'engine'").get() as any;
   const config = existing ? JSON.parse(existing.value) : {};
   Object.assign(config, body);
+
+  // alphaMatch is derived from alphaStroke * matchStrokeFactor (the
+  // essay's own relationship) — recompute it whenever either input
+  // changes, unless this same request also sets alphaMatch explicitly
+  // (an intentional direct override takes precedence over the derivation).
+  if (("alphaStroke" in body || "matchStrokeFactor" in body) && !("alphaMatch" in body)) {
+    const alphaStroke = config.alphaStroke ?? DEFAULTS.alphaStroke;
+    const matchStrokeFactor = config.matchStrokeFactor ?? DEFAULTS.matchStrokeFactor;
+    config.alphaMatch = alphaMatchFromFactor(alphaStroke, matchStrokeFactor);
+  }
+
   db.prepare("UPDATE config SET value = ? WHERE key = 'engine'").run(JSON.stringify(config));
   return c.json(config);
 });

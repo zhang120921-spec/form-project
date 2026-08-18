@@ -16,15 +16,29 @@ export interface EngineConfig {
   rdStart: number;
 }
 
+// Match-play alpha is derived from stroke-play alpha via the empirically
+// measured stroke/hole conversion factor (Lu's essay: a golfer survey of
+// 8 players regressed match-play margins against their stroke-play
+// equivalents, R²=0.998, giving c ≈ 1.45). This keeps matchStrokeFactor a
+// live parameter rather than a config field nothing reads — changing it
+// (via admin or elsewhere) is meant to change match-play ratings, per the
+// essay's own derivation: alpha_match = c * alpha_stroke.
+export function alphaMatchFromFactor(alphaStroke: number, matchStrokeFactor: number): number {
+  return alphaStroke * matchStrokeFactor;
+}
+
+const DEFAULT_ALPHA_STROKE = 0.30;
+const DEFAULT_MATCH_STROKE_FACTOR = 1.45;
+
 export const DEFAULTS: EngineConfig = {
   startRating: 1500,
   anchorHandicap: 18,
   kFloor: 40,
   kPlacement: 80,
   placementMatches: 5,
-  alphaStroke: 0.30,
-  alphaMatch: 0.435,
-  matchStrokeFactor: 1.45,
+  alphaStroke: DEFAULT_ALPHA_STROKE,
+  alphaMatch: alphaMatchFromFactor(DEFAULT_ALPHA_STROKE, DEFAULT_MATCH_STROKE_FACTOR),
+  matchStrokeFactor: DEFAULT_MATCH_STROKE_FACTOR,
   handicapMode: "whs",
   rdFloor: 30,
   rdStart: 350,

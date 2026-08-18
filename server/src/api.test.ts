@@ -839,8 +839,33 @@ describe("Config", () => {
     });
     expect(status).toBe(200);
     expect(json.alphaStroke).toBe(0.25);
-    // unchanged keys preserved
-    expect(json.alphaMatch).toBe(0.435);
+    // alphaMatch is derived from alphaStroke * matchStrokeFactor, so it
+    // recomputes when alphaStroke changes (0.25 * 1.45 = 0.3625).
+    expect(json.alphaMatch).toBe(0.3625);
+    // unrelated keys preserved
+    expect(json.kFloor).toBe(40);
+  });
+
+  it("PATCH /api/config — changing matchStrokeFactor recomputes alphaMatch", async () => {
+    const { status, json } = await fetch("/api/config", {
+      token: adminToken,
+      method: "PATCH",
+      body: { matchStrokeFactor: 1.5 },
+    });
+    expect(status).toBe(200);
+    expect(json.matchStrokeFactor).toBe(1.5);
+    expect(json.alphaMatch).toBe(json.alphaStroke * 1.5);
+  });
+
+  it("PATCH /api/config — explicit alphaMatch overrides the derivation", async () => {
+    const { status, json } = await fetch("/api/config", {
+      token: adminToken,
+      method: "PATCH",
+      body: { alphaStroke: 0.25, alphaMatch: 0.9 },
+    });
+    expect(status).toBe(200);
+    expect(json.alphaStroke).toBe(0.25);
+    expect(json.alphaMatch).toBe(0.9);
   });
 
   it("PATCH /api/config — rejects non-admin", async () => {

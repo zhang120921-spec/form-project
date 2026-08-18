@@ -5,6 +5,7 @@ import { api, ApiError } from "@/lib/api";
 import { useStore } from "@/hooks/useStore";
 import { useState, useEffect, useMemo } from "react";
 import { buildConnectivity, getConnectivity } from "@/lib/connectivity";
+import { usePendingCounts } from "@/hooks/usePendingCounts";
 import { t } from "@/lib/i18n";
 import styles from "./FriendsPage.module.css";
 
@@ -13,6 +14,7 @@ export default function FriendsPage() {
   const { data: replay } = useReplay();
   const { user } = useAuth();
   const store = useStore();
+  const { refetch: refetchPendingCounts } = usePendingCounts();
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<{ id: string; display_name: string; home_club?: string }[]>([]);
   const [searching, setSearching] = useState(false);
@@ -78,6 +80,7 @@ export default function FriendsPage() {
       await api.post(`/friends/accept/${requestId}`);
       refetch();
       loadRequests();
+      refetchPendingCounts();
       setSuccess(t("Friend added"));
       setTimeout(() => setSuccess(""), 3000);
     } catch {
@@ -259,6 +262,7 @@ export default function FriendsPage() {
                   onClick={async () => {
                     await api.post(`/friends/decline/${r.id}`);
                     loadRequests();
+                    refetchPendingCounts();
                   }}
                 >
                   {t("Decline")}

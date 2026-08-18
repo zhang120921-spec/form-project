@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "@/lib/api";
 import { t } from "@/lib/i18n";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import styles from "./InviteModal.module.css";
 
 interface Props {
@@ -28,6 +29,8 @@ export default function InviteModal({
   const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
 
+  useEscapeKey(onClose);
+
   const handleSend = async () => {
     setSending(true);
     setError("");
@@ -49,10 +52,16 @@ export default function InviteModal({
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={styles.modal}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="invite-modal-title"
+      >
         <div className={styles.modalHeader}>
-          <h3 className={styles.modalTitle}>{t("Invite {name}", { name: playerName })}</h3>
-          <button className={styles.closeBtn} onClick={onClose}>
+          <h3 id="invite-modal-title" className={styles.modalTitle}>{t("Invite {name}", { name: playerName })}</h3>
+          <button className={styles.closeBtn} onClick={onClose} aria-label={t("Close")}>
             ✕
           </button>
         </div>

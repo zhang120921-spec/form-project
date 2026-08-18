@@ -27,10 +27,17 @@
 
 .headerRow {
   display: flex;
+  width: 100%;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
   gap: var(--space-sm);
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
 }
 
 .headerLeft {

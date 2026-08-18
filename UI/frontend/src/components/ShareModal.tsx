@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { PlayerState } from "@/lib/types";
 import FormStrip from "./FormStrip";
 import { t } from "@/lib/i18n";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import styles from "./ShareModal.module.css";
 
 type FormResult = "W" | "L" | "T";
@@ -27,6 +28,8 @@ export default function ShareModal({
 }: Props) {
   const [copiedText, setCopiedText] = useState(false);
 
+  useEscapeKey(onClose);
+
   const handleCopyText = async () => {
     const parts = [t("My FORM rating is {rating}", { rating: Math.round(player.rating) })];
     parts.push(`. ${t("I've played {rounds} rounds with a {winRate}% win rate.", { rounds: player.matches, winRate })}`);
@@ -45,10 +48,16 @@ export default function ShareModal({
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={styles.modal}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="share-modal-title"
+      >
         <div className={styles.modalHeader}>
-          <h3 className={styles.modalTitle}>{t("Share Your Rating")}</h3>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <h3 id="share-modal-title" className={styles.modalTitle}>{t("Share Your Rating")}</h3>
+          <button className={styles.closeBtn} onClick={onClose} aria-label={t("Close")}>✕</button>
         </div>
 
         {/* Share card preview */}

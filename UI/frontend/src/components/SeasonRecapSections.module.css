@@ -135,11 +135,12 @@
   width: 32px;
   height: 3px;
   background: var(--section-accent, var(--brass));
-  transition: width var(--fade-med) ease;
+  opacity: 0.6;
+  transition: opacity var(--fade-med) ease;
 }
 
 .recapSection:hover .sectionAccent {
-  width: 48px;
+  opacity: 1;
 }
 
 .bulletList {

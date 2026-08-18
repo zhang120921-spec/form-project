@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { usePendingCounts } from "@/hooks/usePendingCounts";
 import { t, useLang, toggleLang } from "@/lib/i18n";
 import { useState } from "react";
 import styles from "./Shell.module.css";
@@ -24,10 +25,16 @@ export default function Shell({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   const lang = useLang();
   const [drawer, setDrawer] = useState(false);
+  const { attestationsCount, friendRequestsCount } = usePendingCounts();
 
   if (!user) return <>{children}</>;
 
   const closeDrawer = () => setDrawer(false);
+
+  const badges: Record<string, number> = {
+    "/friends": friendRequestsCount,
+    "/profile": attestationsCount,
+  };
 
   const navItems = NAV.map((n) => (
     <NavLink
@@ -41,6 +48,11 @@ export default function Shell({ children }: { children: React.ReactNode }) {
     >
       <span className={styles.navIcon}>{n.icon}</span>
       <span className={styles.navLabel}>{t(n.label)}</span>
+      {badges[n.to] > 0 && (
+        <span className={styles.navBadge} aria-label={t("{n} need your attention", { n: badges[n.to] })}>
+          {badges[n.to]}
+        </span>
+      )}
     </NavLink>
   ));
 
@@ -65,7 +77,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             <button onClick={toggleLang} className={styles.iconBtn} title={t("Switch language")}>
               {lang === "en" ? "中文" : "EN"}
             </button>
-            <button onClick={logout} className={styles.iconBtn} title={t("Sign out")}>→</button>
+            <button onClick={logout} className={styles.iconBtn} title={t("Sign out")} aria-label={t("Sign out")}>→</button>
           </div>
         </div>
       </aside>
@@ -75,7 +87,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
       <aside className={`${styles.drawer} ${drawer ? styles.drawerOpen : ""}`}>
         <div className={styles.drawerHead}>
           <span className={styles.logo}>FORM</span>
-          <button className={styles.iconBtn} onClick={closeDrawer}>✕</button>
+          <button className={styles.iconBtn} onClick={closeDrawer} aria-label={t("Close menu")}>✕</button>
         </div>
         <nav className={styles.nav}>{navItems}</nav>
       </aside>
@@ -93,6 +105,7 @@ export default function Shell({ children }: { children: React.ReactNode }) {
             </button>
             <NavLink to="/profile" className={styles.avatarBtn} title={t("Profile")}>
               {user.displayName.charAt(0).toUpperCase()}
+              {attestationsCount > 0 && <span className={styles.bnBadge} />}
             </NavLink>
           </div>
         </header>
@@ -110,7 +123,10 @@ export default function Shell({ children }: { children: React.ReactNode }) {
                 `${styles.bnItem} ${isActive ? styles.bnActive : ""}`
               }
             >
-              <span className={styles.bnIcon}>{n.icon}</span>
+              <span className={styles.bnIconWrap}>
+                <span className={styles.bnIcon}>{n.icon}</span>
+                {badges[n.to] > 0 && <span className={styles.bnBadge} />}
+              </span>
               <span className={styles.bnLabel}>{t(n.short)}</span>
             </NavLink>
           ))}

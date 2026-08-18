@@ -706,6 +706,25 @@ app.get("/api/replay", authMiddleware, (c) => {
     isPro: proIds.has(p.id),
   }));
 
+  // Join anomaly-detection flags so the UI can surface them without a
+  // second fetch — same ai_analysis data /api/rounds already returns.
+  if (result.rounds.length > 0) {
+    const roundIds = result.rounds.map((r) => r.id);
+    const placeholders = roundIds.map(() => "?").join(",");
+    const analyses = db.prepare(`
+      SELECT round_id, flagged, flag_reason FROM ai_analysis
+      WHERE round_id IN (${placeholders})
+    `).all(...roundIds) as any[];
+    const analysisByRound = new Map(analyses.map((a) => [a.round_id, a]));
+
+    result.rounds = result.rounds.map((r) => {
+      const analysis = analysisByRound.get(r.id);
+      return analysis
+        ? { ...r, flagged: !!analysis.flagged, flagReason: analysis.flag_reason ?? undefined }
+        : r;
+    });
+  }
+
   return c.json(result);
 });
 

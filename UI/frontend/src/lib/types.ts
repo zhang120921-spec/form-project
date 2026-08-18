@@ -90,6 +90,9 @@ export interface ReplayedRound {
   narration?: string | null;
   /** Source: "template" (deterministic) or "ai". */
   narrationSource?: "template" | "ai" | null;
+  /** Statistical anomaly flag from engine/anomaly.ts, joined from ai_analysis. */
+  flagged?: boolean;
+  flagReason?: string;
 }
 
 export interface ReplayResult {

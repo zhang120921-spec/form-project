@@ -10,9 +10,12 @@ import FormStrip from "@/components/FormStrip";
 import ShareModal from "@/components/ShareModal";
 import AttestationDetailModal from "@/components/AttestationDetailModal";
 import SeasonRecapSections from "@/components/SeasonRecapSections";
+import AiBadge from "@/components/AiBadge";
 import { buildRivalries } from "@/lib/rivalries";
 import { buildConnectivity, getConnectivity } from "@/lib/connectivity";
 import { t } from "@/lib/i18n";
+import { useToast } from "@/hooks/useToast";
+import { usePendingCounts } from "@/hooks/usePendingCounts";
 import styles from "./ProfilePage.module.css";
 
 type FormResult = "W" | "L" | "T";
@@ -34,6 +37,8 @@ function computeFormResults(
 }
 
 export default function ProfilePage() {
+  const { showToast } = useToast();
+  const { refetch: refetchPendingCounts } = usePendingCounts();
   const { user, logout, updateProfile } = useAuth();
   const { data } = useReplay();
   const { attestations, refetch: refetchAtt } = useAttestations();
@@ -271,6 +276,7 @@ export default function ProfilePage() {
                     </div>
                   )}
 
+                  {recap.source === "ai" && <AiBadge />}
                   <SeasonRecapSections narrative={cleanNarrative} />
 
                   <button
@@ -457,12 +463,24 @@ export default function ProfilePage() {
           replayData={data}
           onClose={() => setDetailAtt(null)}
           onConfirm={async () => {
-            await api.post(`/attestations/${detailAtt.id}/confirm`);
-            await refetchAtt();
+            try {
+              await api.post(`/attestations/${detailAtt.id}/confirm`);
+              await refetchAtt();
+              refetchPendingCounts();
+              showToast(t("Round confirmed — rating updated"), "success");
+            } catch {
+              showToast(t("Failed to confirm round"), "error");
+            }
           }}
           onDispute={async (participants) => {
-            await api.post(`/attestations/${detailAtt.id}/dispute`, { participants });
-            await refetchAtt();
+            try {
+              await api.post(`/attestations/${detailAtt.id}/dispute`, { participants });
+              await refetchAtt();
+              refetchPendingCounts();
+              showToast(t("Dispute sent back for confirmation"), "success");
+            } catch {
+              showToast(t("Failed to send dispute"), "error");
+            }
           }}
         />
       )}

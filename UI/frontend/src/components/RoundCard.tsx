@@ -1,6 +1,7 @@
 import type { ReplayedRound, PlayerState } from "@/lib/types";
 import { useState } from "react";
 import { useNarrator } from "@/hooks/useAI";
+import AiBadge from "./AiBadge";
 import styles from "./RoundCard.module.css";
 import { t } from "@/lib/i18n";
 
@@ -17,7 +18,7 @@ function playerName(id: string, players: PlayerState[]): string {
 
 export default function RoundCard({ round, players, showMaths, onToggleMaths }: Props) {
   const [expanded, setExpanded] = useState(false);
-  const { narrative, loading, error, generate } = useNarrator(round.id);
+  const { narrative, loading, error, generate, source } = useNarrator(round.id);
 
   return (
     <div className={`${styles.card} rule-light-bottom`}>
@@ -29,6 +30,9 @@ export default function RoundCard({ round, players, showMaths, onToggleMaths }: 
             {round.format === "stroke" ? t("stroke") : round.format === "match" ? t("match") : t("stableford")}
             {round.holes !== 18 ? ` ${t("{n}h", { n: round.holes })}` : ""}
           </span>
+          {round.flagged && (
+            <span className={styles.flagBadge}>{t("⚠ Flagged")}</span>
+          )}
         </div>
         <div className={styles.players}>
           {round.snapshot.map((s) => {
@@ -48,6 +52,10 @@ export default function RoundCard({ round, players, showMaths, onToggleMaths }: 
 
       {expanded && (
         <div className={styles.detail}>
+          {round.flagged && round.flagReason && (
+            <p className={styles.flagReason}>{round.flagReason}</p>
+          )}
+
           {round.narration && (
             <p className={styles.narration}>{round.narration}</p>
           )}
@@ -91,7 +99,10 @@ export default function RoundCard({ round, players, showMaths, onToggleMaths }: 
 
           <div className={styles.narrator}>
             {narrative ? (
-              <p className={styles.narratorText}>{narrative}</p>
+              <>
+                {source === "ai" && <AiBadge />}
+                <p className={styles.narratorText}>{narrative}</p>
+              </>
             ) : (
               <button
                 className={styles.narratorBtn}

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
 import type { Attestation, ReplayResult } from "@/lib/types";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
 import styles from "./AttestationDetailModal.module.css";
 import { t } from "@/lib/i18n";
 
@@ -83,6 +84,8 @@ export default function AttestationDetailModal({
   const [editedScores, setEditedScores] = useState<Record<string, number>>({});
   const [actionLoading, setActionLoading] = useState<"confirm" | "dispute" | null>(null);
 
+  useEscapeKey(onClose);
+
   useEffect(() => {
     let cancelled = false;
     async function load() {
@@ -162,10 +165,16 @@ export default function AttestationDetailModal({
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={styles.modal}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="attestation-modal-title"
+      >
         <div className={styles.modalHeader}>
-          <h3 className={styles.modalTitle}>{t("Round Details")}</h3>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <h3 id="attestation-modal-title" className={styles.modalTitle}>{t("Round Details")}</h3>
+          <button className={styles.closeBtn} onClick={onClose} aria-label={t("Close")}>✕</button>
         </div>
 
         <div className={styles.body}>

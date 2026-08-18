@@ -6,7 +6,7 @@ import db from "../db/connection.js";
 import { ensureFamousPlayers } from "../db/pros.js";
 import { authMiddleware, adminMiddleware, type AppEnv } from "../middleware/auth.js";
 import { rateLimit } from "../middleware/rateLimit.js";
-import { chatCompletion, isAIEnabled, getAIConfig } from "./service.js";
+import { chatCompletion, isAIEnabled, isVisionEnabled, getAIConfig } from "./service.js";
 import {
   replay,
   seedRating,
@@ -235,6 +235,7 @@ app.post("/narrate", rateLimit(10, 60_000), async (c) => {
   }));
 
   let narration: string;
+  let source: "ai" | "template" = "template";
 
   if (isAIEnabled()) {
     // Build AI prompt
@@ -245,12 +246,18 @@ app.post("/narrate", rateLimit(10, 60_000), async (c) => {
       pairwiseDetails
     );
     const aiResponse = await chatCompletion(prompt, {
-      maxTokens: 600,
+      // Reasoning models spend a variable, often large share of the budget
+      // "thinking" before emitting content — verified live against DeepSeek
+      // (60-90% of a small budget can go to reasoning_content, leaving too
+      // little for the actual answer). Generous headroom avoids silent
+      // empty-content truncation rather than guessing a tight number.
+      maxTokens: 1200,
       temperature: 0.7,
     });
 
     if (aiResponse) {
       narration = aiResponse.trim();
+      source = "ai";
     } else {
       narration = buildRuleBasedNarrative(
         roundRow,
@@ -279,7 +286,7 @@ app.post("/narrate", rateLimit(10, 60_000), async (c) => {
     ).run(uid(), roundId, narration);
   }
 
-  return c.json({ narrative: narration, generatedAt: new Date().toISOString() });
+  return c.json({ narrative: narration, generatedAt: new Date().toISOString(), source });
 });
 
 function buildNarrationPrompt(
@@ -386,7 +393,7 @@ app.post("/ocr-scorecard", rateLimit(5, 60_000), async (c) => {
     return c.json({ error: "Image must be under 10MB" }, 400);
   }
 
-  if (!isAIEnabled()) {
+  if (!isVisionEnabled()) {
     return c.json({
       fallback: true,
       message: "Vision AI not configured. Please enter scores manually.",
@@ -416,7 +423,7 @@ Important:
 - Parse the date in YYYY-MM-DD format if visible`;
 
   const aiResponse = await chatCompletion(prompt, {
-    maxTokens: 1024,
+    maxTokens: 2000,
     temperature: 0.1,
     jsonMode: true,
     imageUrl: dataUrl,
@@ -476,7 +483,7 @@ Rules:
 - Return player names in their original language.`;
 
     const aiResponse = await chatCompletion(prompt, {
-      maxTokens: 512,
+      maxTokens: 1000,
       temperature: 0.1,
       jsonMode: true,
     });
@@ -504,7 +511,12 @@ function regexParseRound(text: string) {
   let confidence: "high" | "medium" | "low" = "low";
 
   // ── Detect format ──
-  if (/stableford/i.test(text) || /\bpts?\b/i.test(text) || /points?\s*$/i.test(text)) {
+  if (
+    /stableford/i.test(text) ||
+    /\bpts?\b/i.test(text) ||
+    /points?\s*$/i.test(text) ||
+    /稳定式|积分/.test(text)
+  ) {
     format = "stableford";
   } else {
     format = "stroke"; // default to stroke play
@@ -627,6 +639,39 @@ function regexParseRound(text: string) {
       players.push({ name: "Player", score: scores[0] });
     } else if (names.length > 0) {
       // Just names, no scores
+      names.forEach((name) => players.push({ name, score: null }));
+    }
+  }
+
+  // Pattern 3: Chinese input — "打了82杆" (shot 82), "和小李一起"/"跟小李" (with 小李).
+  // Strip birdie/eagle/bogey counts first ("3只小鸟" is 3 birdies, not a score of 3).
+  if (players.length === 0) {
+    const stripped = text.replace(/\d+\s*(?:只)?\s*(?:双柏忌|老鹰|小鸟|柏忌)/g, "");
+
+    const scores: number[] = [];
+    const strokeScorePattern = /(\d{2,3})\s*杆/g;
+    const stablefordScorePattern = /(\d{1,2})\s*分/g;
+    const scorePattern = format === "stableford" ? stablefordScorePattern : strokeScorePattern;
+    let zhMatch: RegExpExecArray | null;
+    while ((zhMatch = scorePattern.exec(stripped)) !== null) {
+      const s = parseInt(zhMatch[1]);
+      if (s >= minScore && s <= maxScore) scores.push(s);
+    }
+
+    const names: string[] = [];
+    const namePattern = /(?:和|跟)([一-龥]{1,4}?)(?:一起|打|去|在|\s|$)/g;
+    while ((zhMatch = namePattern.exec(stripped)) !== null) {
+      const name = zhMatch[1].trim();
+      if (name) names.push(name);
+    }
+
+    if (names.length > 0 && scores.length > 0) {
+      names.forEach((name, i) => {
+        players.push({ name, score: scores[i] ?? null });
+      });
+    } else if (scores.length > 0) {
+      players.push({ name: "Player", score: scores[0] });
+    } else if (names.length > 0) {
       names.forEach((name) => players.push({ name, score: null }));
     }
   }
@@ -785,36 +830,36 @@ app.post("/match-suggestions", rateLimit(10, 60_000), async (c) => {
 
     if (daysSinceLast > 21) {
       score += 30;
-      reasons.push(`Haven't played ${f.display_name} in ${daysSinceLast} days.`);
+      reasons.push(`已经 ${daysSinceLast} 天没和 ${f.display_name} 打过了。`);
     } else if (daysSinceLast > 7) {
       score += 15;
-      reasons.push(`Last played ${f.display_name} ${daysSinceLast} days ago.`);
+      reasons.push(`上次和 ${f.display_name} 交手是 ${daysSinceLast} 天前。`);
     } else if (daysSinceLast === 999) {
       score += 25;
-      reasons.push(`You've never played ${f.display_name}.`);
+      reasons.push(`你还没和 ${f.display_name} 打过球。`);
     } else if (!recentOpponents.has(f.id)) {
       score += 10;
-      reasons.push(`Last played ${f.display_name} recently.`);
+      reasons.push(`最近才和 ${f.display_name} 打过。`);
     } else {
-      reasons.push(`Last played ${f.display_name} ${daysSinceLast} days ago.`);
+      reasons.push(`上次和 ${f.display_name} 交手是 ${daysSinceLast} 天前。`);
     }
 
     // Factor 2: Rating proximity (boost for close ratings)
     if (ratingGap < 30) {
       score += 25;
-      reasons.push(`Your ratings are within ${ratingGap.toFixed(1)} points — a close match.`);
+      reasons.push(`评分差距仅 ${ratingGap.toFixed(1)} 分——势均力敌。`);
     } else if (ratingGap < 80) {
       score += 15;
-      reasons.push(`Rating gap of ${ratingGap.toFixed(1)} points — a competitive round.`);
+      reasons.push(`评分差距 ${ratingGap.toFixed(1)} 分，是场有看头的对决。`);
     } else {
       score += 5;
-      reasons.push(`Rating gap of ${ratingGap.toFixed(1)} points — a tough test.`);
+      reasons.push(`评分差距 ${ratingGap.toFixed(1)} 分，是个不小的挑战。`);
     }
 
     // Factor 3: Regular flag boost
     if (f.is_regular) {
       score += 15;
-      reasons.push(`${f.display_name} is a regular playing partner.`);
+      reasons.push(`${f.display_name} 是你的常打球友。`);
     }
 
     // Factor 4: Different course variety
@@ -850,7 +895,7 @@ app.post("/match-suggestions", rateLimit(10, 60_000), async (c) => {
         : "never played before"
     }. Just return the suggestion text in Chinese, no quotes or extra text.`;
 
-    const aiText = await chatCompletion(prompt, { maxTokens: 100, temperature: 0.8 });
+    const aiText = await chatCompletion(prompt, { maxTokens: 300, temperature: 0.8 });
     if (aiText) {
       suggestions[0].reason = aiText.trim();
     }
@@ -984,6 +1029,7 @@ app.get("/season-recap/:playerId", rateLimit(10, 60_000), async (c) => {
     return c.json({
       stats: { totalRounds: 0 },
       narrative: `${playerName} 本赛季还没有已确认的球局。`,
+      source: "template",
       period: { from: null, to: null },
     });
   }
@@ -1138,17 +1184,22 @@ app.get("/season-recap/:playerId", rateLimit(10, 60_000), async (c) => {
 
   // Generate narrative
   let narrative: string;
+  let source: "ai" | "template" = "template";
 
   if (isAIEnabled()) {
     const prompt = buildRecapPrompt(playerName, stats);
     const aiResponse = await chatCompletion(prompt, {
-      maxTokens: 800,
+      maxTokens: 1500,
       temperature: 0.7,
     });
 
-    narrative =
-      trimTrailingFragment(aiResponse || "") ||
-      buildRuleBasedRecap(playerName, stats);
+    const trimmed = trimTrailingFragment(aiResponse || "");
+    if (trimmed) {
+      narrative = trimmed;
+      source = "ai";
+    } else {
+      narrative = buildRuleBasedRecap(playerName, stats);
+    }
   } else {
     narrative = buildRuleBasedRecap(playerName, stats);
   }
@@ -1156,6 +1207,7 @@ app.get("/season-recap/:playerId", rateLimit(10, 60_000), async (c) => {
   return c.json({
     stats,
     narrative,
+    source,
     period: {
       from: roundRows[0]?.date || null,
       to: roundRows[roundRows.length - 1]?.date || null,
@@ -1336,7 +1388,7 @@ Rules:
 - Be conservative — don't change by more than 1.5 from the current value unless justified`;
 
     const aiResponse = await chatCompletion(prompt, {
-      maxTokens: 1024,
+      maxTokens: 2000,
       temperature: 0.3,
       jsonMode: true,
     });

@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "UI/frontend/src/components/LogRoundForm.module.css"
+        ],
+        "createdAt": "2026-08-18T13:23:56.902Z",
+        "reason": "L18 is an error/alert banner's left accent border (border-left + matching bg/text color), a conventional error-state pattern, not a decorative card side-tab. Pre-existing CSS, not authored in this session."
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "UI/frontend/src/components/RoundTimeline.module.css"
+        ],
+        "createdAt": "2026-08-18T14:07:38.682Z",
+        "reason": "narration/flagReason text callouts use border-left matching bg+text color (brass=AI-attributed text, neg=error-state text) — same sanctioned pattern as AuthPage/FriendsPage error banners, not decorative whole-card accents"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "UI/frontend/src/components/RoundCard.module.css"
+        ],
+        "createdAt": "2026-08-18T14:07:38.714Z",
+        "reason": "narration/narratorText/flagReason text callouts use border-left matching bg+text color (brass=AI-attributed text, neg=error-state text) — same sanctioned pattern as AuthPage/FriendsPage error banners, not decorative whole-card accents"
+      }
+    ]
+  }
+}

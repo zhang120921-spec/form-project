@@ -66,7 +66,12 @@ export default function RivalryCard({ rivalries, variant = "compact" }: Props) {
 
         return (
           <div key={r.playerB.id} className={styles.rivalryItem}>
-            <div className={styles.headerRow} onClick={() => setExpanded(isExpanded ? null : r.playerB.id)}>
+            <button
+              type="button"
+              className={styles.headerRow}
+              onClick={() => setExpanded(isExpanded ? null : r.playerB.id)}
+              aria-expanded={variant === "full" ? isExpanded : undefined}
+            >
               <div className={styles.headerLeft}>
                 <span className={styles.oppName}>{r.playerB.name}</span>
                 <span className={styles.record}>
@@ -81,7 +86,7 @@ export default function RivalryCard({ rivalries, variant = "compact" }: Props) {
                 </span>
                 <span className={styles.meetings}>{t("{n} meetings", { n: r.meetings.length })}</span>
               </div>
-            </div>
+            </button>
 
             <p className={styles.edgeLine}>{edgeText}.</p>
 

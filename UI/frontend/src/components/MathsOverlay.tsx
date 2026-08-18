@@ -1,6 +1,8 @@
 import type { ReplayedRound, PlayerState } from "@/lib/types";
 import { t } from "@/lib/i18n";
 import { useNarrator } from "@/hooks/useAI";
+import { useEscapeKey } from "@/hooks/useEscapeKey";
+import AiBadge from "./AiBadge";
 import styles from "./MathsOverlay.module.css";
 
 interface Props {
@@ -14,20 +16,28 @@ function pName(id: string, players: PlayerState[]): string {
 }
 
 export default function MathsOverlay({ round, players, onClose }: Props) {
-  const { narrative, loading, error, generate } = useNarrator(round.id);
+  const { narrative, loading, error, generate, source } = useNarrator(round.id);
+
+  useEscapeKey(onClose);
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.panel} onClick={(e) => e.stopPropagation()}>
+      <div
+        className={styles.panel}
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="maths-overlay-title"
+      >
         <div className={styles.head}>
           <div>
-            <span className={styles.title}>{t("The Maths")}</span>
+            <span id="maths-overlay-title" className={styles.title}>{t("The Maths")}</span>
             <span className={styles.subtitle}>
               {round.date} · {round.course} · {round.format}
               {round.holes !== 18 ? t(" · {n} holes", { n: round.holes }) : ""}
             </span>
           </div>
-          <button className={styles.close} onClick={onClose}>
+          <button className={styles.close} onClick={onClose} aria-label={t("Close")}>
             ×
           </button>
         </div>
@@ -157,7 +167,10 @@ export default function MathsOverlay({ round, players, onClose }: Props) {
 
           <section className={styles.narratorSection}>
             {narrative ? (
-              <p className={styles.narratorText}>{narrative}</p>
+              <>
+                {source === "ai" && <AiBadge />}
+                <p className={styles.narratorText}>{narrative}</p>
+              </>
             ) : (
               <button
                 className={styles.narratorBtn}

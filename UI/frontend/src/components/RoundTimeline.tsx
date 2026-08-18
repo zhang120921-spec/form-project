@@ -45,6 +45,9 @@ export default function RoundTimeline({ round, players, onToggleMaths }: Props) 
                 {formatLabel}
                 {round.holes !== 18 ? ` ${t("{n}h", { n: round.holes })}` : ""}
               </span>
+              {round.flagged && (
+                <span className={styles.flagBadge}>{t("⚠ Flagged")}</span>
+              )}
             </div>
           </div>
           <div className={styles.deltas}>
@@ -66,6 +69,10 @@ export default function RoundTimeline({ round, players, onToggleMaths }: Props) 
 
         {expanded && (
           <div className={styles.detail}>
+            {round.flagged && round.flagReason && (
+              <p className={styles.flagReason}>{round.flagReason}</p>
+            )}
+
             {round.narration && (
               <p className={styles.narration}>{round.narration}</p>
             )}

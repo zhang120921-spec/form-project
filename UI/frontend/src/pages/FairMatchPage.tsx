@@ -277,6 +277,7 @@ function FairMatchCalculator() {
             <button
               className={styles.nudgeBtn}
               onClick={() => setStrokeOverride(Math.max(0, effectiveOverride - 1))}
+              aria-label={t("Decrease strokes")}
             >
               −
             </button>
@@ -289,6 +290,7 @@ function FairMatchCalculator() {
             <button
               className={styles.nudgeBtn}
               onClick={() => setStrokeOverride(effectiveOverride + 1)}
+              aria-label={t("Increase strokes")}
             >
               +
             </button>

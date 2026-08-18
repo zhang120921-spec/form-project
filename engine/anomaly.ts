@@ -56,7 +56,7 @@ export function detectAnomalies(
       if (r.ags < meanAGS - 2 * stdDev) {
         anomalies.push({
           roundId: r.roundId,
-          reason: `${playerName} shot ${r.ags} at ${r.course} on ${r.date}, well below their recent average of ${Math.round(meanAGS)} (std dev ${Math.round(stdDev)}).`,
+          reason: `${playerName} 在 ${r.date} 于 ${r.course} 打出 ${r.ags} 杆，明显低于近期平均 ${Math.round(meanAGS)} 杆（标准差 ${Math.round(stdDev)}）。`,
           severity: r.ags < meanAGS - 3 * stdDev ? "high" : "medium",
         });
       }
@@ -75,7 +75,7 @@ export function detectAnomalies(
       ) {
         anomalies.push({
           roundId: d.roundId,
-          reason: `${playerName} gained ${Math.round(d.delta)} rating points from round at ${d.course} on ${d.date} — over 3x the typical gain of ${Math.round(typicalGain)}.`,
+          reason: `${playerName} 在 ${d.date} 于 ${d.course} 的这轮球中评分上涨了 ${Math.round(d.delta)} 分——是平时涨幅 ${Math.round(typicalGain)} 的 3 倍以上。`,
           severity: d.delta > typicalGain * 5 ? "high" : "medium",
         });
       }

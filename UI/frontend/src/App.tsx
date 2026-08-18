@@ -1,6 +1,8 @@
 import { BrowserRouter, HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { StoreProvider } from "@/hooks/useStore";
 import { AuthProvider, useAuth } from "@/hooks/useAuth";
+import { ToastProvider } from "@/hooks/useToast";
+import { PendingCountsProvider } from "@/hooks/usePendingCounts";
 import Shell from "@/components/Shell";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import AuthPage from "@/pages/AuthPage";
@@ -64,9 +66,13 @@ export default function App() {
     <Router>
       <StoreProvider>
         <AuthProvider>
-          <ErrorBoundary>
-            <AppRoutes />
-          </ErrorBoundary>
+          <ToastProvider>
+            <PendingCountsProvider>
+              <ErrorBoundary>
+                <AppRoutes />
+              </ErrorBoundary>
+            </PendingCountsProvider>
+          </ToastProvider>
         </AuthProvider>
       </StoreProvider>
     </Router>

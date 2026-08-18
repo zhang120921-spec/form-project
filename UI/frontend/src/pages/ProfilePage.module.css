@@ -401,8 +401,6 @@
   gap: var(--space-md);
   padding: var(--space-lg);
   border: 1px solid var(--rule);
-  border-left: 3px solid var(--brass);
-  background: var(--brass-bg);
 }
 
 .recapStats {

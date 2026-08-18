@@ -36,12 +36,14 @@ export interface SeasonRecapStats {
 export interface SeasonRecap {
   stats: SeasonRecapStats;
   narrative: string;
+  source?: "ai" | "template";
   period: { from: string | null; to: string | null };
 }
 
 export interface NarratorResult {
   narrative: string;
   generatedAt: string;
+  source?: "ai" | "template";
 }
 
 export interface PublicProfileSummary {
@@ -137,6 +139,7 @@ export function useSeasonRecap(playerId: string | null) {
 export function useNarrator(roundId: string | null) {
   const [narrative, setNarrative] = useState<string | null>(null);
   const [generatedAt, setGeneratedAt] = useState<string | null>(null);
+  const [source, setSource] = useState<"ai" | "template" | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -150,6 +153,7 @@ export function useNarrator(roundId: string | null) {
       });
       setNarrative(result.narrative);
       setGeneratedAt(result.generatedAt);
+      setSource(result.source ?? null);
     } catch (err: any) {
       setError(err.message || t("Failed to generate narration"));
     } finally {
@@ -157,7 +161,7 @@ export function useNarrator(roundId: string | null) {
     }
   }, [roundId]);
 
-  return { narrative, generatedAt, loading, error, generate };
+  return { narrative, generatedAt, source, loading, error, generate };
 }
 
 export function usePublicProfiles(filter: "app" | "pro" | "all" = "app") {

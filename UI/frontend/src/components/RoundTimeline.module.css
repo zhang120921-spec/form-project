@@ -101,6 +101,16 @@
   width: fit-content;
 }
 
+.flagBadge {
+  display: inline-block;
+  font-size: var(--type-metadata);
+  font-weight: 600;
+  color: var(--neg);
+  background: var(--neg-bg);
+  padding: 1px 6px;
+  width: fit-content;
+}
+
 .deltas {
   display: flex;
   flex-direction: column;
@@ -157,6 +167,16 @@
   margin-bottom: var(--space-lg);
   background: var(--brass-bg);
   border-left: 3px solid var(--brass);
+}
+
+.flagReason {
+  font-size: var(--type-body);
+  color: var(--neg);
+  line-height: 1.6;
+  padding: var(--space-md) var(--space-lg);
+  margin-bottom: var(--space-lg);
+  background: var(--neg-bg);
+  border-left: 3px solid var(--neg);
 }
 
 .table {

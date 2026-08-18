@@ -224,7 +224,11 @@
   user-select: none;
 }
 
-/* ── Chart tooltip ── */
+/* ── Chart tooltip ──
+   Reserves its layout space at all times and only fades opacity — matches
+   the design system's fades-only motion rule and avoids animating height
+   (which can't interpolate to/from "auto" anyway, and forces layout when
+   animated as a real value). */
 .chartTooltip {
   display: flex;
   flex-direction: row;
@@ -235,20 +239,16 @@
   padding: var(--space-sm) var(--space-md);
   font-size: var(--type-body);
   opacity: 0;
-  height: 0;
-  overflow: hidden;
-  transition: opacity var(--fade-fast), height var(--fade-fast), margin var(--fade-fast);
+  transition: opacity var(--fade-fast);
   pointer-events: none;
   position: static;
-  margin-top: 0;
+  margin-top: var(--space-sm);
   width: 100%;
   box-sizing: border-box;
 }
 
 .chartTooltip[data-visible="true"] {
   opacity: 1;
-  height: auto;
-  margin-top: var(--space-sm);
 }
 
 .tooltipDate {
@@ -389,8 +389,6 @@
   gap: var(--space-xs);
   padding: var(--space-md) var(--space-lg);
   border: 1px solid var(--rule);
-  border-left: 3px solid var(--brass);
-  background: var(--brass-bg);
 }
 
 .matchInfo {
@@ -418,6 +416,7 @@
 
 .matchReason {
   font-size: var(--type-metadata);
+  font-style: italic;
   color: var(--ink-2);
   line-height: 1.6;
 }

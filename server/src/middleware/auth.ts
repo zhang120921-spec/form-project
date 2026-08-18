@@ -4,6 +4,11 @@ import { jwtVerify, SignJWT } from "jose";
 import crypto from "crypto";
 import db from "../db/connection.js";
 
+// Shared Hono context typing — every app instance that uses authMiddleware
+// or adminMiddleware needs this so c.get("userId")/c.set("userId", ...)
+// type-check instead of falling back to `never`.
+export type AppEnv = { Variables: { userId: string } };
+
 if (!process.env.JWT_SECRET) {
   throw new Error("JWT_SECRET environment variable is required. Set it to a random string (min 32 chars).");
 }
@@ -34,7 +39,7 @@ export function hashToken(token: string): string {
 }
 
 // Auth middleware — validates JWT and attaches userId
-export const authMiddleware = createMiddleware(async (c, next) => {
+export const authMiddleware = createMiddleware<AppEnv>(async (c, next) => {
   const auth = c.req.header("Authorization");
   if (!auth?.startsWith("Bearer ")) {
     return c.json({ error: "Unauthorized" }, 401);
@@ -57,7 +62,7 @@ export const authMiddleware = createMiddleware(async (c, next) => {
 });
 
 // Admin middleware
-export const adminMiddleware = createMiddleware(async (c, next) => {
+export const adminMiddleware = createMiddleware<AppEnv>(async (c, next) => {
   const userId = c.get("userId");
   const user = db.prepare("SELECT is_admin FROM users WHERE id = ?").get(userId) as any;
   if (!user?.is_admin) {

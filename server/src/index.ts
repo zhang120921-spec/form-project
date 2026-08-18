@@ -6,10 +6,10 @@ import { hash, verify } from "argon2";
 import crypto from "crypto";
 import db from "./db/connection.js";
 import { runMigrations } from "./db/schema.js";
-import { authMiddleware, adminMiddleware, createToken, hashToken } from "./middleware/auth.js";
+import { authMiddleware, adminMiddleware, createToken, hashToken, type AppEnv } from "./middleware/auth.js";
 import { rateLimit } from "./middleware/rateLimit.js";
 import adminRoutes from "./admin/routes.js";
-import aiRoutes, { refreshProHandicaps } from "./ai/routes.js";
+import aiRoutes, { refreshProHandicaps, runAnomalyDetectionForUser } from "./ai/routes.js";
 import { getAIConfig } from "./ai/service.js";
 import { readFileSync } from "fs";
 import path from "path";
@@ -17,7 +17,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const app = new Hono();
+const app = new Hono<AppEnv>();
 const PORT = parseInt(process.env.PORT || "3001");
 
 // CORS — allow dev server origins + null (for standalone file:// builds)
@@ -218,13 +218,21 @@ app.get("/api/profile", authMiddleware, (c) => {
   const result = replay(players, rounds, DEFAULTS);
   const state = result.players.find((p) => p.id === userId);
 
+  // Rank is scope-relative (not a PlayerState field) — rank within the
+  // user's own friends network, same scope /api/rankings defaults to.
+  const sortedByRating = result.players
+    .filter((p) => p.rating != null)
+    .sort((a, b) => b.rating - a.rating);
+  const rankIndex = sortedByRating.findIndex((p) => p.id === userId);
+  const rank = rankIndex >= 0 ? rankIndex + 1 : null;
+
   return c.json({
     id: user.id, email: user.email, displayName: user.display_name,
     homeClub: user.home_club, region: user.region,
     sgaHandicap: user.sga_handicap, isPublic: !!user.is_public, createdAt: user.created_at,
     rating: state?.rating ?? null,
     ratingDeviation: state?.rd ?? null,
-    rank: state?.rank ?? null,
+    rank,
     matches: state?.matches ?? 0,
     isProvisional: state?.isProvisional ?? true,
   });
@@ -469,8 +477,22 @@ app.get("/api/rounds", authMiddleware, (c) => {
       partsByRound.get(p.round_id)!.push(p);
     }
 
+    const analyses = db.prepare(`
+      SELECT round_id, narration, flagged, flag_reason FROM ai_analysis
+      WHERE round_id IN (${placeholders})
+    `).all(...roundIds) as any[];
+    const analysisByRound = new Map(analyses.map((a) => [a.round_id, a]));
+
     for (const r of rounds) {
       r.participants = partsByRound.get(r.id) ?? [];
+      const analysis = analysisByRound.get(r.id);
+      if (analysis) {
+        r.aiAnalysis = {
+          narration: analysis.narration ?? undefined,
+          flagged: !!analysis.flagged,
+          flagReason: analysis.flag_reason ?? undefined,
+        };
+      }
     }
   }
 
@@ -547,7 +569,14 @@ app.get("/api/rounds/:id", authMiddleware, (c) => {
     ORDER BY rp.player_id ASC
   `).all(roundId);
 
-  return c.json({ ...round, participants });
+  const analysis = db.prepare(
+    "SELECT narration, flagged, flag_reason FROM ai_analysis WHERE round_id = ?"
+  ).get(roundId) as any;
+  const aiAnalysis = analysis
+    ? { narration: analysis.narration ?? undefined, flagged: !!analysis.flagged, flagReason: analysis.flag_reason ?? undefined }
+    : undefined;
+
+  return c.json({ ...round, participants, aiAnalysis });
 });
 
 // ═══════════════ REPLAY ═══════════════
@@ -907,6 +936,7 @@ app.post("/api/attestations/:id/confirm", authMiddleware, (c) => {
   if (!a) return c.json({ error: "Not found" }, 404);
 
   // Use a transaction to avoid race condition when multiple users confirm simultaneously
+  let fullyConfirmed = false;
   const doConfirm = db.transaction(() => {
     db.prepare("UPDATE attestations SET status = 'confirmed', confirmed_at = datetime('now') WHERE id = ?").run(attestId);
 
@@ -914,9 +944,26 @@ app.post("/api/attestations/:id/confirm", authMiddleware, (c) => {
     const pending = db.prepare("SELECT COUNT(*) as c FROM attestations WHERE round_id = ? AND status = 'pending'").get(a.round_id) as any;
     if (pending.c === 0) {
       db.prepare("UPDATE rounds SET status = 'confirmed' WHERE id = ?").run(a.round_id);
+      fullyConfirmed = true;
     }
   });
   doConfirm();
+
+  // Run anomaly detection for every participant now that the round is fully
+  // attested — outside the transaction above since it opens its own writes.
+  // Best-effort: a detection failure must never block confirmation itself.
+  if (fullyConfirmed) {
+    const participantIds = db
+      .prepare("SELECT DISTINCT player_id FROM round_participants WHERE round_id = ?")
+      .all(a.round_id) as { player_id: string }[];
+    for (const { player_id } of participantIds) {
+      try {
+        runAnomalyDetectionForUser(player_id);
+      } catch (err) {
+        console.error(`Anomaly detection failed for user ${player_id}:`, err);
+      }
+    }
+  }
 
   return c.json({ success: true });
 });
@@ -1082,7 +1129,7 @@ app.get("/api/admin/stats", authMiddleware, adminMiddleware, (c) => {
   const dbPageSize = db.prepare("PRAGMA page_size").get() as any;
   const pages = dbSize.page_count || dbSize.c || 0;
   const pageBytes = dbPageSize.page_size || dbPageSize.c || 0;
-  const sizeMb = pages && pageBytes ? ((pages * pageBytes) / (1024 * 1024)).toFixed(2) : null;
+  const sizeMb = pages && pageBytes ? Math.round(((pages * pageBytes) / (1024 * 1024)) * 100) / 100 : null;
   return c.json({
     users: users.c,
     rounds: rounds.c,
@@ -1090,7 +1137,7 @@ app.get("/api/admin/stats", authMiddleware, adminMiddleware, (c) => {
     courses: courses.c,
     friendships: friendships.c,
     pendingRequests: pending.c,
-    dbSizeMb: parseFloat(sizeMb),
+    dbSizeMb: sizeMb,
     uptime: process.uptime().toFixed(1),
     nodeVersion: process.version,
   });
@@ -1431,7 +1478,7 @@ app.get("/admin", (c) => {
   c.header("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
   c.header("Pragma", "no-cache");
   c.header("Expires", "0");
-  const htmlPath = path.resolve(__dirname, "../public/admin/index.html");
+  const htmlPath = path.resolve(__dirname, "../../UI/admin-panel/admin.html");
   return c.html(readFileSync(htmlPath, "utf-8"));
 });
 
@@ -1577,13 +1624,13 @@ app.get("/api/health", (c) => c.json({ status: "ok", timestamp: new Date().toISO
 // ═══════════════ STATIC (production) ═══════════════
 // In production, serve the single-file built frontend for all non-API routes.
 // During development the Vite dev server handles this on port 5173.
-const frontendPath = path.resolve(__dirname, "../public/index.html");
+const frontendPath = path.resolve(__dirname, "../../UI/served-builds/app.html");
 let hasFrontend = false;
 try {
   readFileSync(frontendPath); // check it exists
   hasFrontend = true;
 } catch {
-  console.log("No built frontend found at public/index.html — API-only mode");
+  console.log("No built frontend found at UI/served-builds/app.html — API-only mode");
 }
 
 // Catch-all for unmatched API routes — returns 404 for all HTTP methods

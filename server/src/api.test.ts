@@ -28,10 +28,19 @@ async function fetch(path: string, opts: FetchOpts = {}) {
   const headers: Record<string, string> = { "Content-Type": "application/json" };
   if (opts.token) headers["Authorization"] = `Bearer ${opts.token}`;
 
+  // Registration requires PIPL consent. These tests predate that
+  // requirement and exercise unrelated behavior, so default consent to
+  // true here unless a test explicitly overrides it (to test the consent
+  // gate itself).
+  let body = opts.body;
+  if (path === "/api/auth/register" && body && body.consent === undefined) {
+    body = { ...body, consent: true };
+  }
+
   const req = new Request(`http://localhost${path}`, {
     method: opts.method || (opts.body ? "POST" : "GET"),
     headers,
-    body: opts.body ? JSON.stringify(opts.body) : undefined,
+    body: body ? JSON.stringify(body) : undefined,
   });
   const res = await app.fetch(req);
   const json = await res.json().catch(() => null);

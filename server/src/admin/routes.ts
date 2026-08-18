@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { runCommand, PRESETS, listSessions, getSession, subscribe, killSession } from "./commands.js";
-import { authMiddleware, adminMiddleware } from "../middleware/auth.js";
+import { authMiddleware, adminMiddleware, type AppEnv } from "../middleware/auth.js";
 
-const app = new Hono();
+const app = new Hono<AppEnv>();
 
 // Admin routes — protected by auth + admin middleware
 

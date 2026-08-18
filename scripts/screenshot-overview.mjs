@@ -1,8 +1,10 @@
 // Screenshot the Overview page in both light and dark themes
 import { chromium } from "playwright";
-import { join } from "path";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 
-const OUT = "/Users/michaelzhang/WorkBuddy/2026-08-02-12-07-39/dusk-v3";
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const OUT = join(__dirname, "..", "UI", "screenshots");
 const CHROMIUM_PATH = "/Users/michaelzhang/Library/Caches/ms-playwright/chromium-1234/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing";
 const W = 1280;
 const H = 900;

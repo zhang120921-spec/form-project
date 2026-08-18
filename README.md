@@ -5,9 +5,10 @@ A full-stack golf form-rating web application adapting the Elo chess rating syst
 ## Architecture
 
 ```
-form-v3/
+FORM-project/
 ├── engine/          # Pure TypeScript rating engine (zero deps, runs in Node & browser)
-│   └── index.ts     # All formulas, replay, WHS handicap, forecast scoring
+│   ├── index.ts     # All formulas, replay, WHS handicap, forecast scoring
+│   └── anomaly.ts   # Self-relative statistical anomaly detection
 ├── store/
 │   └── interface.ts # FormStore data-access interface (30+ methods)
 ├── server/          # Hono + SQLite backend
@@ -18,13 +19,13 @@ form-v3/
 │           ├── connection.ts  # SQLite with WAL mode
 │           ├── schema.ts      # Full schema with migrations
 │           └── seed.ts        # Demo data (admin, 13 players, 34 rounds)
-└── web/             # Vite + React + TypeScript client
-    └── src/
-        ├── components/  # Header, PlayerCard, RoundCard, LogRoundForm, MathsOverlay
-        ├── pages/       # Overview, Rankings, Rounds, Log, Profile, Friends, Auth
-        ├── hooks/       # useAuth, useReplay, useRounds, useFriends, etc.
-        ├── lib/         # API client, theme, types
-        └── styles/      # Scorecard design tokens & global CSS
+├── UI/              # Everything UI-related — see UI/README.md
+│   ├── frontend/    # Vite + React + TypeScript client source
+│   ├── admin-panel/ # Single-file admin dashboard
+│   ├── served-builds/ # The built HTML the backend actually serves
+│   ├── design-prototype/ # Original HTML mockup, pre-React
+│   └── screenshots/ # Reference screenshots
+└── deploy/          # Deployment entry point (start.sh) — runs the real server/, no duplicated source
 ```
 
 ## Quick Start
@@ -44,9 +45,17 @@ Or use the **Admin Console** at http://localhost:3001/admin (login with `admin@f
 ### 2. Web Client
 
 ```bash
-cd web
+cd UI/frontend
 npm install
 npm run dev           # Start on http://localhost:5173
+```
+
+To ship a build the server actually serves:
+
+```bash
+cd UI/frontend
+npm run build
+cp dist/index.html ../served-builds/app.html
 ```
 
 ### 3. Open
@@ -85,16 +94,18 @@ The rating engine is a pure, dependency-free TypeScript module at `engine/index.
 | 4 | Attestation (confirm/dispute) | ✅ |
 | 5 | Admin (users CRUD, stats, health, commands) | ✅ |
 | 6 | Courses (CR/Slope per tee) | ✅ |
-| 7 | AI narrator | ⬜ |
-| 8 | Fair-match calculator | ⬜ |
-| 9 | Matchmaking | ⬜ |
-| 10 | OCR scorecard | ⬜ |
-| 11 | Forecast accuracy | ⬜ |
-| 12 | Sandbag immunity | ⬜ |
-| 13 | Anomaly detection | ⬜ |
-| 14 | Rivalries | ⬜ |
-| 15 | Connection graph | ⬜ |
-| 16 | Season recap | ⬜ |
+| 7 | AI narrator | ✅ |
+| 8 | Fair-match calculator | ✅ |
+| 9 | Matchmaking (match suggestions) | ✅ |
+| 10 | OCR scorecard | ✅ |
+| 11 | Forecast accuracy | ⚠️ built, admin-only |
+| 12 | Sandbag-proof explainer/simulator | ✅ |
+| 13 | Anomaly detection | ✅ |
+| 14 | Rivalries | ✅ |
+| 15 | Connection graph (opponent diversity) | ✅ |
+| 16 | Season recap | ✅ |
+
+This table was significantly stale until 2026-08-18 — most of these were already implemented (server routes + wired frontend hooks) but never marked done. See `docs/FEATURE_STATUS.md` for the detailed audit and what's actually left.
 
 ## License
 

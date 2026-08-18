@@ -4,7 +4,7 @@ import { z } from "zod";
 import crypto from "crypto";
 import db from "../db/connection.js";
 import { ensureFamousPlayers } from "../db/pros.js";
-import { authMiddleware, adminMiddleware } from "../middleware/auth.js";
+import { authMiddleware, adminMiddleware, type AppEnv } from "../middleware/auth.js";
 import { rateLimit } from "../middleware/rateLimit.js";
 import { chatCompletion, isAIEnabled, getAIConfig } from "./service.js";
 import {
@@ -15,8 +15,9 @@ import {
   type Round,
   type ReplayResult,
 } from "../../../engine/index.js";
+import { detectAnomalies, type DetectedAnomaly } from "../../../engine/anomaly.js";
 
-const app = new Hono();
+const app = new Hono<AppEnv>();
 const uid = () => crypto.randomUUID();
 
 // All AI routes require authentication
@@ -860,9 +861,19 @@ app.post("/match-suggestions", rateLimit(10, 60_000), async (c) => {
 
 // ═══════════════ 6. Anomaly Detection ═══════════════
 
-app.post("/detect-anomalies", rateLimit(5, 60_000), async (c) => {
-  const userId = c.get("userId");
+export interface DetectedAnomalyRecord extends DetectedAnomaly {
+  playerId: string;
+  playerName: string;
+}
 
+/**
+ * Runs self-relative statistical anomaly detection (see engine/anomaly.ts)
+ * for one user's own confirmed rounds and persists any newly-detected flags
+ * into ai_analysis. Called both from the on-demand /detect-anomalies route
+ * and automatically whenever a round involving this user is confirmed, so
+ * flags exist without anyone needing to trigger detection by hand.
+ */
+export function runAnomalyDetectionForUser(userId: string): DetectedAnomalyRecord[] {
   // Get all confirmed rounds involving the user
   const roundRows = db
     .prepare(
@@ -873,9 +884,7 @@ app.post("/detect-anomalies", rateLimit(5, 60_000), async (c) => {
     )
     .all(userId) as any[];
 
-  if (roundRows.length < 3) {
-    return c.json({ anomalies: [] });
-  }
+  if (roundRows.length < 3) return [];
 
   // Build participant data
   const allParts: any[] = [];
@@ -893,111 +902,38 @@ app.post("/detect-anomalies", rateLimit(5, 60_000), async (c) => {
   const result = replay(players, rounds, DEFAULTS);
   const userName = getPlayerName(userId);
 
-  const anomalies: Array<{
-    roundId: string;
-    playerId: string;
-    playerName: string;
-    reason: string;
-    severity: "low" | "medium" | "high";
-  }> = [];
+  const strokeRounds = allParts
+    .filter((p: any) => p.format === "stroke" && p.ags != null)
+    .map((p: any) => ({ roundId: p.roundId, ags: p.ags, date: p.date, course: p.course }));
 
-  // Compute AGS history (stroke/stableford rounds)
-  const strokeRounds = allParts.filter(
-    (p: any) => p.format === "stroke" && p.ags != null
-  );
-
-  if (strokeRounds.length >= 5) {
-    const recent5 = strokeRounds.slice(-5);
-    const agsValues = recent5.map((r: any) => r.ags);
-    const meanAGS = agsValues.reduce((a: number, b: number) => a + b, 0) / agsValues.length;
-    const variance =
-      agsValues.reduce((sum: number, v: number) => sum + (v - meanAGS) ** 2, 0) /
-      agsValues.length;
-    const stdDev = Math.sqrt(variance);
-
-    // Check each confirmed round
-    for (const pr of allParts) {
-      if (pr.ags == null) continue;
-
-      // Check if AGS is more than 2 std dev below average (suspiciously good)
-      if (pr.ags < meanAGS - 2 * stdDev) {
-        const replayed = result.rounds.find((rr) => rr.id === pr.roundId);
-        const snap = replayed?.snapshot.find((s) => s.playerId === userId);
-
-        let reason = `${userName} shot ${pr.ags} at ${pr.course} on ${pr.date}, well below their recent average of ${Math.round(meanAGS)} (std dev ${Math.round(stdDev)}).`;
-
-        if (snap && snap.delta > 0) {
-          reason += ` Rating gain: +${Math.round(snap.delta)} points.`;
-        }
-
-        anomalies.push({
-          roundId: pr.roundId,
-          playerId: userId,
-          playerName: userName,
-          reason,
-          severity: pr.ags < meanAGS - 3 * stdDev ? "high" : "medium",
-        });
-
-        // Store flag in ai_analysis
-        const existing = db
-          .prepare("SELECT id FROM ai_analysis WHERE round_id = ?")
-          .get(pr.roundId) as any;
-        if (existing) {
-          db.prepare(
-            "UPDATE ai_analysis SET flagged = 1, flag_reason = ? WHERE round_id = ?"
-          ).run(reason, pr.roundId);
-        } else {
-          db.prepare(
-            "INSERT INTO ai_analysis (id, round_id, flagged, flag_reason) VALUES (?, ?, 1, ?)"
-          ).run(uid(), pr.roundId, reason);
-        }
-      }
-    }
-  }
-
-  // Check for unusually large rating gains
-  const ratingDeltas: number[] = [];
-  for (const rr of result.rounds) {
-    const snap = rr.snapshot.find((s) => s.playerId === userId);
-    if (snap) ratingDeltas.push(Math.abs(snap.delta));
-  }
-
-  if (ratingDeltas.length >= 5) {
-    const typicalGain = ratingDeltas.reduce((a, b) => a + b, 0) / ratingDeltas.length;
-
-    for (const rr of result.rounds) {
+  const ratingDeltas = result.rounds
+    .map((rr) => {
       const snap = rr.snapshot.find((s) => s.playerId === userId);
-      if (snap && snap.delta > typicalGain * 3 && snap.delta > 10) {
-        // Only if not already flagged above
-        const alreadyFlagged = anomalies.some((a) => a.roundId === rr.id);
-        if (!alreadyFlagged) {
-          const reason = `${userName} gained ${Math.round(snap.delta)} rating points from round at ${rr.course} on ${rr.date} — over 3x the typical gain of ${Math.round(typicalGain)}.`;
+      return snap ? { roundId: rr.id, delta: snap.delta, date: rr.date, course: rr.course } : null;
+    })
+    .filter((d): d is { roundId: string; delta: number; date: string; course: string } => d != null);
 
-          anomalies.push({
-            roundId: rr.id,
-            playerId: userId,
-            playerName: userName,
-            reason,
-            severity: snap.delta > typicalGain * 5 ? "high" : "medium",
-          });
+  const anomalies = detectAnomalies(userName, strokeRounds, ratingDeltas);
 
-          const existing = db
-            .prepare("SELECT id FROM ai_analysis WHERE round_id = ?")
-            .get(rr.id) as any;
-          if (existing) {
-            db.prepare(
-              "UPDATE ai_analysis SET flagged = 1, flag_reason = ? WHERE round_id = ?"
-            ).run(reason, rr.id);
-          } else {
-            db.prepare(
-              "INSERT INTO ai_analysis (id, round_id, flagged, flag_reason) VALUES (?, ?, 1, ?)"
-            ).run(uid(), rr.id, reason);
-          }
-        }
-      }
+  for (const a of anomalies) {
+    const existing = db.prepare("SELECT id FROM ai_analysis WHERE round_id = ?").get(a.roundId) as any;
+    if (existing) {
+      db.prepare(
+        "UPDATE ai_analysis SET flagged = 1, flag_reason = ? WHERE round_id = ?"
+      ).run(a.reason, a.roundId);
+    } else {
+      db.prepare(
+        "INSERT INTO ai_analysis (id, round_id, flagged, flag_reason) VALUES (?, ?, 1, ?)"
+      ).run(uid(), a.roundId, a.reason);
     }
   }
 
+  return anomalies.map((a) => ({ ...a, playerId: userId, playerName: userName }));
+}
+
+app.post("/detect-anomalies", rateLimit(5, 60_000), async (c) => {
+  const userId = c.get("userId");
+  const anomalies = runAnomalyDetectionForUser(userId);
   return c.json({ anomalies });
 });
 

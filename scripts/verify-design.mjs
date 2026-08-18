@@ -29,7 +29,7 @@ function readFile(path) {
 
 // ─── 1. Chart: gridlines, axis labels, baseline ───
 console.log("\n📊 Chart assertions:");
-const overviewTsx = readFile(join(ROOT, "web/src/pages/OverviewPage.tsx"));
+const overviewTsx = readFile(join(ROOT, "UI/frontend/src/pages/OverviewPage.tsx"));
 
 assert("Chart contains horizontal gridlines (<line> in gridlines map)",
   overviewTsx.includes("Gridlines") && overviewTsx.includes('stroke="var(--rule-light)"'));
@@ -51,7 +51,7 @@ assert("Area fill at ~8% opacity",
 
 // ─── 2. tabular-nums at root ───
 console.log("\n🔢 Typography assertions:");
-const globalCss = readFile(join(ROOT, "web/src/styles/global.css"));
+const globalCss = readFile(join(ROOT, "UI/frontend/src/styles/global.css"));
 
 assert("tabular-nums is set on body (font-variant-numeric)",
   globalCss.includes("font-variant-numeric: tabular-nums"));
@@ -61,7 +61,7 @@ assert("tabular-nums is set on form elements (font-feature-settings: tnum)",
 
 // ─── 3. Section containers ───
 console.log("\n📦 Section assertions:");
-const overviewCss = readFile(join(ROOT, "web/src/pages/OverviewPage.module.css"));
+const overviewCss = readFile(join(ROOT, "UI/frontend/src/pages/OverviewPage.module.css"));
 
 assert(".sectionCard class exists",
   overviewCss.includes(".sectionCard"));
@@ -98,8 +98,8 @@ assert("Section headers rendered as <h2> elements",
 
 // ─── 5. Form strip renders as elements ───
 console.log("\n🎨 Form strip assertions:");
-const formStripTsx = readFile(join(ROOT, "web/src/components/FormStrip.tsx"));
-const formStripCss = readFile(join(ROOT, "web/src/components/FormStrip.module.css"));
+const formStripTsx = readFile(join(ROOT, "UI/frontend/src/components/FormStrip.tsx"));
+const formStripCss = readFile(join(ROOT, "UI/frontend/src/components/FormStrip.module.css"));
 
 assert("FormStrip renders .dot spans (not bare text)",
   formStripTsx.includes('className={`${styles.dot}') && formStripTsx.includes('sr-only'));
@@ -153,7 +153,7 @@ assert("No box-shadow in core CSS (or only box-shadow: none)",
 
 // ─── 7. Color contrast: accent ≠ positive ───
 console.log("\n🎨 Color contrast assertions:");
-const tokensCss = readFile(join(ROOT, "web/src/styles/tokens.css"));
+const tokensCss = readFile(join(ROOT, "UI/frontend/src/styles/tokens.css"));
 
 // Extract color values
 function extractVar(css, name) {

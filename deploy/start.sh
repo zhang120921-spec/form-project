@@ -8,7 +8,8 @@ echo "╚═══════════════════════�
 echo ""
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
-cd "$DIR"
+SERVER_DIR="$DIR/../server"
+cd "$SERVER_DIR"
 
 # Install deps if node_modules doesn't exist
 if [ ! -d "node_modules" ]; then
@@ -25,6 +26,9 @@ if [ ! -f ".env" ]; then
   echo "→ Created .env with a random JWT_SECRET"
   echo ""
 fi
+
+echo "→ Building..."
+npm run build
 
 echo "→ Starting FORM server..."
 echo ""

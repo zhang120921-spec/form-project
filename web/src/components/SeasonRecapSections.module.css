@@ -1,0 +1,258 @@
+/* ═══════════════ SEASON RECAP SECTIONS ═══════════════ */
+
+.container {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-md);
+}
+
+.recapSection {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-md);
+  background: var(--card);
+  border: 1px solid var(--rule-light);
+  border-top: 3px solid var(--section-accent, var(--brass));
+  opacity: 0;
+  animation: recapSectionIn 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--section-index, 0) * 140ms);
+  transition: border-color var(--fade-fast), background var(--fade-fast), transform var(--fade-fast);
+}
+
+.recapSection:hover {
+  background: var(--hover);
+  border-color: var(--section-accent, var(--brass));
+  transform: translateY(-3px);
+}
+
+.recapSection:active {
+  transform: translateY(0);
+}
+
+/* Section accent colors */
+.colorblue {
+  --section-accent: #2E5AAC;
+  --section-bg: #EAF1FB;
+  --section-icon-bg: #D6E3F8;
+}
+
+.colorgreen {
+  --section-accent: var(--green);
+  --section-bg: var(--pos-bg);
+  --section-icon-bg: var(--sel);
+}
+
+.colororange {
+  --section-accent: #9C5B1C;
+  --section-bg: #F8EEE3;
+  --section-icon-bg: #F0DBC4;
+}
+
+.colorpurple {
+  --section-accent: #5E3A8C;
+  --section-bg: #F0EAF8;
+  --section-icon-bg: #E2D6F3;
+}
+
+.colorbrass {
+  --section-accent: var(--brass);
+  --section-bg: var(--brass-bg);
+  --section-icon-bg: #E8DCC8;
+}
+
+.dark .colorblue {
+  --section-accent: #6B9BD8;
+  --section-bg: #131A26;
+  --section-icon-bg: #1E2D45;
+}
+
+.dark .colororange {
+  --section-accent: #D49A60;
+  --section-bg: #1F1810;
+  --section-icon-bg: #2E2316;
+}
+
+.dark .colorpurple {
+  --section-accent: #A080D8;
+  --section-bg: #1A1622;
+  --section-icon-bg: #261F33;
+}
+
+.dark .colorbrass {
+  --section-accent: var(--brass);
+  --section-bg: var(--brass-bg);
+  --section-icon-bg: #2A2015;
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.sectionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  color: var(--section-accent, var(--brass));
+  background: var(--section-icon-bg, var(--brass-bg));
+  flex-shrink: 0;
+  transition: color var(--fade-fast), background var(--fade-fast), transform var(--fade-fast);
+}
+
+.recapSection:hover .sectionIcon {
+  color: var(--card);
+  background: var(--section-accent, var(--brass));
+  transform: rotate(-4deg) scale(1.05);
+}
+
+.sectionIcon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.sectionTitleWrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.sectionTitle {
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.sectionAccent {
+  display: block;
+  width: 32px;
+  height: 3px;
+  background: var(--section-accent, var(--brass));
+  transition: width var(--fade-med) ease;
+}
+
+.recapSection:hover .sectionAccent {
+  width: 48px;
+}
+
+.bulletList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bullet {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  font-size: var(--type-body);
+  line-height: 1.55;
+  color: var(--ink-2);
+  opacity: 0;
+  animation: recapBulletIn 420ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--section-index, 0) * 140ms + var(--bullet-index, 0) * 90ms + 220ms);
+}
+
+.bulletMarker {
+  width: 6px;
+  height: 6px;
+  margin-top: 0.55em;
+  background: var(--section-accent, var(--brass));
+  flex-shrink: 0;
+  transition: transform var(--fade-fast), background var(--fade-fast);
+}
+
+.recapSection:hover .bulletMarker {
+  transform: scale(1.35);
+}
+
+.bulletText {
+  flex: 1;
+}
+
+.fallback {
+  grid-column: 1 / -1;
+  font-size: var(--type-body);
+  color: var(--ink);
+  line-height: 1.6;
+  padding: var(--space-sm) 0;
+}
+
+@keyframes recapSectionIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes recapBulletIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recapSection,
+  .bullet {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .recapSection:hover,
+  .recapSection:active {
+    transform: none;
+  }
+
+  .recapSection:hover .sectionIcon {
+    transform: none;
+  }
+
+  .sectionAccent,
+  .bulletMarker {
+    transition: none;
+  }
+
+  .recapSection:hover .sectionAccent {
+    width: 32px;
+  }
+
+  .recapSection:hover .bulletMarker {
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .sectionIcon svg {
+    width: 20px;
+    height: 20px;
+  }
+}

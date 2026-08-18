@@ -1,0 +1,236 @@
+/* ═══════════════ SANDBAG IMMUNITY EXPLAINER ═══════════════ */
+
+.page {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── Sections ── */
+.section {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+/* ── Typography — 18px floor, no jargon ── */
+.heading {
+  font-size: var(--type-section);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: var(--space-md);
+  letter-spacing: -0.01em;
+}
+
+.subHeading {
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--space-sm);
+}
+
+.lede {
+  font-size: var(--type-subhead);
+  font-weight: 500;
+  color: var(--ink-2);
+  line-height: 1.6;
+  margin-bottom: var(--space-md);
+  font-style: italic;
+}
+
+.body {
+  font-size: var(--type-body);
+  line-height: 1.6;
+  color: var(--ink);
+  margin-bottom: var(--space-md);
+}
+
+.body:last-child {
+  margin-bottom: 0;
+}
+
+.body em {
+  font-style: italic;
+  font-weight: 500;
+}
+
+.inlineLink {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--fade-fast);
+}
+
+.inlineLink:hover {
+  color: var(--ink);
+}
+
+/* ── Simulator buttons ── */
+.simButtons {
+  display: flex;
+  gap: var(--space-sm);
+  margin: var(--space-lg) 0;
+  flex-wrap: wrap;
+}
+
+.simBtn {
+  flex: 1;
+  min-width: 200px;
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  cursor: pointer;
+  transition: background var(--fade-fast), border-color var(--fade-fast);
+}
+
+.simBtn:hover {
+  background: var(--hover);
+  border-color: var(--ink-2);
+}
+
+.simBtnActive {
+  color: var(--card);
+  background: var(--ink);
+  border-color: var(--ink);
+}
+
+.simBtnActive:hover {
+  background: var(--ink-hover);
+  border-color: var(--ink-hover);
+}
+
+/* ── Results — side by side ── */
+.results {
+  display: flex;
+  gap: 0;
+  margin-top: var(--space-lg);
+  border: 1px solid var(--rule);
+}
+
+.resultCard {
+  flex: 1;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  text-align: center;
+  border-right: 1px solid var(--rule);
+}
+
+.resultCard:last-child {
+  border-right: none;
+}
+
+.sandbagCard {
+  background: var(--neg-bg);
+}
+
+.honestCard {
+  background: var(--pos-bg);
+}
+
+.resultLabel {
+  font-size: var(--type-metadata);
+  font-weight: 600;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.resultRating {
+  font-family: var(--font-mono);
+  font-size: var(--type-hero);
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.resultDelta {
+  font-size: var(--type-body);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.resultDelta.pos {
+  color: var(--pos);
+}
+
+.resultDelta.neg {
+  color: var(--neg);
+}
+
+.resultHcp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--rule-light);
+  width: 100%;
+}
+
+.hcpLabel {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hcpVal {
+  font-family: var(--font-mono);
+  font-size: var(--type-section);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ── Closing line ── */
+.closingLine {
+  margin-top: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--type-body);
+  font-weight: 500;
+  color: var(--ink);
+  background: var(--brass-bg);
+  border-left: 3px solid var(--brass);
+  line-height: 1.6;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .section {
+    padding: var(--space-md);
+  }
+
+  .results {
+    flex-direction: column;
+  }
+
+  .resultCard {
+    border-right: none;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .resultCard:last-child {
+    border-bottom: none;
+  }
+
+  .resultRating {
+    font-size: var(--type-display);
+  }
+
+  .simButtons {
+    flex-direction: column;
+  }
+
+  .simBtn {
+    min-width: 0;
+  }
+}

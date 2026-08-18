@@ -1,0 +1,230 @@
+/* ═══════════════ RIVALRY CARD ═══════════════ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.heading {
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--space-sm);
+}
+
+.empty {
+  padding: var(--space-lg);
+  text-align: center;
+  color: var(--ink-2);
+  font-size: var(--type-body);
+}
+
+/* ── Rivalry item ── */
+.rivalryItem {
+  padding: 0;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  gap: var(--space-sm);
+}
+
+.headerLeft {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.oppName {
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.record {
+  font-family: var(--font-mono);
+  font-size: var(--type-body);
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.recordWin {
+  color: var(--pos);
+}
+
+.recordLoss {
+  color: var(--neg);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.streakBadge {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.meetings {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.edgeLine {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  margin-top: var(--space-xs);
+  font-style: italic;
+}
+
+/* ── Detail (expanded) ── */
+.detail {
+  margin-top: var(--space-md);
+  border-top: 1px solid var(--rule-light);
+  padding-top: var(--space-md);
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.detailLabel {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.detailVal {
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink);
+  font-family: var(--font-mono);
+}
+
+.pos {
+  color: var(--pos);
+}
+
+.neg {
+  color: var(--neg);
+}
+
+/* ── Last 5 meetings ── */
+.lastTitle {
+  font-size: var(--type-metadata);
+  font-weight: 600;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-sm);
+}
+
+.meetingList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.meetingItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-xs) 0;
+  border-bottom: 1px solid var(--rule-light);
+}
+
+.meetingItem:last-child {
+  border-bottom: none;
+}
+
+.meetingDate {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  min-width: 80px;
+}
+
+.meetingCourse {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meetingResult {
+  font-size: var(--type-metadata);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+/* ── Share button ── */
+.shareBtn {
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--card);
+  background: var(--ink);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background var(--fade-fast);
+}
+
+.shareBtn:hover {
+  background: var(--ink-hover);
+}
+
+/* ── Expand button ── */
+.expandBtn {
+  display: block;
+  width: 100%;
+  padding: var(--space-xs);
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color var(--fade-fast);
+}
+
+.expandBtn:hover {
+  color: var(--ink);
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .headerRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-xs);
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .meetingItem {
+    flex-wrap: wrap;
+  }
+}

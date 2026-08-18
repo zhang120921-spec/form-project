@@ -1,0 +1,244 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--space-lg);
+}
+
+.modal {
+  background: var(--card);
+  max-width: 520px;
+  width: 100%;
+  border: 1px solid var(--rule);
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.modalTitle {
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.closeBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  transition: color var(--fade-fast);
+}
+
+.closeBtn:hover {
+  color: var(--ink);
+}
+
+.body {
+  padding: var(--space-lg);
+}
+
+.empty,
+.error,
+.note {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  text-align: center;
+  margin: var(--space-md) 0;
+}
+
+.error {
+  color: var(--neg);
+}
+
+.meta {
+  margin-bottom: var(--space-lg);
+}
+
+.lede {
+  font-size: var(--type-body);
+  color: var(--ink);
+  margin-bottom: var(--space-md);
+  line-height: 1.5;
+}
+
+.lede strong {
+  font-weight: 600;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+}
+
+.metaGrid > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.metaLabel {
+  font-size: var(--type-caption);
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.metaValue {
+  font-size: var(--type-body);
+  color: var(--ink);
+}
+
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--rule-light);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--type-body);
+}
+
+.table th,
+.table td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  border-bottom: 1px solid var(--rule-light);
+  color: var(--ink);
+}
+
+.table th {
+  font-weight: 600;
+  background: var(--ground);
+  font-size: var(--type-caption);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ink-2);
+}
+
+.table td:nth-child(2),
+.table td:nth-child(3),
+.table td:nth-child(4),
+.table td:nth-child(5),
+.table th:nth-child(2),
+.table th:nth-child(3),
+.table th:nth-child(4),
+.table th:nth-child(5) {
+  text-align: right;
+}
+
+.playerCell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.youTag {
+  font-size: var(--type-caption);
+  color: var(--ink-2);
+  background: var(--ground);
+  padding: 2px var(--space-xs);
+  border: 1px solid var(--rule-light);
+}
+
+.scoreInput {
+  width: 64px;
+  padding: var(--space-xs);
+  border: 1px solid var(--rule);
+  font-size: var(--type-body);
+  text-align: right;
+  color: var(--ink);
+  background: var(--card);
+}
+
+.scoreInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.pos {
+  color: var(--pos);
+}
+
+.neg {
+  color: var(--neg);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+  border-top: 1px solid var(--rule);
+  justify-content: flex-end;
+}
+
+.primaryBtn,
+.secondaryBtn {
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--type-body);
+  font-weight: 500;
+  transition: opacity var(--fade-fast), border-color var(--fade-fast), color var(--fade-fast);
+}
+
+.primaryBtn {
+  background: var(--ink);
+  color: var(--card);
+}
+
+.primaryBtn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.secondaryBtn {
+  background: transparent;
+  color: var(--ink-2);
+  border: 1px solid var(--rule);
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  border-color: var(--neg);
+  color: var(--neg);
+}
+
+.primaryBtn:disabled,
+.secondaryBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: var(--space-md);
+    align-items: flex-end;
+  }
+  .modal {
+    max-height: 85vh;
+  }
+  .metaGrid {
+    grid-template-columns: 1fr;
+  }
+  .actions {
+    flex-direction: column;
+  }
+  .primaryBtn,
+  .secondaryBtn {
+    width: 100%;
+  }
+}

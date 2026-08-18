@@ -1,0 +1,59 @@
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.label {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.strip {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Colored squares — filled, zero radius */
+.win {
+  background: var(--green);
+}
+
+.loss {
+  background: var(--neg);
+}
+
+.tie {
+  background: var(--ink-2);
+}
+
+.empty {
+  background: var(--rule-light);
+}
+
+.compact .dot {
+  width: 12px;
+  height: 12px;
+}
+
+@media (max-width: 480px) {
+  .dot {
+    width: 12px;
+    height: 12px;
+  }
+
+  .strip {
+    gap: 2px;
+  }
+}

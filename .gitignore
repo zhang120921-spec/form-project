@@ -1,0 +1,15 @@
+# Environment variables (contains API keys — never commit)
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Database
+*.db
+*.db-journal

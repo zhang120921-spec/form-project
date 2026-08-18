@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FORM — Overview Visual Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --card: #FBF9F5;
+      --ground: #E8E4DA;
+      --math-bg: #FFFDF9;
+      --ink: #12291B;
+      --ink-2: #3D4A42;
+      --ink-hover: #1E3D2C;
+      --rule: #C9C2B2;
+      --rule-light: #DBD5C7;
+      --green: #24503A;
+      --acc-bg: #F0E8DC;
+      --acc-hover: #8D6628;
+      --brass: #7D5620;
+      --accent: #7D5620;
+      --brass-bg: #F0E8DC;
+      --pos: #24503A;
+      --pos-bg: #E8F0EC;
+      --neg: #96331F;
+      --neg-bg: #F5EAE6;
+      --hover: #F0EDE5;
+      --sel: #E8F0EC;
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-display: "Fraunces", "Times New Roman", serif;
+      --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", monospace;
+      --type-floor: 18px;
+      --type-metadata: 0.889rem;
+      --type-body: 1rem;
+      --type-subhead: 1.222rem;
+      --type-section: 1.556rem;
+      --type-display: 2.222rem;
+      --type-hero: 2.667rem;
+      --type-mono: 0.778rem;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --content-w: 920px;
+    }
+
+    .dark {
+      --card: #1A1A22;
+      --ground: #08080A;
+      --math-bg: #202028;
+      --ink: #D9E5DC;
+      --ink-2: #7A8A7F;
+      --ink-hover: #C9D5CC;
+      --rule: #3A3F3A;
+      --rule-light: #2C302C;
+      --green: #5B9876;
+      --acc-bg: #1F1810;
+      --acc-hover: #D4A570;
+      --brass: #C49560;
+      --accent: #C49560;
+      --brass-bg: #1F1810;
+      --pos: #5B9876;
+      --pos-bg: #121A15;
+      --neg: #C77050;
+      --neg-bg: #1A1210;
+      --hover: #141418;
+      --sel: #152318;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: var(--type-floor); }
+    body {
+      font-family: var(--font-sans);
+      background: var(--ground);
+      color: var(--ink);
+      line-height: 1.6;
+      font-variant-numeric: tabular-nums;
+      padding: 24px;
+    }
+
+    .shell {
+      display: flex;
+      max-width: 1160px;
+      margin: 0 auto;
+      min-height: calc(100vh - 48px);
+    }
+
+    .sidebar {
+      width: 240px;
+      flex-shrink: 0;
+      background: var(--card);
+      border-right: 1px solid var(--rule);
+      padding: 24px;
+    }
+
+    .logo {
+      font-size: var(--type-section);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--ink);
+    }
+
+    .main {
+      flex: 1;
+      background: var(--ground);
+      padding: 24px;
+      max-width: var(--content-w);
+    }
+
+    .page {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xl);
+    }
+
+    .sectionCard {
+      background: var(--math-bg);
+      padding: var(--space-lg);
+    }
+
+    .sectionTitle {
+      font-family: var(--font-display), var(--font-sans);
+      font-size: 1.222rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: var(--space-lg);
+      letter-spacing: -0.01em;
+    }
+
+    .heroTop {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .heroLabel {
+      font-size: var(--type-body);
+      font-weight: 400;
+      color: var(--ink-2);
+      letter-spacing: 0.01em;
+    }
+
+    .heroRating {
+      font-family: var(--font-display);
+      font-size: var(--type-hero);
+      font-weight: 300;
+      color: var(--ink);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .heroDelta {
+      font-size: var(--type-body);
+      font-weight: 400;
+      color: var(--pos);
+      margin-top: var(--space-xs);
+    }
+
+    .formStrip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-top: var(--space-xs);
+    }
+
+    .formStrip .label {
+      font-size: var(--type-metadata);
+      color: var(--ink-2);
+    }
+
+    .formStrip .strip {
+      display: flex;
+      gap: 3px;
+    }
+
+    .formStrip .dot {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .formStrip .dot.win { background: var(--green); }
+    .formStrip .dot.loss { background: var(--neg); }
+
+    .rankBadge {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: var(--acc-bg);
+      padding: var(--space-sm) var(--space-md);
+      min-width: 64px;
+    }
+
+    .rankLabel {
+      font-size: var(--type-metadata);
+      font-weight: 400;
+      color: var(--ink-2);
+      letter-spacing: 0.04em;
+      margin-bottom: var(--space-xs);
+    }
+
+    .rankNum {
+      font-family: var(--font-display);
+      font-size: var(--type-section);
+      font-weight: 300;
+      color: var(--accent);
+    }
+
+    .rankTotal {
+      font-size: var(--type-metadata);
+      color: var(--ink-2);
+    }
+
+    .shareBtn {
+      display: inline-block;
+      padding: var(--space-xs) var(--space-lg);
+      font-size: var(--type-body);
+      font-weight: 500;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      margin-bottom: var(--space-md);
+      background: transparent;
+    }
+
+    .chartWrap {
+      width: 100%;
+      margin: var(--space-md) 0 var(--space-lg);
+    }
+
+    .ratingChart {
+      width: 100%;
+      height: auto;
+      max-height: 400px;
+      display: block;
+    }
+
+    .statGrid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-lg);
+      margin-top: var(--space-xl);
+      border-top: 1px solid var(--rule-light);
+      padding-top: var(--space-lg);
+    }
+
+    .statTile {
+      text-align: center;
+      padding: var(--space-md) var(--space-lg);
+      border-right: 1px solid var(--rule-light);
+    }
+
+    .statTile:last-child { border-right: none; }
+
+    .statVal {
+      display: block;
+      font-family: var(--font-display);
+      font-size: var(--type-subhead);
+      font-weight: 300;
+      color: var(--ink);
+    }
+
+    .statLabel {
+      display: block;
+      font-size: var(--type-metadata);
+      color: var(--ink-2);
+      margin-top: var(--space-xs);
+    }
+
+    .playerRow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) 0;
+      border-bottom: 1px solid var(--rule-light);
+    }
+
+    .playerRow:last-child { border-bottom: none; }
+
+    .playerName {
+      font-size: var(--type-body);
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .playerMeta {
+      font-size: var(--type-metadata);
+      color: var(--ink-2);
+      font-family: var(--font-mono);
+    }
+
+    .roundCard {
+      padding: var(--space-md) 0;
+      border-bottom: 1px solid var(--rule-light);
+    }
+
+    .roundCard:last-child { border-bottom: none; }
+
+    .roundTitle {
+      font-size: var(--type-body);
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .roundMeta {
+      font-size: var(--type-metadata);
+      color: var(--ink-2);
+      font-family: var(--font-mono);
+    }
+
+    .matchCard {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      padding: var(--space-md) var(--space-lg);
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--brass);
+      background: var(--brass-bg);
+      margin-bottom: var(--space-sm);
+    }
+
+    .matchName {
+      font-size: var(--type-body);
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .matchRating {
+      font-size: var(--type-metadata);
+      color: var(--ink-2);
+      font-family: var(--font-mono);
+    }
+
+    .matchReason {
+      font-size: var(--type-metadata);
+      color: var(--ink-2);
+      line-height: 1.6;
+    }
+
+    .matchInvite {
+      align-self: flex-start;
+      font-size: var(--type-metadata);
+      font-weight: 600;
+      color: var(--accent);
+      padding: var(--space-xs) 0;
+      background: none;
+      border: none;
+    }
+
+    .toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      padding: 8px 16px;
+      background: var(--card);
+      border: 1px solid var(--rule);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      cursor: pointer;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle" onclick="document.documentElement.classList.toggle('dark')">Toggle theme</button>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="logo">FORM</div>
+      <p style="margin-top: 8px; font-size: 0.889rem; color: var(--ink-2);">Know where you stand</p>
+    </aside>
+    <main class="main">
+      <div class="page">
+        <!-- Rating Hero -->
+        <section class="sectionCard">
+          <div class="heroTop">
+            <div>
+              <div class="heroLabel">Your Rating</div>
+              <div class="heroRating">1983</div>
+              <div class="heroDelta">▲ +37 since your first round</div>
+              <div class="formStrip">
+                <span class="label">Form:</span>
+                <span class="strip" role="list" aria-label="Recent form: wins and losses">
+                  <span class="dot win" title="Win" aria-label="Win"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">W</span></span>
+                  <span class="dot win" title="Win" aria-label="Win"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">W</span></span>
+                  <span class="dot loss" title="Loss" aria-label="Loss"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">L</span></span>
+                  <span class="dot win" title="Win" aria-label="Win"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">W</span></span>
+                  <span class="dot loss" title="Loss" aria-label="Loss"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">L</span></span>
+                </span>
+              </div>
+            </div>
+            <div class="rankBadge">
+              <span class="rankLabel">RANK</span>
+              <span class="rankNum">#2</span>
+              <span class="rankTotal">of 8</span>
+            </div>
+          </div>
+          <button class="shareBtn">Share Rating</button>
+
+          <div class="chartWrap">
+            <svg class="ratingChart" viewBox="0 0 616 296" preserveAspectRatio="xMidYMid meet">
+              <!-- Gridlines -->
+              <g>
+                <line x1="48" y1="264" x2="568" y2="264" stroke="var(--rule-light)" stroke-width="1" />
+                <text x="42" y="269" text-anchor="end" fill="var(--ink-2)" font-family="var(--font-mono)" font-size="16" font-weight="400">1946</text>
+              </g>
+              <g>
+                <line x1="48" y1="144" x2="568" y2="144" stroke="var(--rule-light)" stroke-width="1" />
+                <text x="42" y="149" text-anchor="end" fill="var(--ink-2)" font-family="var(--font-mono)" font-size="16" font-weight="400">1964</text>
+              </g>
+              <g>
+                <line x1="48" y1="24" x2="568" y2="24" stroke="var(--rule-light)" stroke-width="1" />
+                <text x="42" y="29" text-anchor="end" fill="var(--ink-2)" font-family="var(--font-mono)" font-size="16" font-weight="400">1983</text>
+              </g>
+              <!-- Baseline -->
+              <line x1="48" y1="264" x2="568" y2="264" stroke="var(--rule)" stroke-width="1" />
+              <!-- Area -->
+              <path d="M 48,264 L 132,220 L 216,180 L 300,200 L 384,120 L 468,60 L 568,24 L 568,264 L 48,264 Z" fill="var(--green)" fill-opacity="0.08" stroke="none" />
+              <!-- Line -->
+              <path d="M 48,264 L 132,220 L 216,180 L 300,200 L 384,120 L 468,60 L 568,24" fill="none" stroke="var(--green)" stroke-width="2" />
+              <!-- Axis labels -->
+              <text x="48" y="288" text-anchor="start" fill="var(--ink-2)" font-family="var(--font-mono)" font-size="12">04 May</text>
+              <text x="568" y="288" text-anchor="end" fill="var(--ink-2)" font-family="var(--font-mono)" font-size="12">27 Jul</text>
+              <!-- Crosshair -->
+              <line x1="384" y1="24" x2="384" y2="264" stroke="var(--brass)" stroke-width="1.5" stroke-dasharray="3 2" />
+              <!-- Cursor dot -->
+              <circle cx="384" cy="120" r="4" fill="var(--brass)" stroke="var(--math-bg)" stroke-width="2" />
+            </svg>
+          </div>
+
+          <div class="statGrid">
+            <div class="statTile"><span class="statVal">4.2</span><span class="statLabel">Handicap</span></div>
+            <div class="statTile"><span class="statVal">3 days ago</span><span class="statLabel">Last played</span></div>
+            <div class="statTile"><span class="statVal">12</span><span class="statLabel">Rounds</span></div>
+            <div class="statTile"><span class="statVal">High</span><span class="statLabel">Confidence</span></div>
+          </div>
+        </section>
+
+        <!-- Your Rival -->
+        <section class="sectionCard">
+          <h2 class="sectionTitle">Your Rival</h2>
+          <div class="playerRow">
+            <div>
+              <div class="playerName">Marcus Chen</div>
+              <div class="playerMeta">Record 5–4 · Edge 1.2 strokes</div>
+            </div>
+            <div class="formStrip">
+              <span class="strip" role="list" aria-label="Rival form">
+                <span class="dot loss" title="Loss" aria-label="Loss"></span>
+                <span class="dot win" title="Win" aria-label="Win"></span>
+                <span class="dot win" title="Win" aria-label="Win"></span>
+                <span class="dot loss" title="Loss" aria-label="Loss"></span>
+                <span class="dot win" title="Win" aria-label="Win"></span>
+              </span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Top Form -->
+        <section class="sectionCard">
+          <h2 class="sectionTitle">Top Form</h2>
+          <div class="playerRow">
+            <div>
+              <div class="playerName">1. Alex Rivera</div>
+              <div class="playerMeta">Rating 2018 · 12 rounds</div>
+            </div>
+            <div class="formStrip"><span class="strip" role="list"><span class="dot win"></span><span class="dot win"></span><span class="dot win"></span><span class="dot loss"></span><span class="dot win"></span></span></div>
+          </div>
+          <div class="playerRow">
+            <div>
+              <div class="playerName">2. You</div>
+              <div class="playerMeta">Rating 1983 · 12 rounds</div>
+            </div>
+            <div class="formStrip"><span class="strip" role="list"><span class="dot win"></span><span class="dot win"></span><span class="dot loss"></span><span class="dot win"></span><span class="dot loss"></span></span></div>
+          </div>
+          <div class="playerRow">
+            <div>
+              <div class="playerName">3. Sam Park</div>
+              <div class="playerMeta">Rating 1951 · 10 rounds</div>
+            </div>
+            <div class="formStrip"><span class="strip" role="list"><span class="dot loss"></span><span class="dot win"></span><span class="dot win"></span><span class="dot win"></span><span class="dot loss"></span></span></div>
+          </div>
+        </section>
+
+        <!-- Who to play next -->
+        <section class="sectionCard">
+          <h2 class="sectionTitle">Who to play next</h2>
+          <div class="matchCard">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span class="matchName">Jordan Lee</span>
+              <span class="matchRating">Rating 1994</span>
+            </div>
+            <p class="matchReason">Closest rated active player — likely a single-stroke match.</p>
+            <button class="matchInvite">Invite →</button>
+          </div>
+        </section>
+
+        <!-- Recent Rounds -->
+        <section class="sectionCard">
+          <h2 class="sectionTitle">Recent Rounds</h2>
+          <div class="roundCard">
+            <div class="roundTitle">Sentosa Golf Club — Serapong Course</div>
+            <div class="roundMeta">27 Jul 2026 · Stableford · +14 rating</div>
+          </div>
+          <div class="roundCard">
+            <div class="roundTitle">Marina Bay Golf Course</div>
+            <div class="roundMeta">20 Jul 2026 · Stroke · −8 rating</div>
+          </div>
+          <div class="roundCard">
+            <div class="roundTitle">Tanah Merah Country Club</div>
+            <div class="roundMeta">13 Jul 2026 · Stableford · +21 rating</div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

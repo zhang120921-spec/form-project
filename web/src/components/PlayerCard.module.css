@@ -1,0 +1,129 @@
+.card {
+  display: block;
+  padding: var(--space-lg) var(--space-xl);
+  transition: background var(--fade-fast);
+  border-left: 3px solid transparent;
+  text-decoration: none;
+  color: inherit;
+}
+
+.card:last-child {
+  border-bottom: none;
+}
+
+.card:hover {
+  background: var(--hover);
+}
+
+.youRow {
+  border-left-color: var(--brass);
+  background: var(--brass-bg);
+}
+
+.main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.rank {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink-2);
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.club {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+}
+
+.ratingArea {
+  text-align: right;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-xs);
+}
+
+.rating {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.ratingNum {
+  font-size: var(--type-subhead);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.delta {
+  font-size: var(--type-metadata);
+  font-weight: 500;
+}
+
+.pos {
+  color: var(--pos);
+}
+
+.neg {
+  color: var(--neg);
+}
+
+.formArea {
+  flex-shrink: 0;
+  margin-left: var(--space-md);
+}
+
+.detail {
+  margin-top: var(--space-sm);
+  margin-left: calc(32px + var(--space-lg));
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-xl);
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+}
+
+.provisional {
+  color: var(--brass);
+  font-weight: 500;
+  font-style: italic;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: var(--space-md) var(--space-lg);
+  }
+  .main {
+    gap: var(--space-md);
+  }
+  .formArea {
+    margin-left: var(--space-xs);
+  }
+}

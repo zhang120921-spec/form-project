@@ -1,0 +1,334 @@
+.page {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.loading {
+  padding: var(--space-2xl);
+  text-align: center;
+  color: var(--ink-2);
+}
+
+.empty {
+  padding: var(--space-xl) var(--space-lg);
+  text-align: center;
+  color: var(--ink-2);
+  font-size: var(--type-body);
+}
+
+.emptyState {
+  padding: var(--space-2xl) var(--space-lg);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  color: var(--ink-2);
+  opacity: 0.3;
+}
+
+.emptyTitle {
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+.emptySub {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  margin: 0;
+  max-width: 280px;
+  line-height: 1.6;
+}
+
+.noResults {
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  text-align: center;
+  font-style: italic;
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.title {
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.count {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+}
+
+.error {
+  margin: var(--space-md) var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--neg-bg);
+  color: var(--neg);
+  font-size: var(--type-body);
+  border-left: 3px solid var(--neg);
+}
+
+.success {
+  margin: var(--space-md) var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--pos-bg);
+  color: var(--pos);
+  font-size: var(--type-body);
+  border-left: 3px solid var(--pos);
+}
+
+.list {
+  /* rows handle borders */
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  gap: var(--space-md);
+}
+
+.name {
+  display: block;
+  font-size: var(--type-body);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.club {
+  display: block;
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+}
+
+.removeBtn {
+  font-size: var(--type-body);
+  color: var(--neg);
+  padding: var(--space-xs) var(--space-sm);
+  transition: background var(--fade-fast);
+}
+
+.removeBtn:hover {
+  background: var(--neg-bg);
+}
+
+.section {
+  padding: var(--space-lg);
+  border-top: 1px solid var(--rule);
+}
+
+.sectionTitle {
+  font-size: var(--type-metadata);
+  font-weight: 500;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--space-md);
+}
+
+.reqActions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+.acceptBtn {
+  padding: var(--space-xs) var(--space-md);
+  background: var(--ink);
+  color: var(--card);
+  font-size: var(--type-body);
+  font-weight: 500;
+  transition: opacity var(--fade-fast);
+}
+
+.acceptBtn:hover {
+  opacity: 0.85;
+}
+
+.ignoreBtn {
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--rule);
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  transition: all var(--fade-fast);
+}
+
+.ignoreBtn:hover {
+  border-color: var(--ink-2);
+}
+
+.searchBar {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.searchInput {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--rule);
+  background: var(--card);
+  font-size: var(--type-body);
+  color: var(--ink);
+  transition: border-color var(--fade-fast);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--brass);
+}
+
+.searchBtn {
+  padding: var(--space-sm) var(--space-lg);
+  border: 1px solid var(--rule);
+  font-size: var(--type-body);
+  color: var(--ink);
+  transition: all var(--fade-fast);
+}
+
+.searchBtn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.searchBtn:disabled {
+  opacity: 0.5;
+}
+
+.searchResults {
+  /* rows handle their own borders */
+}
+
+.addBtn {
+  padding: var(--space-xs) var(--space-md);
+  border: 1px solid var(--accent);
+  font-size: var(--type-body);
+  color: var(--accent);
+  transition: all var(--fade-fast);
+}
+
+.addBtn:hover {
+  background: var(--acc-bg);
+}
+
+/* ── Connectivity indicators ── */
+.connectivityLabel {
+  font-size: var(--type-body);
+  line-height: 1.6;
+}
+
+.cOk {
+  color: var(--pos);
+}
+
+.cWarning {
+  color: var(--neg);
+}
+
+.cLabel {
+  display: block;
+  font-size: var(--type-metadata);
+  margin-top: var(--space-xs);
+}
+
+.diversityWarning {
+  margin-top: var(--space-sm);
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+.friendInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* ── Friend request messages ── */
+.reqMessage {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  font-style: italic;
+  margin-top: var(--space-xs);
+  line-height: 1.6;
+}
+
+.messageRow {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg) var(--space-md);
+}
+
+.messageInput {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--rule);
+  background: var(--card);
+  font-size: var(--type-body);
+  color: var(--ink);
+  transition: border-color var(--fade-fast);
+}
+
+.messageInput:focus {
+  outline: none;
+  border-color: var(--brass);
+}
+
+.sendBtn {
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--accent);
+  color: var(--card);
+  font-size: var(--type-body);
+  font-weight: 500;
+  transition: opacity var(--fade-fast);
+}
+
+.sendBtn:hover {
+  opacity: 0.85;
+}
+
+/* ── Regular groups ── */
+.regularMark {
+  font-size: var(--type-metadata);
+  color: var(--brass);
+  font-weight: 500;
+}
+
+.regularBtn {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  border: 1px solid var(--rule);
+  transition: all var(--fade-fast);
+}
+
+.regularBtn:hover {
+  border-color: var(--brass);
+  color: var(--brass);
+}
+
+.regularBtnActive {
+  background: #FDF6E3;
+  border-color: #B8860B;
+  color: #B8860B;
+}
+
+.friendActions {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+}

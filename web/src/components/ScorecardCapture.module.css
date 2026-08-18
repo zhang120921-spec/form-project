@@ -1,0 +1,373 @@
+/* ═══════════════ SCORECARD CAPTURE ═══════════════ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--rule);
+}
+
+.tab {
+  flex: 1;
+  padding: var(--space-md) var(--space-sm);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink-2);
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: color var(--fade-fast), border-color var(--fade-fast);
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tabActive {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}
+
+/* ── Tab content ── */
+.tabContent {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.helper {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+/* ── Voice ── */
+.voiceControls {
+  display: flex;
+  justify-content: center;
+}
+
+.micBtn {
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--card);
+  background: var(--ink);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background var(--fade-fast);
+}
+
+.micBtn:hover {
+  background: var(--ink-hover);
+}
+
+.micBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.micActive {
+  background: var(--neg);
+}
+
+.transcript {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  font-size: var(--type-body);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  resize: vertical;
+}
+
+.transcript:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.parseBtn {
+  align-self: flex-start;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--card);
+  background: var(--accent);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background var(--fade-fast);
+}
+
+.parseBtn:hover {
+  background: var(--acc-hover);
+}
+
+/* ── Photo ── */
+.fileInput {
+  font-size: var(--type-body);
+}
+
+.photoPreview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.photo {
+  width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border: 1px solid var(--rule);
+}
+
+.photoNote {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+.ocrLoading {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+.ocrError {
+  font-size: var(--type-body);
+  color: var(--neg);
+}
+
+.ocrFallback {
+  font-size: var(--type-body);
+  color: var(--brass);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--brass-bg);
+  border-left: 3px solid var(--brass);
+  line-height: 1.6;
+}
+
+.aiNote {
+  font-size: var(--type-body);
+  color: var(--brass);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--brass-bg);
+  border-left: 3px solid var(--brass);
+}
+
+/* ── Draft review ── */
+.draft {
+  padding: var(--space-lg);
+  border-top: 1px solid var(--rule);
+}
+
+.draftTitle {
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--space-xs);
+}
+
+.draftHelper {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  margin-bottom: var(--space-md);
+  line-height: 1.6;
+}
+
+/* ── Field rows ── */
+.fieldRow {
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule);
+  margin-bottom: var(--space-sm);
+  transition: border-color var(--fade-fast);
+}
+
+.fieldError {
+  border-color: var(--neg);
+  border-left-color: var(--neg);
+  background: var(--neg-bg);
+}
+
+.fieldWarn {
+  border-left-color: var(--brass);
+  background: var(--brass-bg);
+}
+
+.fieldInputs {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: center;
+}
+
+.fieldSelect {
+  flex: 1;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  font-size: var(--type-body);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  cursor: pointer;
+}
+
+.fieldSelect:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.scoreInput {
+  width: 70px;
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  font-size: var(--type-body);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-align: center;
+}
+
+.scoreInput:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.removeBtn {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--rule);
+  cursor: pointer;
+  transition: color var(--fade-fast), border-color var(--fade-fast);
+}
+
+.removeBtn:hover {
+  color: var(--neg);
+  border-color: var(--neg);
+}
+
+/* ── Confidence ── */
+.confidenceRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.confBadge {
+  font-size: var(--type-metadata);
+  color: var(--brass);
+  font-weight: 500;
+}
+
+.errorMsg {
+  font-size: var(--type-metadata);
+  color: var(--neg);
+  font-weight: 500;
+}
+
+/* ── Add / course ── */
+.addBtn {
+  width: 100%;
+  padding: var(--space-sm);
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px dashed var(--rule);
+  cursor: pointer;
+  transition: border-color var(--fade-fast), color var(--fade-fast);
+  margin-bottom: var(--space-md);
+}
+
+.addBtn:hover {
+  color: var(--ink);
+  border-color: var(--ink-2);
+}
+
+.courseRow {
+  display: flex;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+/* ── Commit ── */
+.commitRow {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+}
+
+.cancelBtn {
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink-2);
+  background: transparent;
+  border: 1px solid var(--rule);
+  cursor: pointer;
+  transition: border-color var(--fade-fast), color var(--fade-fast);
+}
+
+.cancelBtn:hover {
+  color: var(--ink);
+  border-color: var(--ink-2);
+}
+
+.commitBtn {
+  padding: var(--space-sm) var(--space-lg);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--card);
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+  transition: background var(--fade-fast);
+}
+
+.commitBtn:hover {
+  background: var(--acc-hover);
+}
+
+.commitDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.commitWarning {
+  font-size: var(--type-metadata);
+  color: var(--neg);
+  text-align: right;
+  margin-top: var(--space-xs);
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .fieldInputs {
+    flex-wrap: wrap;
+  }
+
+  .scoreInput {
+    width: 60px;
+  }
+
+  .courseRow {
+    flex-direction: column;
+  }
+}

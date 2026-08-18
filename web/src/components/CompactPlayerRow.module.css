@@ -1,0 +1,141 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  transition: background var(--fade-fast);
+  border-left: 3px solid transparent;
+  text-decoration: none;
+  color: inherit;
+}
+
+.row:hover {
+  background: var(--hover);
+}
+
+.youRow {
+  border-left-color: var(--brass);
+  background: var(--brass-bg);
+}
+
+.rank {
+  width: 36px;
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+}
+
+.tierArea {
+  flex-shrink: 0;
+  min-width: 80px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.youMark {
+  color: var(--brass);
+  font-weight: 700;
+}
+
+.club {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  line-height: 1.4;
+}
+
+.rating {
+  text-align: right;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  min-width: 56px;
+}
+
+.ratingNum {
+  font-size: var(--type-body);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.delta {
+  font-size: var(--type-metadata);
+  font-weight: 500;
+}
+
+.pos {
+  color: var(--pos);
+}
+
+.neg {
+  color: var(--neg);
+}
+
+.formArea {
+  flex-shrink: 0;
+  margin-left: var(--space-sm);
+}
+
+.rounds {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  min-width: 60px;
+  text-align: right;
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-left: var(--space-sm);
+}
+
+@media (max-width: 768px) {
+  .row {
+    padding: var(--space-sm) var(--space-md);
+    gap: var(--space-xs);
+  }
+  .tierArea {
+    min-width: 70px;
+  }
+  .rank {
+    width: 30px;
+    font-size: var(--type-metadata);
+  }
+}
+
+@media (max-width: 480px) {
+  .row {
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    padding: var(--space-sm) var(--space-md);
+  }
+  .tierArea {
+    min-width: auto;
+    order: 4;
+  }
+  .formArea {
+    order: 5;
+  }
+  .rounds {
+    order: 6;
+    margin-left: auto;
+  }
+}

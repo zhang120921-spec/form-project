@@ -1,0 +1,82 @@
+.header {
+  flex: 0 0 auto;
+  border-bottom: 1px solid var(--rule);
+  padding: 0;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+}
+
+.logo {
+  font-size: var(--type-section);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+
+.sub {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  letter-spacing: 0.04em;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.iconBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink);
+  border-radius: 0;
+  transition: background var(--fade-fast);
+}
+
+.iconBtn:hover {
+  background: var(--hover);
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 var(--space-lg);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--type-body);
+  font-weight: 500;
+  color: var(--ink-2);
+  border-bottom: 2px solid transparent;
+  transition: color var(--fade-fast), border-color var(--fade-fast);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.active {
+  color: var(--ink);
+  border-bottom-color: var(--accent);
+}

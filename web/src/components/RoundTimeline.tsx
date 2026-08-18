@@ -1,0 +1,114 @@
+import type { ReplayedRound, PlayerState } from "@/lib/types";
+import { useState } from "react";
+import styles from "./RoundTimeline.module.css";
+import { t } from "@/lib/i18n";
+
+interface Props {
+  round: ReplayedRound;
+  players: PlayerState[];
+  onToggleMaths?: () => void;
+}
+
+function playerName(id: string, players: PlayerState[]): string {
+  return players.find((p) => p.id === id)?.name ?? id.slice(0, 6);
+}
+
+export default function RoundTimeline({ round, players, onToggleMaths }: Props) {
+  const [expanded, setExpanded] = useState(false);
+
+  const formatLabel = round.format === "stroke"
+    ? t("Stroke")
+    : round.format === "match"
+    ? t("Match")
+    : t("Stableford");
+
+  return (
+    <div className={styles.node}>
+      {/* Timeline date */}
+      <div className={styles.dateCol}>
+        <span className={styles.dateText}>{round.date}</span>
+      </div>
+
+      {/* Timeline connector */}
+      <div className={styles.lineCol}>
+        <div className={styles.dot} />
+        <div className={styles.line} />
+      </div>
+
+      {/* Content */}
+      <div className={styles.content}>
+        <button className={styles.summary} onClick={() => setExpanded(!expanded)}>
+          <div className={styles.meta}>
+            <span className={styles.course}>{round.course}</span>
+            <div className={styles.metaRow}>
+              <span className={styles.badge}>
+                {formatLabel}
+                {round.holes !== 18 ? ` ${t("{n}h", { n: round.holes })}` : ""}
+              </span>
+            </div>
+          </div>
+          <div className={styles.deltas}>
+            {round.snapshot.map((s) => {
+              const d = Math.round(s.delta);
+              const cls = d > 0 ? styles.pos : d < 0 ? styles.neg : "";
+              return (
+                <div key={s.playerId} className={styles.deltaRow}>
+                  <span className={styles.deltaName}>{playerName(s.playerId, players)}</span>
+                  <span className={`${styles.deltaVal} ${cls}`}>
+                    {d > 0 ? "+" : d < 0 ? "−" : ""}{Math.abs(d)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          <span className={styles.expandIcon}>{expanded ? "▾" : "▸"}</span>
+        </button>
+
+        {expanded && (
+          <div className={styles.detail}>
+            {round.narration && (
+              <p className={styles.narration}>{round.narration}</p>
+            )}
+
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>{t("Player")}</th>
+                  <th>{t("Before")}</th>
+                  <th>{t("After")}</th>
+                  <th>Δ</th>
+                  <th>K</th>
+                  {round.snapshot.some((s2) => s2.hcp != null) && <th>{t("Handicap")}</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {round.snapshot.map((s) => (
+                  <tr key={s.playerId}>
+                    <td>{playerName(s.playerId, players)}</td>
+                    <td className="mono">{Math.round(s.before)}</td>
+                    <td className="mono">{Math.round(s.after)}</td>
+                    <td className={`mono ${s.delta > 0 ? styles.pos : styles.neg}`}>
+                      {s.delta > 0 ? "▲ +" : s.delta < 0 ? "▼ −" : "→ "}{Math.abs(Math.round(s.delta))}
+                    </td>
+                    <td className="mono">{Math.round(s.k)}</td>
+                    {round.snapshot.some((s2) => s2.hcp != null) && (
+                      <td className="mono">
+                        {s.hcp != null ? s.hcp.toFixed(1) : "—"}
+                      </td>
+                    )}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {onToggleMaths && (
+              <button className={styles.mathsBtn} onClick={onToggleMaths}>
+                {t("Show the maths →")}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

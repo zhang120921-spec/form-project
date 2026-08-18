@@ -1,0 +1,240 @@
+/* ═══════════════ SHARE MODAL ═══════════════ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--space-lg);
+}
+
+.modal {
+  background: var(--card);
+  max-width: 420px;
+  width: 100%;
+  border: 1px solid var(--rule);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.modalTitle {
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.closeBtn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  transition: color var(--fade-fast);
+}
+
+.closeBtn:hover {
+  color: var(--ink);
+}
+
+/* ── Share Card ── */
+.card {
+  margin: var(--space-lg);
+  background: var(--ground);
+  border: 1px solid var(--rule);
+  padding: var(--space-xl);
+}
+
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--rule-light);
+}
+
+.cardLogo {
+  font-size: var(--type-subhead);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ink);
+}
+
+.cardTagline {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cardNameRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.cardName {
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.cardRank {
+  font-family: var(--font-mono);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.cardHero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-md) 0;
+}
+
+.cardRating {
+  font-family: var(--font-mono);
+  font-size: var(--type-hero);
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.cardRatingLabel {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cardTierRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  justify-content: center;
+  margin-bottom: var(--space-md);
+}
+
+.cardTierBadge {
+  font-size: var(--type-metadata);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: var(--space-xs) var(--space-sm);
+  border: 1px solid;
+}
+
+.cardTierBadge[data-tier="First Light"] { color: #D4A574; border-color: #D4A574; }
+.cardTierBadge[data-tier="Long Shadow"] { color: #E8C547; border-color: #E8C547; }
+.cardTierBadge[data-tier="Golden Hour"] { color: #C2853B; border-color: #C2853B; }
+.cardTierBadge[data-tier="Afternoon"] { color: #D4843B; border-color: #D4843B; }
+.cardTierBadge[data-tier="Overcast"] { color: #8B4513; border-color: #8B4513; }
+.cardTierBadge[data-tier="Twilight"] { color: #4A3728; border-color: #4A3728; }
+.cardTierBadge[data-tier="Unranked"] { color: var(--ink-2); border-color: var(--rule); }
+
+.cardTierDesc {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+}
+
+.cardFormRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-sm) 0;
+  border-top: 1px solid var(--rule-light);
+  border-bottom: 1px solid var(--rule-light);
+}
+
+.cardStats {
+  display: flex;
+  gap: var(--space-xl);
+  justify-content: center;
+  padding-top: var(--space-md);
+}
+
+.cardStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.cardStatVal {
+  font-family: var(--font-mono);
+  font-size: var(--type-subhead);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.cardStatLabel {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Note ── */
+.note {
+  text-align: center;
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  font-style: italic;
+  padding: 0 var(--space-lg);
+}
+
+/* ── Actions ── */
+.actions {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-lg) var(--space-lg);
+  justify-content: center;
+}
+
+.actionBtn {
+  padding: var(--space-sm) var(--space-xl);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--card);
+  background: var(--ink);
+  border: none;
+  transition: background var(--fade-fast);
+}
+
+.actionBtn:hover {
+  background: var(--ink-hover);
+}
+
+@media (max-width: 480px) {
+  .overlay {
+    padding: var(--space-md);
+    align-items: flex-end;
+  }
+  .modal {
+    max-height: 85vh;
+  }
+  .card {
+    margin: var(--space-md);
+    padding: var(--space-md);
+  }
+  .cardRating {
+    font-size: var(--type-display);
+  }
+}

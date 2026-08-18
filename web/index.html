@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <meta name="theme-color" content="#F7F4EE" />
+  <meta name="description" content="FORM 高尔夫评分系统 — 记录你的每一场球，用 ELO 评分真实反映你的水平。FORM golf ratings — know where you stand." />
+  <title>FORM 高尔夫 — Know where you stand</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23FDFAF5' stroke='%2312291B' stroke-width='3'/%3E%3Ccircle cx='32' cy='32' r='11' fill='%23B0892F'/%3E%3Cpath d='M32 21 L32 43 M26 50 L38 50' stroke='%2312291B' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,12..72,300;0,12..72,400;1,12..72,300&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    #boot-status { position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:Inter,sans-serif;font-size:18px;color:#12291B;background:#FDFAF5;padding:24px 40px;text-align:center;z-index:9999; }
+    #boot-error { display:none;position:fixed;top:1rem;left:1rem;right:1rem;background:#F5EAE6;color:#96331F;font-family:monospace;font-size:14px;padding:16px;border:2px solid #96331F;z-index:9999;white-space:pre-wrap;max-height:80vh;overflow:auto; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <div id="boot-status">FORM</div>
+  <div id="boot-error"></div>
+  <script>
+    window.onerror = function(msg, url, line, col, err) {
+      var el = document.getElementById('boot-error');
+      el.style.display = 'block';
+      el.textContent = (err && err.stack) ? err.stack : (msg + ' at ' + url + ':' + line + ':' + col);
+      var s = document.getElementById('boot-status');
+      if(s) s.remove();
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      var el = document.getElementById('boot-error');
+      el.style.display = 'block';
+      el.textContent = 'Unhandled rejection: ' + (e.reason && e.reason.message ? e.reason.message : String(e.reason));
+    });
+    // Hide boot status when React renders
+    var observer = new MutationObserver(function() {
+      var root = document.getElementById('root');
+      if(root && root.children.length > 0) {
+        var s = document.getElementById('boot-status');
+        if(s) s.style.display = 'none';
+      }
+    });
+    observer.observe(document.getElementById('root'), { childList: true, subtree: true });
+  </script>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

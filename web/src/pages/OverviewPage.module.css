@@ -1,0 +1,440 @@
+.page {
+  padding: var(--space-lg) var(--space-lg) var(--space-2xl);
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl); /* 32px — ≥ 2× max intra-card gap */
+}
+
+.loading {
+  padding: var(--space-2xl);
+  text-align: center;
+  color: var(--ink-2);
+  font-size: var(--type-subhead);
+}
+
+/* ── Empty States ── */
+.empty {
+  padding: var(--space-3xl) var(--space-xl);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.emptyIllustration {
+  margin-bottom: var(--space-md);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  color: var(--ink-2);
+  opacity: 0.3;
+}
+
+.emptyTitle {
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 0;
+}
+
+.emptySub {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  max-width: 320px;
+  line-height: 1.6;
+}
+
+.emptyAction {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-xl);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--card);
+  background: var(--ink);
+  text-decoration: none;
+  margin-top: var(--space-sm);
+  transition: background var(--fade-fast);
+}
+
+.emptyAction:hover {
+  background: var(--ink-hover);
+}
+
+.emptyLink {
+  display: inline-block;
+  margin-top: var(--space-sm);
+  font-size: var(--type-body);
+  color: var(--brass);
+  text-decoration: none;
+  transition: color var(--fade-fast);
+}
+
+.emptyLink:hover {
+  color: var(--ink);
+}
+
+.banner {
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--acc-bg);
+  color: var(--accent);
+  font-size: var(--type-body);
+  font-weight: 500;
+  border-bottom: 1px solid var(--rule);
+}
+
+/* ── Card surface — raised from the page background ── */
+.sectionCard {
+  background: var(--math-bg);
+  padding: var(--space-lg); /* 24px */
+}
+
+/* My Stats hero */
+.heroSection {
+  padding: 0;
+}
+
+.heroTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.heroLeft {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.heroLabel {
+  font-size: var(--type-body);
+  font-weight: 400;
+  color: var(--ink-2);
+  letter-spacing: 0.01em;
+}
+
+.heroRatingRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.heroRating {
+  font-family: var(--font-display);
+  font-size: var(--type-hero);
+  font-weight: 300;
+  color: var(--ink);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.heroFormStrip {
+  margin-top: var(--space-xs);
+}
+
+.heroDelta {
+  font-size: var(--type-body);
+  font-weight: 400;
+  color: var(--ink-2);
+}
+
+.heroDelta.pos {
+  color: var(--pos);
+}
+
+.heroDelta.neg {
+  color: var(--neg);
+}
+
+.heroRight {
+  display: flex;
+  align-items: center;
+}
+
+.rankBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--acc-bg);
+  padding: var(--space-sm) var(--space-md);
+  min-width: 64px;
+}
+
+.rankLabel {
+  font-size: var(--type-metadata);
+  font-weight: 400;
+  color: var(--ink-2);
+  letter-spacing: 0.04em;
+  margin-bottom: var(--space-xs);
+}
+
+.rankNum {
+  font-family: var(--font-display);
+  font-size: var(--type-section);
+  font-weight: 300;
+  color: var(--accent);
+}
+
+.rankTotal {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+}
+
+.shareBtn {
+  display: inline-block;
+  padding: var(--space-xs) var(--space-lg);
+  font-size: var(--type-body);
+  font-weight: 500;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  margin-bottom: var(--space-md);
+  transition: all var(--fade-fast);
+}
+
+.shareBtn:hover {
+  background: var(--acc-bg);
+}
+
+/* ── Rating Chart ── */
+.chartWrap {
+  width: 100%;
+  margin: var(--space-md) 0 var(--space-lg);
+}
+
+.chartArea {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.ratingChart {
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  display: block;
+  opacity: 0.8;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+}
+
+/* ── Chart tooltip ── */
+.chartTooltip {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  gap: var(--space-md);
+  background: var(--card);
+  border: 1px solid var(--brass);
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--type-body);
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: opacity var(--fade-fast), height var(--fade-fast), margin var(--fade-fast);
+  pointer-events: none;
+  position: static;
+  margin-top: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.chartTooltip[data-visible="true"] {
+  opacity: 1;
+  height: auto;
+  margin-top: var(--space-sm);
+}
+
+.tooltipDate {
+  font-family: var(--font-mono);
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+}
+
+.tooltipLabel {
+  font-size: var(--type-body);
+  font-weight: 400;
+  color: var(--ink);
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.tooltipRating {
+  font-family: var(--font-display);
+  font-size: var(--type-subhead);
+  font-weight: 300;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: var(--space-sm) var(--space-sm) var(--space-xl);
+    gap: var(--space-lg);
+  }
+  .sectionCard {
+    padding: var(--space-md);
+  }
+  .heroSection {
+    padding: 0;
+  }
+  .heroTop {
+    gap: var(--space-md);
+    margin-bottom: var(--space-md);
+  }
+  .heroRating {
+    font-size: var(--type-display);
+  }
+  .sectionTitle {
+    margin-bottom: var(--space-md);
+  }
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-lg);
+  margin-top: var(--space-xl);
+  border-top: 1px solid var(--rule-light);
+  padding-top: var(--space-lg);
+}
+
+.statTile {
+  text-align: center;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--rule-light);
+  border-right: 1px solid var(--rule-light);
+}
+
+/* 2-col: strip right border on last column of each row */
+.statTile:nth-child(2n) {
+  border-right: none;
+}
+
+@media (min-width: 769px) {
+  .statGrid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  /* 4-col: restore right border on old 2n edge, strip on 4n edge */
+  .statTile:nth-child(2n) {
+    border-right: 1px solid var(--rule-light);
+  }
+  .statTile:nth-child(4n) {
+    border-right: none;
+  }
+}
+
+.statVal {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--type-subhead);
+  font-weight: 300;
+  color: var(--ink);
+}
+
+.statLabel {
+  display: block;
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  margin-top: var(--space-xs);
+}
+
+.pos {
+  color: var(--pos);
+}
+
+.neg {
+  color: var(--neg);
+}
+
+.provisional {
+  font-size: var(--type-metadata);
+  font-weight: 500;
+  font-style: italic;
+  color: var(--brass);
+  margin-top: var(--space-sm);
+}
+
+.section {
+  /* No border — card edge does the separation */
+}
+
+.sectionTitle {
+  font-size: 1.222rem;      /* 22px */
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--space-lg);
+  letter-spacing: -0.01em;
+  font-family: var(--font-display), var(--font-sans);
+}
+
+/* ── Matchmaking widget ── */
+.matchList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.matchCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--brass);
+  background: var(--brass-bg);
+}
+
+.matchInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.matchName {
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.matchName:hover {
+  color: var(--accent);
+}
+
+.matchRating {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+}
+
+.matchReason {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+
+.matchInvite {
+  align-self: flex-start;
+  font-size: var(--type-metadata);
+  font-weight: 600;
+  color: var(--accent);
+  padding: var(--space-xs) 0;
+  transition: color var(--fade-fast);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.matchInvite:hover {
+  color: var(--acc-hover);
+}

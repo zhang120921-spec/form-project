@@ -1,0 +1,294 @@
+.page {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── Tab bar ── */
+
+.tabBar {
+  display: flex;
+  border-bottom: 1px solid var(--rule);
+  padding: 0 var(--space-md);
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  z-index: 5;
+}
+
+.tab {
+  flex: 1;
+  padding: var(--space-md) var(--space-sm);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink-2);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: all var(--fade-fast);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tabActive {
+  color: var(--brass);
+  border-bottom-color: var(--brass);
+}
+
+/* ── Header (Friends tab) ── */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.title {
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+.count {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+}
+
+/* ── Loading / error / empty ── */
+
+.loading {
+  padding: var(--space-2xl);
+  text-align: center;
+  color: var(--ink-2);
+  font-size: var(--type-subhead);
+}
+
+.error {
+  padding: var(--space-lg);
+  color: var(--neg);
+  font-size: var(--type-body);
+}
+
+.empty {
+  padding: var(--space-3xl) var(--space-xl);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.emptyIcon {
+  font-size: 3rem;
+  color: var(--ink-2);
+  opacity: 0.3;
+}
+
+.emptyTitle {
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+.emptySub {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  line-height: 1.6;
+  max-width: 320px;
+  margin: 0;
+}
+
+.emptyLink {
+  margin-top: var(--space-md);
+  display: inline-block;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  text-decoration: none;
+  transition: all var(--fade-fast);
+}
+
+.emptyLink:hover {
+  background: var(--acc-bg);
+}
+
+/* ── Search (Global tab) ── */
+
+.searchBar {
+  padding: var(--space-md) var(--space-xl);
+  border-bottom: 1px solid var(--rule);
+}
+
+.searchInput {
+  width: 100%;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--rule);
+  background: var(--card);
+  font-size: var(--type-body);
+  color: var(--ink);
+  transition: border-color var(--fade-fast);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--brass);
+}
+
+/* ── List rows (Global & Pros tabs) ── */
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-xl);
+  border-bottom: 1px solid var(--rule-light);
+  text-decoration: none;
+  transition: background var(--fade-fast);
+}
+
+.row:hover {
+  background: var(--hover);
+}
+
+.youRow {
+  background: var(--acc-bg);
+}
+
+.youMark {
+  color: var(--brass);
+  font-weight: 700;
+  font-size: var(--type-metadata);
+}
+
+.rank {
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  min-width: 36px;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.name {
+  font-size: var(--type-body);
+  font-weight: 500;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-xs);
+  min-width: 64px;
+}
+
+.rating {
+  font-family: var(--font-mono);
+  font-size: var(--type-body);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.matches {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+}
+
+.gap {
+  font-size: var(--type-metadata);
+  font-family: var(--font-mono);
+  color: var(--ink-2);
+}
+
+.gapAbove {
+  color: var(--pos);
+}
+
+.gapBelow {
+  color: var(--neg);
+}
+
+.noResults {
+  padding: var(--space-xl);
+  text-align: center;
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+/* ── Your rating banner (Pros tab) ── */
+
+.yourRatingBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-xl) var(--space-md);
+  border-bottom: 1px solid var(--rule);
+  gap: var(--space-xs);
+}
+
+.yourRatingLabel {
+  font-size: var(--type-metadata);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+.yourRatingNum {
+  font-family: var(--font-mono);
+  font-size: var(--type-hero);
+  font-weight: 700;
+  color: var(--brass);
+  line-height: 1;
+}
+
+@media (max-width: 480px) {
+  .row {
+    padding: var(--space-md);
+    gap: var(--space-sm);
+  }
+  .stats {
+    min-width: 52px;
+  }
+  .rating {
+    font-size: var(--type-body);
+  }
+}

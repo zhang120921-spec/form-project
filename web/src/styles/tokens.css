@@ -1,0 +1,104 @@
+/* ═══════════════ SCORECARD DESIGN TOKENS ═══════════════ */
+/* FORM v3 — warm paper, deep green accent, no radius, ruled lines */
+/* Palette: Masters jacket green, brass trophy plate, cream scorecard */
+
+:root {
+  /* Surfaces — card lifted, ground darkened so they separate */
+  --card: #FBF9F5;
+  --ground: #E8E4DA;
+  --math-bg: #FFFDF9;
+
+  /* Ink — near-black green, carries all structural text */
+  --ink: #12291B;
+  --ink-2: #3D4A42;
+  --ink-hover: #1E3D2C;
+
+  /* Rules — hairlines only, carry no text or meaning */
+  --rule: #C9C2B2;
+  --rule-light: #DBD5C7;
+
+  /* Brand green — positive deltas only, never interactive */
+  --green: #24503A;
+  --acc-bg: #F0E8DC;
+  --acc-hover: #8D6628;
+
+  /* Brass — "you" indicator, active, interactive. Replaces accent. */
+  --brass: #7D5620;
+  --accent: #7D5620;
+  --brass-bg: #F0E8DC;
+
+  /* Positive / Negative deltas — green = improvement, terracotta = decline */
+  --pos: #24503A;
+  --pos-bg: #E8F0EC;
+  --neg: #96331F;
+  --neg-bg: #F5EAE6;
+
+  /* Interactive surfaces */
+  --hover: #F0EDE5;
+  --sel: #E8F0EC;
+
+  /* Typography */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Fraunces", "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", "SF Mono", "Cascadia Code", monospace;
+  --type-floor: 18px;
+
+  /* ── 5-step type scale ── */
+  --type-metadata: 0.889rem;     /* 16px — labels, captions, table metadata */
+  --type-body: 1rem;             /* 18px — body copy, buttons, table cells */
+  --type-subhead: 1.222rem;      /* 22px — sub-headings */
+  --type-section: 1.556rem;      /* 28px — section headings */
+  --type-display: 2.222rem;      /* 40px — display text */
+  --type-hero: 2.667rem;         /* 48px — single hero number per screen */
+  --type-mono: 0.778rem;         /* 14px — dense monospace, maths layer only */
+
+  /* Weights */
+  --weight-book: 400;
+  --weight-medium: 600;
+  --weight-bold: 700;
+
+  /* Spacing — intra: 4px/8px, inter: 16px+ */
+  --space-xs: 4px;    /* intra: label-value, icon-text */
+  --space-sm: 8px;    /* intra: button groups, chip groups */
+  --space-md: 16px;   /* small inter: between related items */
+  --space-lg: 24px;   /* card padding, card-to-card gap */
+  --space-xl: 32px;   /* section gap */
+  --space-2xl: 48px;  /* large padding, empty states */
+  --space-3xl: 64px;  /* very large padding */
+
+  /* Animation — fades only, no transforms */
+  --fade-fast: 150ms ease;
+  --fade-med: 200ms ease;
+  --fade-slow: 300ms ease;
+
+  /* Layout */
+  --max-width: 700px;
+  --sidebar-w: 240px;
+  --content-w: 920px;
+}
+
+/* Dark theme — invert green tokens against dark surfaces */
+.dark {
+  --card: #1A1A22;
+  --ground: #08080A;
+  --math-bg: #202028;
+  --ink: #D9E5DC;
+  --ink-2: #7A8A7F;
+  --ink-hover: #C9D5CC;
+  --rule: #3A3F3A;
+  --rule-light: #2C302C;
+  --green: #5B9876;
+  --acc-bg: #1F1810;
+  --acc-hover: #D4A570;
+
+  /* Brass — lighter for dark card (#1A1A22), 6.97:1 contrast */
+  --brass: #C49560;
+  --accent: #C49560;
+  --brass-bg: #1F1810;
+  --pos: #5B9876;
+  --pos-bg: #121A15;
+  --neg: #C77050;
+  --neg-bg: #1A1210;
+  --hover: #141418;
+  --sel: #152318;
+}

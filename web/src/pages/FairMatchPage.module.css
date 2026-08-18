@@ -1,0 +1,475 @@
+/* ═══════════════ FAIR-MATCH CALCULATOR ═══════════════ */
+
+.page {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* ── Tab bar ── */
+
+.tabBar {
+  display: flex;
+  border-bottom: 1px solid var(--rule);
+  padding: 0 var(--space-md);
+}
+
+.tab {
+  flex: 1;
+  padding: var(--space-md) var(--space-sm);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--ink-2);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  transition: all var(--fade-fast);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.tab:hover {
+  color: var(--ink);
+}
+
+.tabActive {
+  color: var(--brass);
+  border-bottom-color: var(--brass);
+}
+
+/* ── Sections ── */
+.section {
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--rule);
+}
+
+.section:last-child {
+  border-bottom: none;
+}
+
+/* ── Typography ── */
+.heading {
+  font-size: var(--type-section);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: var(--space-sm);
+  letter-spacing: -0.01em;
+}
+
+.subHeading {
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: var(--space-md);
+}
+
+.lede {
+  font-size: var(--type-body);
+  font-weight: 500;
+  color: var(--ink-2);
+  line-height: 1.6;
+  margin-bottom: var(--space-lg);
+  font-style: italic;
+}
+
+.empty {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg);
+}
+
+/* ── Player grid ── */
+.playerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.playerChip {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-xs);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  cursor: pointer;
+  transition: background var(--fade-fast), border-color var(--fade-fast);
+  text-align: center;
+}
+
+.playerChip:hover {
+  background: var(--hover);
+  border-color: var(--ink-2);
+}
+
+.chipActive {
+  background: var(--acc-bg);
+  border-color: var(--accent);
+}
+
+.chipName {
+  font-size: var(--type-body);
+  font-weight: 500;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chipRating {
+  font-family: var(--font-mono);
+  font-size: var(--type-body);
+  font-weight: 700;
+  color: var(--ink-2);
+}
+
+.chipProv {
+  font-size: var(--type-metadata);
+  color: var(--brass);
+  font-weight: 500;
+}
+
+.count {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+}
+
+/* ── Form fields ── */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+  flex: 1;
+}
+
+.row {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.fieldLabel {
+  font-size: var(--type-metadata);
+  font-weight: 600;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.select {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 0;
+  font-size: var(--type-body);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: border-color var(--fade-fast);
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ── Nudge controls ── */
+.nudgeRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-lg);
+  margin: var(--space-lg) 0;
+}
+
+.nudgeBtn {
+  width: 48px;
+  height: 48px;
+  font-size: var(--type-section);
+  font-weight: 700;
+  color: var(--card);
+  background: var(--ink);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background var(--fade-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nudgeBtn:hover {
+  background: var(--ink-hover);
+}
+
+.nudgeCenter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 100px;
+}
+
+.nudgeStrokes {
+  font-family: var(--font-mono);
+  font-size: var(--type-display);
+  font-weight: 800;
+  color: var(--ink);
+  line-height: 1.1;
+}
+
+.nudgeLabel {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ── Residual ── */
+.residual {
+  font-size: var(--type-body);
+  color: var(--ink-2);
+  text-align: center;
+  margin-bottom: var(--space-lg);
+  line-height: 1.6;
+}
+
+/* ── Results table ── */
+.tableWrap {
+  border: 1px solid var(--rule);
+  overflow-x: auto;
+  margin-bottom: var(--space-lg);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--type-metadata);
+  font-weight: 600;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--rule);
+  background: var(--ground);
+}
+
+.thNum {
+  text-align: right;
+}
+
+.td {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--type-body);
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule-light);
+}
+
+.tdNum {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--type-body);
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule-light);
+  text-align: right;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.playerLink {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.playerLink:hover {
+  color: var(--accent);
+}
+
+.pos {
+  color: var(--pos);
+}
+
+.neg {
+  color: var(--neg);
+}
+
+.deltaInline {
+  margin-left: var(--space-xs);
+  font-size: var(--type-metadata);
+  opacity: 0.8;
+}
+
+/* ── Phrase box ── */
+.phraseBox {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--brass-bg);
+  border-left: 3px solid var(--brass);
+  margin-bottom: var(--space-md);
+}
+
+.phrase {
+  flex: 1;
+  font-size: var(--type-body);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.shareBtn {
+  padding: var(--space-xs) var(--space-md);
+  font-size: var(--type-body);
+  font-weight: 600;
+  color: var(--card);
+  background: var(--ink);
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  transition: background var(--fade-fast);
+  white-space: nowrap;
+}
+
+.shareBtn:hover {
+  background: var(--ink-hover);
+}
+
+/* ── Provenance ── */
+.provenance {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* ── Compare to Pros ── */
+
+.yourRatingBanner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.bannerLabel {
+  font-size: var(--type-metadata);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-2);
+  font-weight: 600;
+}
+
+.bannerNum {
+  font-family: var(--font-mono);
+  font-size: var(--type-hero);
+  font-weight: 700;
+  color: var(--brass);
+  line-height: 1;
+}
+
+.proList {
+  display: flex;
+  flex-direction: column;
+}
+
+.proRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--rule-light);
+  text-decoration: none;
+  transition: background var(--fade-fast);
+}
+
+.proRow:hover {
+  background: var(--hover);
+}
+
+.proInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.proName {
+  font-size: var(--type-body);
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.proMeta {
+  font-size: var(--type-metadata);
+  color: var(--ink-2);
+}
+
+.proStats {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-xs);
+}
+
+.proRating {
+  font-family: var(--font-mono);
+  font-size: var(--type-body);
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.proGap {
+  font-size: var(--type-metadata);
+  font-family: var(--font-mono);
+  color: var(--ink-2);
+}
+
+.gapAbove {
+  color: var(--pos);
+}
+
+.gapBelow {
+  color: var(--neg);
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .section {
+    padding: var(--space-md);
+  }
+
+  .row {
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .playerGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .tableWrap {
+    font-size: var(--type-metadata);
+  }
+
+  .td, .th {
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .phraseBox {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-sm);
+  }
+
+  .shareBtn {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+  }
+}

@@ -1,0 +1,123 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-md);
+  z-index: 100;
+}
+
+.modal {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  width: 100%;
+  max-width: 420px;
+  padding: var(--space-lg);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.modalTitle {
+  font-size: var(--type-subhead);
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1.25rem;
+  color: var(--ink-2);
+  cursor: pointer;
+  padding: var(--space-xs);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.label {
+  font-size: var(--type-metadata);
+  font-weight: 600;
+  color: var(--ink-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.input,
+.textarea {
+  font-family: inherit;
+  font-size: var(--type-body);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--rule);
+  background: var(--bg);
+  color: var(--ink);
+  border-radius: 0;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.textarea {
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+.sendBtn,
+.cancelBtn {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--type-body);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.sendBtn {
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+.sendBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.cancelBtn {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--rule);
+}
+
+.error {
+  color: #c0392b;
+  font-size: var(--type-body);
+  margin: var(--space-sm) 0;
+}
+
+.success {
+  color: var(--accent);
+  font-size: var(--type-body);
+  font-weight: 600;
+  text-align: center;
+  padding: var(--space-lg) 0;
+}

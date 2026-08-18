@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FORM Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #F3F4F6;
+      --surface: #FFFFFF;
+      --sidebar: #FFFFFF;
+      --ink: #111827;
+      --ink-2: #6B7280;
+      --ink-3: #9CA3AF;
+      --rule: #E5E7EB;
+      --rule-light: #F3F4F6;
+      --accent: #7D5620;
+      --accent-light: #F5E6D0;
+      --accent-hover: #5C3D15;
+      --pos: #24503A;
+      --pos-bg: #D4EDE0;
+      --neg: #DC2626;
+      --neg-bg: #FEE2E2;
+      --warn: #D97706;
+      --warn-bg: #FEF3C7;
+      --hover: #F9FAFB;
+      --shadow: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+      --radius: 12px;
+      --radius-sm: 8px;
+    }
+    .dark {
+      --bg: #08080A;
+      --surface: #1A1A22;
+      --sidebar: #111116;
+      --ink: #F3F4F6;
+      --ink-2: #9CA3AF;
+      --ink-3: #6B7280;
+      --rule: #3A3F3A;
+      --rule-light: #25282C;
+      --accent: #C49560;
+      --accent-light: #3D2A15;
+      --accent-hover: #D4A870;
+      --pos: #5B9876;
+      --pos-bg: #1A3328;
+      --neg: #F87171;
+      --neg-bg: #450A0A;
+      --warn: #FBBF24;
+      --warn-bg: #451A03;
+      --hover: #1F1F28;
+      --shadow: 0 1px 3px rgba(0,0,0,0.3);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg); color: var(--ink); line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background 200ms, color 200ms;
+    }
+    button, input, textarea, select { font: inherit; color: inherit; }
+    button { cursor: pointer; border: none; background: none; }
+
+    /* Layout */
+    .app { display: flex; min-height: 100vh; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px; background: var(--sidebar); border-right: 1px solid var(--rule);
+      display: flex; flex-direction: column; position: fixed; inset: 0 auto 0 0; z-index: 50;
+      transition: transform 200ms ease;
+    }
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 0.6rem; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--rule);
+    }
+    .logo-mark {
+      width: 34px; height: 34px; border-radius: 10px; background: var(--accent);
+      display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 0.9rem;
+    }
+    .logo-text { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; }
+    .logo-sub { font-size: 0.7rem; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .nav { flex: 1; padding: 1rem 0.875rem; display: flex; flex-direction: column; gap: 0.15rem; overflow-y: auto; }
+    .nav-group { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-3); padding: 0.5rem 1rem 0.25rem; font-weight: 600; }
+    .nav-item {
+      display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 1rem;
+      border-radius: 10px; color: var(--ink-2); font-size: 0.88rem; font-weight: 500;
+      transition: all 150ms; cursor: pointer; text-decoration: none;
+    }
+    .nav-item:hover { background: var(--hover); color: var(--ink); }
+    .nav-item.active { background: var(--accent); color: #fff; }
+    .nav-icon { width: 20px; text-align: center; font-size: 0.95rem; }
+
+    .sidebar-footer { padding: 1rem; border-top: 1px solid var(--rule); }
+    .status-card {
+      background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-sm); padding: 0.9rem;
+    }
+    .status-card.offline { border-color: var(--neg); }
+    .status-indicator { display: flex; align-items: center; gap: 0.5rem; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--pos); }
+    .status-card.offline .status-dot { background: var(--neg); }
+    .status-title { font-weight: 600; font-size: 0.88rem; }
+    .status-meta { font-size: 0.72rem; color: var(--ink-2); margin: 0.25rem 0 0.6rem; }
+    .status-btns { display: flex; gap: 0.35rem; flex-wrap: wrap; }
+    .status-btn {
+      padding: 0.35rem 0.6rem; border: 1px solid var(--rule); border-radius: 6px;
+      font-size: 0.72rem; font-weight: 500; color: var(--ink-2);
+    }
+    .status-btn:hover { background: var(--hover); color: var(--ink); }
+    .status-btn.danger:hover { border-color: var(--neg); color: var(--neg); background: var(--neg-bg); }
+
+    .overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 40; opacity: 0; pointer-events: none;
+      transition: opacity 200ms;
+    }
+    .overlay.show { opacity: 1; pointer-events: auto; }
+
+    /* Main area */
+    .main { flex: 1; margin-left: 260px; display: flex; flex-direction: column; min-width: 0; }
+
+    /* Topbar */
+    .topbar {
+      height: 64px; background: var(--surface); border-bottom: 1px solid var(--rule);
+      display: flex; align-items: center; padding: 0 1.5rem; gap: 1rem; position: sticky; top: 0; z-index: 30;
+    }
+    .menu-btn {
+      display: none; width: 38px; height: 38px; border-radius: 10px; align-items: center; justify-content: center;
+      font-size: 1.1rem; color: var(--ink-2);
+    }
+    .menu-btn:hover { background: var(--hover); }
+    .topbar-right { display: flex; align-items: center; gap: 0.5rem; margin-left: auto; }
+    .icon-btn {
+      width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: var(--ink-2); position: relative;
+    }
+    .icon-btn:hover { background: var(--hover); }
+    .profile { display: flex; align-items: center; gap: 0.75rem; padding-left: 0.75rem; border-left: 1px solid var(--rule); }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--accent-light); color: var(--accent);
+      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.82rem;
+    }
+    .profile-name { font-size: 0.85rem; font-weight: 600; }
+    .profile-role { font-size: 0.68rem; color: var(--ink-2); }
+
+    /* Page content */
+    .page { flex: 1; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+    /* Tabs */
+    .tabs {
+      display: inline-flex; background: var(--surface); border: 1px solid var(--rule); border-radius: 999px;
+      padding: 0.3rem; width: fit-content; flex-wrap: wrap; box-shadow: var(--shadow);
+    }
+    .tab {
+      padding: 0.45rem 1rem; border-radius: 999px; font-size: 0.8rem; font-weight: 500; color: var(--ink-2);
+      white-space: nowrap;
+    }
+    .tab:hover { color: var(--ink); }
+    .tab.active { background: var(--ink); color: var(--bg); }
+
+    /* Panels */
+    .tab-panel { display: none; flex-direction: column; gap: 1.25rem; animation: fadeIn 180ms ease; }
+    .tab-panel.active { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    .panel {
+      background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .panel-header {
+      padding: 1rem 1.25rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      border-bottom: 1px solid var(--rule-light); flex-wrap: wrap;
+    }
+    .panel-header h2 { font-size: 1.05rem; font-weight: 700; }
+    .panel-actions { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+
+    .search-bar { position: relative; }
+    .search-bar input {
+      padding: 0.45rem 0.75rem 0.45rem 2rem; border: 1px solid var(--rule); border-radius: 10px;
+      background: var(--bg); color: var(--ink); font-size: 0.85rem; min-width: 200px;
+    }
+    .search-bar input:focus { outline: none; border-color: var(--accent); }
+    .search-bar .search-icon { position: absolute; left: 0.7rem; top: 50%; transform: translateY(-50%); font-size: 0.8rem; color: var(--ink-3); }
+
+    .add-btn {
+      padding: 0.45rem 0.9rem; border-radius: 10px; font-size: 0.82rem; font-weight: 600; color: #fff;
+      background: var(--accent);
+    }
+    .add-btn:hover { background: var(--accent-hover); }
+
+    /* Table */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th {
+      text-align: left; padding: 0.75rem 1rem; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--ink-2); border-bottom: 1px solid var(--rule); font-weight: 600; white-space: nowrap;
+      background: var(--bg);
+    }
+    td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--rule-light); color: var(--ink); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--hover); }
+    .empty-row td { text-align: center; color: var(--ink-2); padding: 2.5rem; }
+
+    .pill {
+      display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px; font-size: 0.65rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.03em;
+    }
+    .pill.admin { background: var(--accent-light); color: var(--accent); }
+    .pill.active { background: var(--pos-bg); color: var(--pos); }
+    .pill.suspended { background: var(--neg-bg); color: var(--neg); }
+    .pill.warn { background: var(--warn-bg); color: var(--warn); }
+    .pill.neutral { background: var(--rule-light); color: var(--ink-2); }
+
+    .action-btns { display: flex; gap: 0.35rem; justify-content: flex-end; flex-wrap: wrap; }
+    .btn-sm {
+      padding: 0.3rem 0.65rem; border: 1px solid var(--rule); border-radius: 6px; font-size: 0.75rem; font-weight: 500;
+    }
+    .btn-sm:hover { background: var(--hover); border-color: var(--accent); }
+    .btn-sm.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn-sm.primary:hover { background: var(--accent-hover); }
+    .btn-sm.success { background: var(--pos); border-color: var(--pos); color: #fff; }
+    .btn-sm.success:hover { filter: brightness(1.1); }
+    .btn-sm.danger { border-color: var(--neg); color: var(--neg); }
+    .btn-sm.danger:hover { background: var(--neg-bg); }
+
+    /* Stats grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.875rem; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius-sm);
+      padding: 1rem; box-shadow: var(--shadow);
+    }
+    .stat-card .label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); margin-bottom: 0.3rem; }
+    .stat-card .value { font-size: 1.5rem; font-weight: 700; }
+    .stat-card .sub { font-size: 0.72rem; color: var(--ink-2); margin-top: 0.15rem; }
+
+    /* Config form */
+    .config-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem; padding: 1.25rem; }
+    .config-field { display: flex; flex-direction: column; gap: 0.25rem; }
+    .config-field label { font-size: 0.72rem; color: var(--ink-2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.03em; }
+    .config-field .val { font-size: 0.95rem; font-weight: 600; padding: 0.35rem 0; }
+    .config-field input {
+      padding: 0.4rem 0.6rem; border: 1px solid var(--rule); border-radius: 8px;
+      background: var(--bg); color: var(--ink); font-size: 0.9rem; font-family: "JetBrains Mono", monospace;
+    }
+    .config-field input:focus { outline: none; border-color: var(--accent); }
+
+    /* Info rows */
+    .info-rows { padding: 1.25rem; display: flex; flex-direction: column; gap: 0.6rem; }
+    .info-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid var(--rule-light); }
+    .info-row:last-child { border-bottom: none; }
+    .info-label { font-size: 0.78rem; color: var(--ink-2); width: 120px; flex-shrink: 0; }
+    .info-value { font-size: 0.9rem; font-weight: 600; font-family: "JetBrains Mono", monospace; }
+
+    /* Commands */
+    .cmd-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.625rem; padding: 1.25rem; }
+    .cmd-btn {
+      text-align: left; padding: 0.85rem; border: 1px solid var(--rule); border-radius: var(--radius-sm);
+      background: var(--bg); transition: all 150ms;
+    }
+    .cmd-btn:hover { border-color: var(--accent); background: var(--surface); }
+    .cmd-btn .title { font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 0.2rem; }
+    .cmd-btn .desc { font-size: 0.72rem; color: var(--ink-2); }
+
+    .terminal {
+      background: #0D0D0F; color: #E4E4E7; font-family: "JetBrains Mono", monospace; font-size: 0.75rem;
+      padding: 0.85rem; min-height: 160px; max-height: 40vh; overflow-y: auto; white-space: pre-wrap; line-height: 1.6;
+    }
+    .terminal .empty { color: #71717A; font-style: italic; }
+
+    .session-list { padding: 0.85rem 1.25rem; border-top: 1px solid var(--rule-light); }
+    .session-item {
+      display: flex; align-items: center; justify-content: space-between; padding: 0.4rem 0;
+      border-bottom: 1px solid var(--rule-light); font-size: 0.82rem;
+    }
+    .session-item:last-child { border-bottom: none; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+      display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem;
+    }
+    .modal {
+      background: var(--surface); border: 1px solid var(--rule); border-radius: var(--radius);
+      max-width: 500px; width: 100%; box-shadow: var(--shadow-md); max-height: 90vh; overflow-y: auto;
+    }
+    .modal.wide { max-width: 660px; }
+    .modal h3 { padding: 1rem 1.25rem; font-size: 1rem; border-bottom: 1px solid var(--rule); }
+    .modal-body { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    .modal-actions { padding: 0.85rem 1.25rem; border-top: 1px solid var(--rule); display: flex; gap: 0.5rem; justify-content: flex-end; }
+    .field { display: flex; flex-direction: column; gap: 0.25rem; }
+    .field label { font-size: 0.75rem; color: var(--ink-2); font-weight: 500; }
+    .field input, .field select, .field textarea {
+      padding: 0.5rem 0.65rem; border: 1px solid var(--rule); border-radius: 8px;
+      background: var(--bg); color: var(--ink); font-size: 0.85rem;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--accent); }
+    .field textarea { min-height: 80px; font-family: "JetBrains Mono", monospace; font-size: 0.8rem; resize: vertical; }
+    .chk-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+
+    /* Tea line */
+    .tee-row { display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center; padding: 0.35rem 0; }
+    .tee-row input { width: 70px; padding: 0.35rem 0.5rem; border: 1px solid var(--rule); border-radius: 6px; font-size: 0.78rem; background: var(--bg); }
+    .tee-row input.wide { width: 100px; }
+    .tee-row input.small { width: 55px; }
+    .tee-row button { padding: 0.35rem 0.5rem; border: 1px solid var(--neg); border-radius: 6px; font-size: 0.75rem; color: var(--neg); }
+    .add-tee-btn { padding: 0.35rem 0.7rem; border: 1px dashed var(--rule); border-radius: 6px; font-size: 0.78rem; color: var(--ink-2); margin-top: 0.25rem; }
+
+    /* Forecast */
+    .forecast-display { padding: 1.25rem; display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+    .forecast-metric { text-align: center; }
+    .forecast-metric .value { font-size: 2rem; font-weight: 700; }
+    .forecast-metric .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); margin-top: 0.2rem; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem; padding: 0.75rem 1.1rem;
+      background: var(--ink); color: var(--bg); font-size: 0.85rem; font-weight: 500;
+      z-index: 200; border-radius: 10px; opacity: 0; transition: opacity 200ms; box-shadow: var(--shadow-md);
+      max-width: 400px;
+    }
+    .toast.show { opacity: 1; }
+
+    .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--rule); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading { color: var(--ink-2); font-style: italic; font-size: 0.85rem; padding: 1rem; text-align: center; }
+
+    /* Editable inline */
+    .inline-edit { cursor: pointer; border-bottom: 1px dotted var(--ink-3); }
+    .inline-edit:hover { color: var(--accent); border-color: var(--accent); }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .cmd-grid { grid-template-columns: repeat(2, 1fr); }
+      .config-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); box-shadow: var(--shadow-md); }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0; }
+      .menu-btn { display: flex; }
+      .topbar { padding: 0 1rem; height: 58px; }
+      .profile-name, .profile-role { display: none; }
+      .page { padding: 0.875rem; gap: 0.875rem; }
+      .tabs { width: 100%; overflow-x: auto; border-radius: 0; }
+      .tab { flex-shrink: 0; }
+      .panel-header { padding: 0.875rem; }
+      .panel-header h2 { font-size: 0.95rem; }
+      .panel-actions { width: 100%; }
+      .search-bar { flex: 1; }
+      .search-bar input { width: 100%; min-width: 0; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 0.625rem; }
+      .stat-card { padding: 0.8rem; }
+      .stat-card .value { font-size: 1.2rem; }
+      .cmd-grid { grid-template-columns: 1fr; padding: 0.875rem; }
+      .config-grid { grid-template-columns: 1fr; }
+      .forecast-display { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app" id="app"></div>
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API = "/api";
+    const ADMIN = "/api/admin";
+
+    // Language (zh / en)
+    function getLang() { return localStorage.getItem("form_admin_lang") || "en"; }
+    function setLang(l) { localStorage.setItem("form_admin_lang", l); }
+    function toggleLang() { lang = getLang() === "en" ? "zh" : "en"; setLang(lang); renderDashboard(); }
+    let lang = getLang();
+
+    const I18N = {
+      en: {
+        admin: "Admin", core: "CORE", ops: "OPS",
+        nav_users: "Users", nav_ai: "AI Config", nav_engine: "Engine Config",
+        nav_courses: "Courses", nav_database: "Database", nav_commands: "Dev Commands", nav_health: "System Health",
+        server_online: "Server Online", server_offline: "Server Offline",
+        api_reachable: "API reachable", check_server: "Check the server process", checking: "Checking...",
+        refresh: "Refresh", shut_down: "Shut Down", restart: "Restart",
+        logout: "Logout", toggle_lang: "Switch language",
+        total_users: "Total Users", rounds: "Rounds", courses: "Courses", friendships: "Friendships",
+        registered: "registered", confirmed: "confirmed", playable_venues: "Playable venues", pending: "pending",
+        ai_status: "AI Status", ai_enabled: "Enabled", ai_disabled: "Disabled",
+        deepseek_active: "DeepSeek API active", rule_fallback: "Rule-based fallback only",
+        model: "Model", api_key: "API Key", none: "None", masked: "Masked for security",
+        refreshed: "Refreshed", config_from_env: "Config loaded from .env",
+        user_list: "User List", search_users: "Search by name, email, or club...",
+        new_user: "+ New User", col_user: "User", col_club: "Home Club", col_handicap: "Handicap",
+        col_joined: "Joined", col_status: "Status", col_actions: "Actions",
+        showing: "Showing", of: "of", users_unit: "users", no_users: "No users found",
+        edit: "Edit", suspend: "Suspend", unsuspend: "Unsuspend", delete: "Delete",
+        pill_admin: "Admin", pill_active: "Active", pill_suspended: "Suspended",
+        ai_config: "AI Configuration", endpoint: "Endpoint", last_checked: "Last checked",
+        not_configured: "Not configured",
+        engine_config: "Engine Configuration", reload: "Reload", save_changes: "Save Changes",
+        ef_startRating: "Start Rating", ef_anchorHandicap: "Anchor Handicap", ef_kFloor: "K Floor",
+        ef_kPlacement: "K Placement", ef_placementMatches: "Placement Matches",
+        ef_alphaStroke: "Alpha Stroke", ef_alphaMatch: "Alpha Match", ef_matchStrokeFactor: "Match Stroke Factor",
+        ef_rdFloor: "RD Floor", ef_rdStart: "RD Start", ef_handicapMode: "Handicap Mode",
+        ef_desc_startRating: "Initial Elo rating for unseeded players",
+        ef_desc_anchorHandicap: "Handicap that maps to start rating",
+        ef_desc_kFloor: "Minimum K-factor for established players",
+        ef_desc_kPlacement: "K-factor during placement period",
+        ef_desc_placementMatches: "Rounds before K settles to floor",
+        ef_desc_alphaStroke: "Stroke-play learning rate",
+        ef_desc_alphaMatch: "Match-play learning rate",
+        ef_desc_matchStrokeFactor: "Rating multiplier for match play",
+        ef_desc_rdFloor: "Minimum rating deviation",
+        ef_desc_rdStart: "Initial rating deviation",
+        ef_desc_handicapMode: "Handicap system (whs/ega/custom)",
+        course_name: "Course Name", col_tees: "Tees", add_course: "+ Add Course",
+        verified: "Verified", pending_review: "Pending", no_courses: "No courses found",
+        db_ops: "Database Operations", refresh_all: "Refresh All",
+        seed_demo: "Seed Demo Data", clear_data: "Clear All Data", recompute_cache: "Recompute Cache",
+        refresh_pros: "Refresh Pro Handicaps", calc_forecast: "Calculate Forecast",
+        forecast_accuracy: "Forecast Accuracy",
+        dev_commands: "Dev Commands", no_commands: "No commands run yet.",
+        terminal_empty: "Click a dev command above to see output here.",
+        server_details: "Server Details", db_size: "Database Size", uptime: "Uptime",
+        pending_requests: "Pending Requests", confirmed_rounds: "Confirmed Rounds",
+        total_rounds: "Total Rounds", pending_friend_req: "Pending Friend Requests",
+        node_version: "Node Version", sqlite_disk: "SQLite on disk", friend_requests: "Friend requests",
+        of_total: "total",
+        cmd_server_install: "Server npm install", cmd_server_install_d: "Install server dependencies",
+        cmd_server_migrate: "Server db:migrate", cmd_server_migrate_d: "Create database tables",
+        cmd_server_seed: "Server db:seed", cmd_server_seed_d: "Load demo and bot data",
+        cmd_server_dev: "Server npm dev", cmd_server_dev_d: "Start server on :3001",
+        cmd_web_install: "Web npm install", cmd_web_install_d: "Install web dependencies",
+        cmd_web_dev: "Web npm dev", cmd_web_dev_d: "Start web client on :5173",
+        brier_score: "Brier Score", log_loss: "Log Loss", sample_size: "Sample Size",
+        brier_sub: "0 = perfect, 0.25 = coin flip", logloss_sub: "Lower is better calibration",
+        sample_sub: "Pairwise comparisons", no_forecast: "No forecast data available. Seed the database and add confirmed rounds.",
+        health_refreshed: "Health refreshed", ai_refreshed: "AI config refreshed",
+        config_reloaded: "Config reloaded", courses_refreshed: "Courses refreshed",
+        data_refreshed: "Data refreshed", sessions_refreshed: "Sessions refreshed",
+        stats_refreshed: "Stats refreshed", no_changes: "No changes detected",
+        config_saved: "Engine config saved", invalid_value: "Invalid value for",
+        forecast_calculated: "Forecast calculated", computing_forecast: "Computing forecast accuracy...",
+        pros_updating: "Refreshing...", pro_refresh_confirm: "Refresh pro player plus-handicaps? This will use AI if available, or a rule-based fallback.",
+        pros_updated_suf: "pros updated", pro_done: "Done:", pro_failed: "Failed — see toast",
+        confirm_shutdown: "Shut down the FORM server? This will stop the API.",
+        confirm_restart: "Restart the FORM server? API will be unavailable for ~5 seconds.",
+        shutting_down: "Shutting down server...", server_stopped: "Server stopped",
+        restarting: "Restarting...", server_restarting: "Server restarting — refresh in a few seconds",
+        confirm_seed: "This will DROP ALL DATA and re-seed with demo players, courses, and rounds. Continue?",
+        confirm_clear: "This will DELETE ALL DATA and leave an empty database. This cannot be undone. Continue?",
+        confirm_delete_user_suf: "This removes all their rounds and friendships.",
+        create_user: "Create User", edit_prefix: "Edit:", display_name_req: "Display Name *",
+        email_req: "Email *", password_req: "Password *", home_club: "Home Club",
+        sga_handicap: "SGA Handicap", admin_account: "Admin account",
+        cancel: "Cancel", create: "Create", new_password: "New Password (leave blank to keep)",
+        min_6: "Min 6 characters", name_email_required: "Name, email and password are required",
+        invalid_handicap: "Invalid handicap", handicap_range: "Handicap must be between -10 and 54",
+        user_created: "User created", updated_prefix: "Updated",
+        create_course: "Create Course", course_name_req: "Course Name *",
+        club: "Club", tees: "Tees", add_tee: "+ Add Tee",
+        course_name_required: "Course name is required", course_created: "Course created",
+        sign_in: "Sign In", sign_in_admin: "Sign in with an admin account",
+        email: "Email", password: "Password",
+        form_admin: "FORM Admin", admin_label: "Administrator",
+        session_expired: "Session expired. Please sign in.",
+        auto_login_failed: "Auto-login failed",
+        ui_failed: "Admin UI failed to render", reload_page: "Reload page",
+        nav_resets: "Password Resets", resets_list: "Pending Password Resets",
+        resets_hint: "Students forgot their password on the login screen. When they request a reset, a token appears here — copy it to them and they can finish resetting. Tokens expire after 24 hours.",
+        col_email: "Email", col_name: "Name", col_token: "Reset Token", col_expires: "Expires",
+        no_resets: "No pending password resets", resets_refreshed: "Password resets refreshed",
+        copy_token: "Copy", token_copied: "Token copied — share it with the student", token_expired: "expired",
+      },
+      zh: {
+        admin: "管理后台", core: "核心", ops: "运维",
+        nav_users: "用户", nav_ai: "AI配置", nav_engine: "引擎配置",
+        nav_courses: "球场", nav_database: "数据库", nav_commands: "开发命令", nav_health: "系统健康",
+        server_online: "服务器在线", server_offline: "服务器离线",
+        api_reachable: "API可达", check_server: "请检查服务器进程", checking: "检查中...",
+        refresh: "刷新", shut_down: "关闭", restart: "重启",
+        logout: "退出登录", toggle_lang: "切换语言",
+        total_users: "总用户数", rounds: "回合数", courses: "球场数", friendships: "好友关系",
+        registered: "已注册", confirmed: "已确认", playable_venues: "可打球场", pending: "待处理",
+        ai_status: "AI状态", ai_enabled: "已启用", ai_disabled: "已禁用",
+        deepseek_active: "DeepSeek API已激活", rule_fallback: "仅规则回退",
+        model: "模型", api_key: "API密钥", none: "无", masked: "出于安全已隐藏",
+        refreshed: "已刷新", config_from_env: "配置来自.env文件",
+        user_list: "用户列表", search_users: "按姓名、邮箱或俱乐部搜索...",
+        new_user: "+ 新建用户", col_user: "用户", col_club: "主场俱乐部", col_handicap: "差点",
+        col_joined: "加入时间", col_status: "状态", col_actions: "操作",
+        showing: "显示", of: "共", users_unit: "个用户", no_users: "未找到用户",
+        edit: "编辑", suspend: "封禁", unsuspend: "解封", delete: "删除",
+        pill_admin: "管理员", pill_active: "正常", pill_suspended: "已封禁",
+        ai_config: "AI配置", endpoint: "端点", last_checked: "最后检查",
+        not_configured: "未配置",
+        engine_config: "引擎配置", reload: "重新加载", save_changes: "保存更改",
+        ef_startRating: "起始评分", ef_anchorHandicap: "锚定差点", ef_kFloor: "K下限",
+        ef_kPlacement: "K定级", ef_placementMatches: "定级场次",
+        ef_alphaStroke: "Stroke学习率", ef_alphaMatch: "Match学习率", ef_matchStrokeFactor: "Match评分系数",
+        ef_rdFloor: "RD下限", ef_rdStart: "RD起始", ef_handicapMode: "差点系统",
+        ef_desc_startRating: "未评级玩家的初始Elo评分",
+        ef_desc_anchorHandicap: "对应起始评分的差点",
+        ef_desc_kFloor: "老玩家的最低K系数",
+        ef_desc_kPlacement: "定级期使用的K系数",
+        ef_desc_placementMatches: "K系数稳定前的回合数",
+        ef_desc_alphaStroke: "比杆赛学习率",
+        ef_desc_alphaMatch: "比洞赛学习率",
+        ef_desc_matchStrokeFactor: "比洞赛评分倍率",
+        ef_desc_rdFloor: "最低评分偏差",
+        ef_desc_rdStart: "初始评分偏差",
+        ef_desc_handicapMode: "差点系统 (whs/ega/custom)",
+        course_name: "球场名称", col_tees: "发球台", add_course: "+ 添加球场",
+        verified: "已验证", pending_review: "待审核", no_courses: "未找到球场",
+        db_ops: "数据库操作", refresh_all: "全部刷新",
+        seed_demo: "生成演示数据", clear_data: "清除所有数据", recompute_cache: "重算缓存",
+        refresh_pros: "刷新职业球员差点", calc_forecast: "计算预测准确度",
+        forecast_accuracy: "预测准确度",
+        dev_commands: "开发命令", no_commands: "尚未运行任何命令。",
+        terminal_empty: "点击上方开发命令查看输出。",
+        server_details: "服务器详情", db_size: "数据库大小", uptime: "运行时间",
+        pending_requests: "待处理请求", confirmed_rounds: "已确认回合",
+        total_rounds: "总回合数", pending_friend_req: "待处理好友请求",
+        node_version: "Node版本", sqlite_disk: "SQLite磁盘占用", friend_requests: "好友请求",
+        of_total: "总数",
+        cmd_server_install: "服务器 npm install", cmd_server_install_d: "安装服务器依赖",
+        cmd_server_migrate: "服务器 db:migrate", cmd_server_migrate_d: "创建数据库表",
+        cmd_server_seed: "服务器 db:seed", cmd_server_seed_d: "加载演示和机器人数据",
+        cmd_server_dev: "服务器 npm dev", cmd_server_dev_d: "在:3001启动服务器",
+        cmd_web_install: "前端 npm install", cmd_web_install_d: "安装前端依赖",
+        cmd_web_dev: "前端 npm dev", cmd_web_dev_d: "在:5173启动前端",
+        brier_score: "Brier分数", log_loss: "对数损失", sample_size: "样本量",
+        brier_sub: "0=完美, 0.25=抛硬币", logloss_sub: "越低校准越好",
+        sample_sub: "成对比较次数", no_forecast: "暂无预测数据。请生成演示数据并添加已确认回合。",
+        health_refreshed: "健康状态已刷新", ai_refreshed: "AI配置已刷新",
+        config_reloaded: "配置已重新加载", courses_refreshed: "球场已刷新",
+        data_refreshed: "数据已刷新", sessions_refreshed: "会话已刷新",
+        stats_refreshed: "统计已刷新", no_changes: "未检测到更改",
+        config_saved: "引擎配置已保存", invalid_value: "无效值",
+        forecast_calculated: "预测已计算", computing_forecast: "正在计算预测准确度...",
+        pros_updating: "刷新中...", pro_refresh_confirm: "刷新职业球员正差点？将使用AI（如可用）或基于规则的回退。",
+        pros_updated_suf: "位职业球员已更新", pro_done: "完成：", pro_failed: "失败 — 见提示",
+        confirm_shutdown: "关闭FORM服务器？这将停止API。",
+        confirm_restart: "重启FORM服务器？API将不可用约5秒。",
+        shutting_down: "正在关闭服务器...", server_stopped: "服务器已停止",
+        restarting: "重启中...", server_restarting: "服务器重启中 — 几秒后刷新",
+        confirm_seed: "这将清空所有数据并重新生成演示球员、球场和回合。继续吗？",
+        confirm_clear: "这将删除所有数据并留下空数据库。此操作不可撤销。继续吗？",
+        confirm_delete_user_suf: "这将删除其所有回合和好友关系。",
+        create_user: "新建用户", edit_prefix: "编辑：", display_name_req: "显示名称 *",
+        email_req: "邮箱 *", password_req: "密码 *", home_club: "主场俱乐部",
+        sga_handicap: "SGA差点", admin_account: "管理员账号",
+        cancel: "取消", create: "创建", new_password: "新密码（留空则不变）",
+        min_6: "至少6位", name_email_required: "姓名、邮箱和密码为必填项",
+        invalid_handicap: "无效差点", handicap_range: "差点需在-10到54之间",
+        user_created: "用户已创建", updated_prefix: "已更新",
+        create_course: "新建球场", course_name_req: "球场名称 *",
+        club: "俱乐部", tees: "发球台", add_tee: "+ 添加发球台",
+        course_name_required: "球场名称为必填项", course_created: "球场已创建",
+        sign_in: "登录", sign_in_admin: "请使用管理员账号登录",
+        email: "邮箱", password: "密码",
+        form_admin: "FORM管理后台", admin_label: "管理员",
+        session_expired: "会话已过期，请重新登录。",
+        auto_login_failed: "自动登录失败",
+        ui_failed: "管理界面渲染失败", reload_page: "刷新页面",
+        nav_resets: "密码重置", resets_list: "待处理密码重置",
+        resets_hint: "学生在登录页点\"忘记密码\"后，这里会出现重置令牌。把令牌发给学生，他们就能完成重置。令牌24小时后过期。",
+        col_email: "邮箱", col_name: "姓名", col_token: "重置令牌", col_expires: "过期时间",
+        no_resets: "暂无待处理的密码重置", resets_refreshed: "密码重置已刷新",
+        copy_token: "复制", token_copied: "令牌已复制 — 请发给学生", token_expired: "已过期",
+      },
+    };
+
+    function t(key) { return I18N[lang]?.[key] ?? I18N.en[key] ?? key; }
+
+    // State
+    let stats = null, users = [], sessions = [], aiConfig = null, engineConfig = null, courses = [], forecast = null, resets = [];
+    let eventSource = null, activeSessionId = null, activeTab = "users", sidebarOpen = false;
+    let token = localStorage.getItem("form_admin_token") || null;
+    let adminUser = null;
+    try { adminUser = JSON.parse(localStorage.getItem("form_admin_user") || "null"); } catch { adminUser = null; }
+    let healthInterval = null;
+
+    const toastEl = document.getElementById("toast");
+
+    // Helpers
+    function el(type, props = {}, ...children) {
+      const e = document.createElement(type);
+      for (const [k, v] of Object.entries(props)) {
+        if (k === "className") e.className = v;
+        else if (k.startsWith("on")) e[k] = v;
+        else if (k === "style" && typeof v === "object") Object.assign(e.style, v);
+        else e.setAttribute(k, v);
+      }
+      for (const c of children) {
+        if (c == null) continue;
+        if (typeof c === "string") e.appendChild(document.createTextNode(c));
+        else e.appendChild(c);
+      }
+      return e;
+    }
+
+    async function api(method, path, body) {
+      const headers = { "Content-Type": "application/json" };
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      const res = await fetch(`${API}${path}`, { method, headers, body: body ? JSON.stringify(body) : undefined });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || `${method} ${path} failed (${res.status})`);
+      return data;
+    }
+
+    const ADMIN_EMAIL = "admin@test.golf";
+    const ADMIN_PASSWORD = "adminpass123";
+
+    async function login(email, password) {
+      const data = await api("POST", "/auth/login", { email, password });
+      if (!data.user?.isAdmin) throw new Error("Account is not an administrator");
+      token = data.token;
+      adminUser = data.user;
+      localStorage.setItem("form_admin_token", token);
+      localStorage.setItem("form_admin_user", JSON.stringify(adminUser));
+    }
+
+    function logout() {
+      token = null;
+      adminUser = null;
+      localStorage.removeItem("form_admin_token");
+      localStorage.removeItem("form_admin_user");
+      stats = null; users = []; sessions = []; aiConfig = null; engineConfig = null; courses = []; forecast = null;
+      if (healthInterval) { clearInterval(healthInterval); healthInterval = null; }
+      init();
+    }
+
+    function toast(msg) {
+      toastEl.textContent = msg; toastEl.classList.add("show");
+      clearTimeout(toastEl._t); toastEl._t = setTimeout(() => toastEl.classList.remove("show"), 3000);
+    }
+
+    function fmtDate(d) {
+      if (!d) return "—";
+      return new Date(d).toLocaleDateString(lang === "zh" ? "zh-CN" : "en-SG", { year: "numeric", month: "short", day: "numeric" });
+    }
+
+    // ══════ Data loading ══════
+    async function loadStats() { try { stats = await api("GET", "/admin/stats"); } catch { stats = null; } }
+    async function loadUsers() { try { users = await api("GET", "/admin/users"); } catch { users = []; } }
+    async function loadSessions() { try { sessions = await api("GET", "/admin/commands/sessions"); } catch { sessions = []; } }
+    async function loadAiConfig() { try { aiConfig = await api("GET", "/admin/ai-config"); } catch { aiConfig = null; } }
+    async function loadEngineConfig() { try { engineConfig = await api("GET", "/admin/config"); } catch { engineConfig = null; } }
+    async function loadCourses() { try { courses = await api("GET", "/admin/courses"); } catch { courses = []; } }
+    async function loadForecast() { try { forecast = await api("GET", "/admin/forecast"); } catch { forecast = null; } }
+    async function loadResets() { try { const d = await api("GET", "/admin/password-resets"); resets = d.resets || []; } catch { resets = []; } }
+
+    async function refreshAll() {
+      await Promise.all([loadStats(), loadUsers(), loadSessions(), loadAiConfig(), loadEngineConfig(), loadCourses(), loadForecast(), loadResets()]);
+    }
+
+    function healthCheck() {
+      const card = document.getElementById("status-card");
+      const title = document.getElementById("status-title");
+      const meta = document.getElementById("status-meta");
+      fetch(`${API}/health`).then(r => r.json()).then(data => {
+        if (card) card.classList.remove("offline");
+        if (title) title.textContent = t("server_online");
+        if (meta) meta.textContent = `${t("api_reachable")} · ${new Date().toLocaleTimeString()}`;
+      }).catch(() => {
+        if (card) card.classList.add("offline");
+        if (title) title.textContent = t("server_offline");
+        if (meta) meta.textContent = t("check_server");
+      });
+    }
+
+    async function shutdownServer() {
+      if (!confirm(t("confirm_shutdown"))) return;
+      try {
+        const card = document.getElementById("status-card");
+        if (card) card.classList.add("offline");
+        toast(t("shutting_down"));
+        await api("POST", "/admin/server/shutdown");
+      } catch { toast(t("server_stopped")); }
+    }
+
+    async function restartServer() {
+      if (!confirm(t("confirm_restart"))) return;
+      try { toast(t("restarting")); await api("POST", "/admin/server/restart"); } catch {}
+      toast(t("server_restarting"));
+      setTimeout(healthCheck, 2000); setTimeout(healthCheck, 5000);
+    }
+
+    // ══════ Sidebar / tabs ══════
+    function setTab(tab) { activeTab = tab; renderDashboard(); }
+    function toggleSidebar() {
+      sidebarOpen = !sidebarOpen;
+      document.getElementById("sidebar")?.classList.toggle("open", sidebarOpen);
+      document.getElementById("overlay")?.classList.toggle("show", sidebarOpen);
+    }
+
+    // ══════ User pill ══════
+    function userPill(u) {
+      if (u.is_admin) return el("span", { className: "pill admin" }, t("pill_admin"));
+      if (u.is_suspended) return el("span", { className: "pill suspended" }, t("pill_suspended"));
+      return el("span", { className: "pill active" }, t("pill_active"));
+    }
+
+    function filteredUsers() {
+      const q = (document.getElementById("user-search")?.value || "").toLowerCase();
+      return users.filter(u =>
+        (u.display_name || "").toLowerCase().includes(q) ||
+        (u.email || "").toLowerCase().includes(q) ||
+        (u.home_club || "").toLowerCase().includes(q)
+      );
+    }
+
+    // ══════ User: Create modal ══════
+    function showCreateUserModal() {
+      const backdrop = el("div", { className: "modal-backdrop" });
+      const modal = el("div", { className: "modal" });
+      modal.innerHTML = `
+        <h3>${t("create_user")}</h3>
+        <div class="modal-body">
+          <div class="field"><label>${t("display_name_req")}</label><input id="mu-name" type="text" placeholder="${lang === "zh" ? "如：张三" : "e.g. John Smith"}" /></div>
+          <div class="field"><label>${t("email_req")}</label><input id="mu-email" type="email" placeholder="john@example.com" /></div>
+          <div class="field"><label>${t("password_req")}</label><input id="mu-pass" type="text" placeholder="${t("min_6")}" /></div>
+          <div class="field"><label>${t("home_club")}</label><input id="mu-club" type="text" placeholder="${lang === "zh" ? "如：圣淘沙高尔夫俱乐部" : "e.g. Sentosa GC"}" /></div>
+          <div class="field"><label>${t("sga_handicap")}</label><input id="mu-handicap" type="text" inputmode="decimal" placeholder="e.g. 12.4 or +2" /></div>
+          <div class="chk-row"><input type="checkbox" id="mu-admin" /><label>${t("admin_account")}</label></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-sm" id="mu-cancel">${t("cancel")}</button>
+          <button class="btn-sm primary" id="mu-save">${t("create")}</button>
+        </div>`;
+      backdrop.appendChild(modal); document.body.appendChild(backdrop);
+      document.getElementById("mu-cancel").onclick = () => backdrop.remove();
+      backdrop.onclick = (e) => { if (e.target === backdrop) backdrop.remove(); };
+      document.getElementById("mu-save").onclick = async () => {
+        const name = document.getElementById("mu-name").value.trim();
+        const email = document.getElementById("mu-email").value.trim();
+        const pass = document.getElementById("mu-pass").value;
+        const club = document.getElementById("mu-club").value.trim();
+        const hcRaw = document.getElementById("mu-handicap").value.trim();
+        const admin = document.getElementById("mu-admin").checked;
+        if (!name || !email || !pass) { toast(t("name_email_required")); return; }
+        let hcp = undefined;
+        if (hcRaw) {
+          const val = hcRaw.startsWith("+") ? -parseFloat(hcRaw.slice(1)) : parseFloat(hcRaw);
+          if (isNaN(val) || !isFinite(val)) { toast(t("invalid_handicap")); return; }
+          if (val < -10 || val > 54) { toast(t("handicap_range")); return; }
+          hcp = val;
+        }
+        try {
+          await api("POST", "/admin/users", { displayName: name, email, password: pass, homeClub: club || undefined, sgaHandicap: hcp, isAdmin: admin });
+          backdrop.remove(); toast(t("user_created"));
+          await refreshAll(); renderDashboard();
+        } catch (e) { toast(e.message); }
+      };
+    }
+
+    // ══════ User: Edit modal ══════
+    function showEditUserModal(u) {
+      const hcpDisplay = u.sga_handicap != null ? (u.sga_handicap < 0 ? "+" + Math.abs(u.sga_handicap) : String(u.sga_handicap)) : "";
+      const backdrop = el("div", { className: "modal-backdrop" });
+      const modal = el("div", { className: "modal" });
+      modal.innerHTML = `
+        <h3>${t("edit_prefix")} ${u.display_name || u.email}</h3>
+        <div class="modal-body">
+          <div class="field"><label>${t("display_name_req").replace(" *","")}</label><input id="eu-name" type="text" value="${u.display_name || ""}" /></div>
+          <div class="field"><label>${t("email")}</label><input id="eu-email" type="email" value="${u.email}" disabled style="opacity:0.6" /></div>
+          <div class="field"><label>${t("home_club")}</label><input id="eu-club" type="text" value="${u.home_club || ""}" /></div>
+          <div class="field"><label>${t("sga_handicap")}</label><input id="eu-handicap" type="text" inputmode="decimal" value="${hcpDisplay}" placeholder="e.g. 12.4 or +2" /></div>
+          <div class="field"><label>${t("new_password")}</label><input id="eu-pass" type="text" placeholder="${t("min_6")}" /></div>
+          <div class="chk-row"><input type="checkbox" id="eu-admin" ${u.is_admin ? "checked" : ""} /><label>${t("admin_account")}</label></div>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-sm" id="eu-cancel">${t("cancel")}</button>
+          <button class="btn-sm primary" id="eu-save">${t("save_changes")}</button>
+        </div>`;
+      backdrop.appendChild(modal); document.body.appendChild(backdrop);
+      document.getElementById("eu-cancel").onclick = () => backdrop.remove();
+      backdrop.onclick = (e) => { if (e.target === backdrop) backdrop.remove(); };
+      document.getElementById("eu-save").onclick = async () => {
+        const name = document.getElementById("eu-name").value.trim();
+        const club = document.getElementById("eu-club").value.trim();
+        const hcRaw = document.getElementById("eu-handicap").value.trim();
+        const pass = document.getElementById("eu-pass").value;
+        const admin = document.getElementById("eu-admin").checked;
+        const body = {};
+        if (name !== (u.display_name || "")) body.displayName = name;
+        if (club !== (u.home_club || "")) body.homeClub = club;
+        if (admin !== !!u.is_admin) body.isAdmin = admin;
+        if (pass) body.password = pass;
+        if (hcRaw) {
+          const val = hcRaw.startsWith("+") ? -parseFloat(hcRaw.slice(1)) : parseFloat(hcRaw);
+          if (isNaN(val) || !isFinite(val)) { toast(t("invalid_handicap")); return; }
+          body.sgaHandicap = val;
+        }
+        try {
+          await api("PATCH", `/admin/users/${u.id}`, body);
+          backdrop.remove(); toast(`${t("updated_prefix")} ${u.display_name}`);
+          await refreshAll(); renderDashboard();
+        } catch (e) { toast(e.message); }
+      };
+    }
+
+    async function deleteUser(id, name) {
+      if (!confirm(`${t("delete")} "${name}"? ${t("confirm_delete_user_suf")}`)) return;
+      try { await api("DELETE", `/admin/users/${id}`); toast(`${t("delete")} ${name}`); await refreshAll(); renderDashboard(); } catch (e) { toast(e.message); }
+    }
+
+    async function toggleSuspension(id, name, current) {
+      const action = current ? t("unsuspend") : t("suspend");
+      if (!confirm(`${action} "${name}"?`)) return;
+      try { await api("PATCH", `/admin/users/${id}`, { isSuspended: !current }); toast(`${current ? t("unsuspend") : t("suspend")} ${name}`); await refreshAll(); renderDashboard(); } catch (e) { toast(e.message); }
+    }
+
+    // ══════ Users render ══════
+    function renderUsers() {
+      const tbody = document.getElementById("users-tbody");
+      if (!tbody) return;
+      const list = filteredUsers();
+      tbody.innerHTML = "";
+      if (list.length === 0) { tbody.innerHTML = `<tr class="empty-row"><td colspan="6">${t("no_users")}</td></tr>`; return; }
+      for (const u of list) {
+        const hcpDisplay = u.sga_handicap != null ? (u.sga_handicap < 0 ? "+" + Math.abs(u.sga_handicap) : String(u.sga_handicap)) : "—";
+        tbody.appendChild(el("tr", {},
+          el("td", {}, el("span", { className: "inline-edit", onclick: () => showEditUserModal(u) }, u.display_name || "—"), el("div", { style: "font-size:0.75rem;color:var(--ink-2)" }, u.email)),
+          el("td", {}, u.home_club || "—"),
+          el("td", {}, hcpDisplay),
+          el("td", {}, fmtDate(u.created_at)),
+          el("td", {}, userPill(u)),
+          el("td", {},
+            el("div", { className: "action-btns" },
+              el("button", { className: "btn-sm", onclick: () => showEditUserModal(u) }, t("edit")),
+              el("button", { className: "btn-sm", onclick: () => toggleSuspension(u.id, u.display_name, u.is_suspended) }, u.is_suspended ? t("unsuspend") : t("suspend")),
+              el("button", { className: "btn-sm danger", onclick: () => deleteUser(u.id, u.display_name) }, t("delete"))
+            )
+          )
+        ));
+      }
+      const showingEl = document.getElementById("showing-count");
+      const totalEl = document.getElementById("total-count");
+      if (showingEl) showingEl.textContent = String(list.length);
+      if (totalEl) totalEl.textContent = String(users.length);
+    }
+
+    // ══════ Password Resets render ══════
+    function renderResets() {
+      const tbody = document.getElementById("resets-tbody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+      if (resets.length === 0) { tbody.innerHTML = `<tr class="empty-row"><td colspan="5">${t("no_resets")}</td></tr>`; return; }
+      for (const r of resets) {
+        const expired = new Date(r.expiresAt).getTime() < Date.now();
+        tbody.appendChild(el("tr", {},
+          el("td", {}, r.displayName || "—"),
+          el("td", {}, r.email || "—"),
+          el("td", {},
+            el("code", { style: "font-family:'JetBrains Mono',monospace;font-size:0.75rem;background:var(--bg);padding:0.2rem 0.45rem;border-radius:6px;border:1px solid var(--rule-light)" }, r.token || "—")
+          ),
+          el("td", {}, expired ? el("span", { className: "pill suspended" }, t("token_expired")) : fmtDate(r.expiresAt)),
+          el("td", {},
+            el("div", { className: "action-btns" },
+              el("button", { className: "btn-sm primary", onclick: () => { navigator.clipboard?.writeText(r.token || "").then(() => toast(t("token_copied"))); } }, `📋 ${t("copy_token")}`)
+            )
+          )
+        ));
+      }
+    }
+
+    // ══════ AI Config render ══════
+    function renderAiConfig() {
+      const grid = document.getElementById("ai-config-display");
+      if (!grid || !aiConfig) return;
+      grid.innerHTML = "";
+      const rows = [
+        [t("col_status"), aiConfig.enabled ? el("span", { className: "pill active" }, t("ai_enabled")) : el("span", { className: "pill suspended" }, t("ai_disabled"))],
+        [t("endpoint"), aiConfig.endpoint || "—"],
+        [t("model"), aiConfig.model || "—"],
+        [t("api_key"), aiConfig.apiKey || t("not_configured")],
+        [t("last_checked"), new Date().toLocaleTimeString()],
+      ];
+      for (const [label, value] of rows) {
+        grid.appendChild(el("div", { className: "info-row" },
+          el("div", { className: "info-label" }, label),
+          el("div", { className: "info-value" }, value)
+        ));
+      }
+    }
+
+    function renderAiInfoBlock() {
+      if (!aiConfig) return t("not_configured");
+      const status = aiConfig.enabled ? t("ai_enabled") : t("ai_disabled");
+      return `${status} · ${aiConfig.model || "N/A"} · ${aiConfig.endpoint || "N/A"}`;
+    }
+
+    // ══════ Engine Config render ══════
+    function renderEngineConfig() {
+      const container = document.getElementById("engine-config-container");
+      if (!container || !engineConfig) return;
+      const fields = [
+        { key: "startRating", label: t("ef_startRating"), desc: t("ef_desc_startRating") },
+        { key: "anchorHandicap", label: t("ef_anchorHandicap"), desc: t("ef_desc_anchorHandicap") },
+        { key: "kFloor", label: t("ef_kFloor"), desc: t("ef_desc_kFloor") },
+        { key: "kPlacement", label: t("ef_kPlacement"), desc: t("ef_desc_kPlacement") },
+        { key: "placementMatches", label: t("ef_placementMatches"), desc: t("ef_desc_placementMatches") },
+        { key: "alphaStroke", label: t("ef_alphaStroke"), desc: t("ef_desc_alphaStroke") },
+        { key: "alphaMatch", label: t("ef_alphaMatch"), desc: t("ef_desc_alphaMatch") },
+        { key: "matchStrokeFactor", label: t("ef_matchStrokeFactor"), desc: t("ef_desc_matchStrokeFactor") },
+        { key: "rdFloor", label: t("ef_rdFloor"), desc: t("ef_desc_rdFloor") },
+        { key: "rdStart", label: t("ef_rdStart"), desc: t("ef_desc_rdStart") },
+        { key: "handicapMode", label: t("ef_handicapMode"), desc: t("ef_desc_handicapMode") },
+      ];
+      container.innerHTML = "";
+      for (const f of fields) {
+        const val = engineConfig[f.key] != null ? String(engineConfig[f.key]) : "—";
+        container.appendChild(el("div", { className: "config-field" },
+          el("label", {}, f.label),
+          el("input", { id: `cfg-${f.key}`, value: val, "data-key": f.key, "data-prev": val }),
+          el("div", { style: "font-size:0.65rem;color:var(--ink-3);margin-top:0.1rem" }, f.desc)
+        ));
+      }
+    }
+
+    async function saveEngineConfig() {
+      const updates = {};
+      const inputs = document.querySelectorAll("#engine-config-container input");
+      for (const inp of inputs) {
+        const key = inp.getAttribute("data-key");
+        const prev = inp.getAttribute("data-prev");
+        const raw = inp.value.trim();
+        if (raw === prev) continue;
+        // Parse numbers vs strings
+        if (key === "handicapMode") {
+          updates[key] = raw || "whs";
+        } else {
+          const num = parseFloat(raw);
+          if (isNaN(num)) { toast(`${t("invalid_value")} ${key}: ${raw}`); return; }
+          updates[key] = num;
+        }
+      }
+      if (Object.keys(updates).length === 0) { toast(t("no_changes")); return; }
+      try {
+        await api("PATCH", "/admin/config", updates);
+        toast(t("config_saved"));
+        await loadEngineConfig();
+        renderDashboard();
+      } catch (e) { toast(e.message); }
+    }
+
+    // ══════ Courses render ══════
+    function renderCourses() {
+      const tbody = document.getElementById("courses-tbody");
+      if (!tbody) return;
+      tbody.innerHTML = "";
+      if (courses.length === 0) { tbody.innerHTML = `<tr class="empty-row"><td colspan="5">${t("no_courses")}</td></tr>`; return; }
+      for (const c of courses) {
+        const teeList = (c.tees || []).map(tee => `${tee.name || ""} (${tee.colour || "?"}, CR ${tee.cr || "—"}/${tee.slope || "—"})`).join(", ") || t("col_tees");
+        tbody.appendChild(el("tr", {},
+          el("td", {}, el("strong", {}, c.name || "—")),
+          el("td", {}, c.club || "—"),
+          el("td", { style: "font-size:0.78rem" }, teeList),
+          el("td", {}, c.verified ? el("span", { className: "pill active" }, t("verified")) : el("span", { className: "pill neutral" }, t("pending_review"))),
+          el("td", {},
+            el("div", { className: "action-btns" },
+              el("button", { className: "btn-sm", onclick: () => showEditCourseModal(c) }, t("edit")),
+              el("button", { className: "btn-sm danger", onclick: () => deleteCourse(c.id, c.name) }, t("delete"))
+            )
+          )
+        ));
+      }
+    }
+
+    function showCreateCourseModal() {
+      const backdrop = el("div", { className: "modal-backdrop" });
+      const modal = el("div", { className: "modal wide" });
+      modal.innerHTML = `
+        <h3>${t("create_course")}</h3>
+        <div class="modal-body" id="course-form">
+          <div class="field"><label>${t("course_name_req")}</label><input id="cc-name" type="text" placeholder="${lang === "zh" ? "如：滨海湾高尔夫俱乐部" : "e.g. Marina Bay GC"}" /></div>
+          <div class="field"><label>${t("club")}</label><input id="cc-club" type="text" placeholder="${lang === "zh" ? "如：滨海湾" : "e.g. Marina Bay"}" /></div>
+          <div class="chk-row"><input type="checkbox" id="cc-verified" /><label>${t("verified")}</label></div>
+          <div style="font-size:0.78rem;color:var(--ink-2);font-weight:600;margin-top:0.5rem">${t("tees")}</div>
+          <div id="cc-tees"></div>
+          <button class="add-tee-btn" id="cc-add-tee">${t("add_tee")}</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-sm" id="cc-cancel">${t("cancel")}</button>
+          <button class="btn-sm primary" id="cc-save">${t("create_course")}</button>
+        </div>`;
+      backdrop.appendChild(modal); document.body.appendChild(backdrop);
+
+      let tees = [{ name: "", colour: "", yardage: "", par: "72", cr: "", slope: "" }];
+
+      function renderTees() {
+        const container = document.getElementById("cc-tees");
+        container.innerHTML = "";
+        tees.forEach((tee, i) => {
+          container.appendChild(el("div", { className: "tee-row" },
+            el("input", { className: "wide", placeholder: lang === "zh" ? "发球台名" : "Tee name", value: tee.name || "", oninput: (e) => { tees[i].name = e.target.value; } }),
+            el("input", { className: "small", placeholder: lang === "zh" ? "颜色" : "Colour", value: tee.colour || "", oninput: (e) => { tees[i].colour = e.target.value; } }),
+            el("input", { className: "small", placeholder: "Yds", value: tee.yardage || "", oninput: (e) => { tees[i].yardage = e.target.value; } }),
+            el("input", { className: "small", placeholder: "Par", value: tee.par || "72", oninput: (e) => { tees[i].par = e.target.value; } }),
+            el("input", { className: "small", placeholder: "CR", value: tee.cr || "", oninput: (e) => { tees[i].cr = e.target.value; } }),
+            el("input", { className: "small", placeholder: "Slope", value: tee.slope || "", oninput: (e) => { tees[i].slope = e.target.value; } }),
+            i > 0 ? el("button", { onclick: () => { tees.splice(i, 1); renderTees(); } }, "✕") : null
+          ));
+        });
+      }
+      renderTees();
+
+      document.getElementById("cc-add-tee").onclick = () => { tees.push({ name: "", colour: "", yardage: "", par: "72", cr: "", slope: "" }); renderTees(); };
+      document.getElementById("cc-cancel").onclick = () => backdrop.remove();
+      backdrop.onclick = (e) => { if (e.target === backdrop) backdrop.remove(); };
+      document.getElementById("cc-save").onclick = async () => {
+        const name = document.getElementById("cc-name").value.trim();
+        if (!name) { toast(t("course_name_required")); return; }
+        const body = {
+          name,
+          club: document.getElementById("cc-club").value.trim() || undefined,
+          verified: document.getElementById("cc-verified").checked,
+          tees: tees.filter(tee => tee.name || tee.colour).map(tee => ({
+            name: tee.name || `Tee ${tees.indexOf(tee) + 1}`,
+            colour: tee.colour || "White",
+            yardage: tee.yardage ? parseInt(tee.yardage) : null,
+            par: tee.par ? parseInt(tee.par) : 72,
+            cr: tee.cr ? parseFloat(tee.cr) : null,
+            slope: tee.slope ? parseInt(tee.slope) : null,
+          })),
+        };
+        try {
+          await api("POST", "/admin/courses", body);
+          backdrop.remove(); toast(t("course_created"));
+          await loadCourses(); renderDashboard();
+        } catch (e) { toast(e.message); }
+      };
+    }
+
+    function showEditCourseModal(c) {
+      const backdrop = el("div", { className: "modal-backdrop" });
+      const modal = el("div", { className: "modal wide" });
+      modal.innerHTML = `
+        <h3>${t("edit_prefix")} ${c.name}</h3>
+        <div class="modal-body">
+          <div class="field"><label>${t("course_name")}</label><input id="ec-name" type="text" value="${c.name || ""}" /></div>
+          <div class="field"><label>${t("club")}</label><input id="ec-club" type="text" value="${c.club || ""}" /></div>
+          <div class="chk-row"><input type="checkbox" id="ec-verified" ${c.verified ? "checked" : ""} /><label>${t("verified")}</label></div>
+          <div style="font-size:0.78rem;color:var(--ink-2);font-weight:600;margin-top:0.5rem">${t("tees")}</div>
+          <div id="ec-tees"></div>
+          <button class="add-tee-btn" id="ec-add-tee">${t("add_tee")}</button>
+        </div>
+        <div class="modal-actions">
+          <button class="btn-sm" id="ec-cancel">Cancel</button>
+          <button class="btn-sm primary" id="ec-save">Save Changes</button>
+        </div>`;
+      backdrop.appendChild(modal); document.body.appendChild(backdrop);
+
+      let tees = (c.tees || []).map(tee => ({ ...tee })) || [];
+      if (tees.length === 0) tees = [{ name: "", colour: "", yardage: "", par: "72", cr: "", slope: "" }];
+
+      function renderTees() {
+        const container = document.getElementById("ec-tees");
+        container.innerHTML = "";
+        tees.forEach((tee, i) => {
+          container.appendChild(el("div", { className: "tee-row" },
+            el("input", { className: "wide", placeholder: lang === "zh" ? "发球台名" : "Tee name", value: tee.name || "", oninput: (e) => { tees[i].name = e.target.value; } }),
+            el("input", { className: "small", placeholder: lang === "zh" ? "颜色" : "Colour", value: tee.colour || "", oninput: (e) => { tees[i].colour = e.target.value; } }),
+            el("input", { className: "small", placeholder: "Yds", value: tee.yardage || "", oninput: (e) => { tees[i].yardage = e.target.value; } }),
+            el("input", { className: "small", placeholder: "Par", value: tee.par || "72", oninput: (e) => { tees[i].par = e.target.value; } }),
+            el("input", { className: "small", placeholder: "CR", value: tee.cr || "", oninput: (e) => { tees[i].cr = e.target.value; } }),
+            el("input", { className: "small", placeholder: "Slope", value: tee.slope || "", oninput: (e) => { tees[i].slope = e.target.value; } }),
+            i > 0 ? el("button", { onclick: () => { tees.splice(i, 1); renderTees(); } }, "✕") : null
+          ));
+        });
+      }
+      renderTees();
+
+      document.getElementById("ec-add-tee").onclick = () => { tees.push({ name: "", colour: "", yardage: "", par: "72", cr: "", slope: "" }); renderTees(); };
+      document.getElementById("ec-cancel").onclick = () => backdrop.remove();
+      backdrop.onclick = (e) => { if (e.target === backdrop) backdrop.remove(); };
+      document.getElementById("ec-save").onclick = async () => {
+        const body = {
+          name: document.getElementById("ec-name").value.trim(),
+          club: document.getElementById("ec-club").value.trim() || undefined,
+          verified: document.getElementById("ec-verified").checked,
+          tees: tees.filter(tee => tee.name || tee.colour).map(tee => ({
+            name: tee.name || "Unnamed",
+            colour: tee.colour || "White",
+            yardage: tee.yardage ? parseInt(tee.yardage) : null,
+            par: tee.par ? parseInt(tee.par) : 72,
+            cr: tee.cr ? parseFloat(tee.cr) : null,
+            slope: tee.slope ? parseInt(tee.slope) : null,
+          })),
+        };
+        try {
+          await api("PATCH", `/admin/courses/${c.id}`, body);
+          backdrop.remove(); toast(`${t("updated_prefix")} ${c.name}`);
+          await loadCourses(); renderDashboard();
+        } catch (e) { toast(e.message); }
+      };
+    }
+
+    async function deleteCourse(id, name) {
+      if (!confirm(`${t("delete")} "${name}"?`)) return;
+      try { await api("DELETE", `/admin/courses/${id}`); toast(`${t("delete")} ${name}`); await loadCourses(); renderDashboard(); } catch (e) { toast(e.message); }
+    }
+    // Note: deleteCourse API needs to exist — we don't have DELETE /api/admin/courses/:id yet
+    // We'll add it below, but for now the button gracefully fails
+
+    // ══════ Database ops ══════
+    async function seedDatabase() {
+      if (!confirm(t("confirm_seed"))) return;
+      try { const r = await api("POST", "/admin/seed"); toast(r.message || t("seed_demo")); await refreshAll(); renderDashboard(); } catch (e) { toast(e.message); }
+    }
+
+    async function clearDatabase() {
+      if (!confirm(t("confirm_clear"))) return;
+      try { const r = await api("POST", "/admin/clear"); toast(r.message || t("clear_data")); await refreshAll(); renderDashboard(); } catch (e) { toast(e.message); }
+    }
+
+    async function recompute() {
+      try { const r = await api("POST", "/admin/recompute"); toast(r.message || t("recompute_cache")); } catch (e) { toast(e.message); }
+    }
+
+    async function refreshForecast() {
+      const el = document.getElementById("forecast-display");
+      if (el) el.innerHTML = `<div class="loading"><span class="spinner"></span> ${t("computing_forecast")}</div>`;
+      try {
+        await loadForecast();
+        renderDashboard();
+        toast(t("forecast_calculated"));
+      } catch (e) { toast(e.message); }
+    }
+
+    async function refreshPros() {
+      if (!confirm(t("pro_refresh_confirm"))) return;
+      const el = document.getElementById("pro-refresh-status");
+      if (el) el.textContent = t("pros_updating");
+      try {
+        const r = await api("POST", "/admin/refresh-pros");
+        if (el) el.textContent = `${t("pro_done")} ${r.updated} ${t("pros_updated_suf")}`;
+        toast(`${r.updated} ${t("pros_updated_suf")}`);
+        await refreshAll(); renderDashboard();
+      } catch (e) { toast(e.message); if (el) el.textContent = t("pro_failed"); }
+    }
+
+    function renderForecastDisplay() {
+      const el = document.getElementById("forecast-display");
+      if (!el) return;
+      if (!forecast || forecast.sampleSize === 0) {
+        el.innerHTML = `<div style="color:var(--ink-2);font-style:italic;padding:1rem;text-align:center">${t("no_forecast")}</div>`;
+        return;
+      }
+      // Lower is better for both Brier score and log loss
+      el.innerHTML = "";
+      const metrics = [
+        { label: t("brier_score"), value: forecast.brierScore != null ? forecast.brierScore.toFixed(4) : "—", sub: t("brier_sub") },
+        { label: t("log_loss"), value: forecast.logLoss != null ? forecast.logLoss.toFixed(4) : "—", sub: t("logloss_sub") },
+        { label: t("sample_size"), value: forecast.sampleSize || "—", sub: t("sample_sub") },
+      ];
+      for (const m of metrics) {
+        el.appendChild(el("div", { className: "forecast-metric" },
+          el("div", { className: "value" }, m.value),
+          el("div", { className: "label" }, m.label),
+          el("div", { style: "font-size:0.65rem;color:var(--ink-3);margin-top:0.2rem" }, m.sub)
+        ));
+      }
+    }
+
+    // ══════ Dev Commands ══════
+    async function runPreset(preset) {
+      try {
+        const data = await api("POST", `/admin/commands/run/${preset}`);
+        activeSessionId = data.sessionId;
+        await loadSessions();
+        connectStream(data.sessionId);
+        renderDashboard();
+      } catch (e) { toast(e.message); }
+    }
+
+    function connectStream(sid) {
+      if (eventSource) { eventSource.close(); eventSource = null; }
+      activeSessionId = sid;
+      const out = document.getElementById("terminal");
+      out.innerHTML = "";
+      eventSource = new EventSource(`${ADMIN}/commands/sessions/${sid}/stream`);
+      eventSource.onmessage = (ev) => {
+        const msg = JSON.parse(ev.data);
+        if (msg.type === "out") {
+          const line = el("span", { className: "line" }, msg.text || " ");
+          out.appendChild(line);
+          out.scrollTop = out.scrollHeight;
+        } else if (msg.type === "status") {
+          loadSessions().then(() => renderDashboard());
+        }
+      };
+      eventSource.onerror = () => { eventSource.close(); eventSource = null; };
+    }
+
+    function renderSessions() {
+      const container = document.getElementById("cmd-sessions");
+      if (!container) return;
+      container.innerHTML = "";
+      if (sessions.length === 0) {
+        container.appendChild(el("div", { style: "color:var(--ink-2);font-size:0.82rem" }, t("no_commands")));
+        return;
+      }
+      for (const s of sessions.slice(-8).reverse()) {
+        const info = el("div", {},
+          el("strong", {}, s.label),
+          el("span", { style: "color:var(--ink-2);margin-left:0.5rem;font-size:0.72rem" }, new Date(s.startedAt).toLocaleTimeString())
+        );
+        const badge = el("span", { className: `pill ${s.status === "running" ? "admin" : s.status === "error" ? "suspended" : "active"}` }, s.status);
+        const btns = el("span", { style: "display:flex;gap:0.35rem;align-items:center" }, badge);
+        if (s.status === "running") {
+          const killBtn = el("button", { className: "btn-sm danger" }, lang === "zh" ? "终止" : "Kill");
+          killBtn.onclick = async () => { await api("POST", `/admin/commands/sessions/${s.id}/kill`); await loadSessions(); renderDashboard(); };
+          btns.appendChild(killBtn);
+        }
+        const viewBtn = el("button", { className: "btn-sm" }, activeSessionId === s.id ? (lang === "zh" ? "▸ 查看中" : "▸ Viewing") : (lang === "zh" ? "查看" : "View"));
+        viewBtn.onclick = () => connectStream(s.id);
+        btns.appendChild(viewBtn);
+        container.appendChild(el("div", { className: "session-item" }, info, btns));
+      }
+    }
+
+    function renderCommands() {
+      const grid = document.getElementById("cmd-grid");
+      if (!grid) return;
+      grid.innerHTML = "";
+      const presets = [
+        { key: "server-install", label: t("cmd_server_install"), desc: t("cmd_server_install_d") },
+        { key: "server-migrate", label: t("cmd_server_migrate"), desc: t("cmd_server_migrate_d") },
+        { key: "server-seed", label: t("cmd_server_seed"), desc: t("cmd_server_seed_d") },
+        { key: "server-dev", label: t("cmd_server_dev"), desc: t("cmd_server_dev_d") },
+        { key: "web-install", label: t("cmd_web_install"), desc: t("cmd_web_install_d") },
+        { key: "web-dev", label: t("cmd_web_dev"), desc: t("cmd_web_dev_d") },
+      ];
+      for (const p of presets) {
+        grid.appendChild(el("button", { className: "cmd-btn", onclick: () => runPreset(p.key) },
+          el("span", { className: "title" }, p.label),
+          el("span", { className: "desc" }, p.desc)
+        ));
+      }
+    }
+
+    // ══════ Main render ══════
+    function renderDashboard() {
+      const app = document.getElementById("app");
+      app.innerHTML = "";
+
+      // ══ Sidebar ══
+      const tabs = {
+        users: { icon: "👤", label: t("nav_users"), group: t("core") },
+        resets: { icon: "🔑", label: t("nav_resets"), group: t("core") },
+        ai: { icon: "🧠", label: t("nav_ai"), group: t("core") },
+        engine: { icon: "⚙", label: t("nav_engine"), group: t("core") },
+        courses: { icon: "⛳", label: t("nav_courses"), group: t("core") },
+        database: { icon: "🗄", label: t("nav_database"), group: t("ops") },
+        commands: { icon: "⌨", label: t("nav_commands"), group: t("ops") },
+        health: { icon: "♥", label: t("nav_health"), group: t("ops") },
+      };
+
+      const navGroups = {};
+      for (const [k, v] of Object.entries(tabs)) {
+        if (!navGroups[v.group]) navGroups[v.group] = [];
+        navGroups[v.group].push([k, v]);
+      }
+
+      const navItems = [];
+      for (const [group, items] of Object.entries(navGroups)) {
+        navItems.push(el("div", { className: "nav-group" }, group));
+        for (const [k, v] of items) {
+          navItems.push(el("a", { className: `nav-item ${activeTab === k ? "active" : ""}`, onclick: () => setTab(k) },
+            el("span", { className: "nav-icon" }, v.icon), v.label
+          ));
+        }
+      }
+
+      const sidebar = el("aside", { className: `sidebar ${sidebarOpen ? "open" : ""}`, id: "sidebar" },
+        el("div", { className: "sidebar-brand" },
+          el("div", { className: "logo-mark" }, "F"),
+          el("div", {}, el("div", { className: "logo-text" }, "FORM"), el("div", { className: "logo-sub" }, t("admin")))
+        ),
+        el("nav", { className: "nav" }, ...navItems),
+        el("div", { className: "sidebar-footer" },
+          el("div", { className: "status-card", id: "status-card" },
+            el("div", { className: "status-indicator" },
+              el("div", { className: "status-dot" }),
+              el("div", { className: "status-title", id: "status-title" }, t("server_online"))
+            ),
+            el("div", { className: "status-meta", id: "status-meta" }, t("checking")),
+            el("div", { className: "status-btns" },
+              el("button", { className: "status-btn", onclick: () => { healthCheck(); toast(t("health_refreshed")); } }, t("refresh")),
+              el("button", { className: "status-btn danger", onclick: shutdownServer }, t("shut_down")),
+              el("button", { className: "status-btn", onclick: restartServer }, t("restart"))
+            )
+          )
+        )
+      );
+      app.appendChild(sidebar);
+      app.appendChild(el("div", { className: `overlay ${sidebarOpen ? "show" : ""}`, id: "overlay", onclick: toggleSidebar }));
+
+      // ══ Main ══
+      const main = el("main", { className: "main" },
+        el("header", { className: "topbar" },
+          el("button", { className: "menu-btn", onclick: toggleSidebar }, "☰"),
+          el("div", {
+            style: "font-size:0.9rem;font-weight:600;color:var(--ink-2)"
+          }, tabs[activeTab]?.label || t("form_admin")),
+          el("div", { className: "topbar-right" },
+            el("div", { className: "profile" },
+              el("div", { className: "avatar" }, adminUser?.displayName?.[0] || "A"),
+              el("span", { className: "profile-name" }, adminUser?.displayName || adminUser?.email || t("admin_label")),
+              el("button", { className: "icon-btn", onclick: toggleLang, title: t("toggle_lang") }, lang === "en" ? "中文" : "EN"),
+              el("button", { className: "icon-btn", onclick: logout, title: t("logout") }, "↪")
+            )
+          )
+        ),
+        el("div", { className: "page" },
+          el("div", { className: "tabs" },
+            ...Object.keys(tabs).map(k =>
+              el("button", { className: `tab ${activeTab === k ? "active" : ""}`, onclick: () => setTab(k) }, tabs[k].label)
+            )
+          ),
+
+          // ── Users panel ──
+          el("section", { className: `tab-panel ${activeTab === "users" ? "active" : ""}` },
+            el("div", { id: "stats-grid", className: "stats-grid" }),
+            el("div", { className: "panel" },
+              el("div", { className: "panel-header" },
+                el("h2", {}, `${t("user_list")} (${users.length})`),
+                el("div", { className: "panel-actions" },
+                  el("div", { className: "search-bar" },
+                    el("span", { className: "search-icon" }, "🔍"),
+                    el("input", { id: "user-search", type: "text", placeholder: t("search_users"), oninput: () => { renderUsers(); } })
+                  ),
+                  el("button", { className: "add-btn", onclick: showCreateUserModal }, t("new_user"))
+                )
+              ),
+              el("div", { className: "table-wrap" },
+                el("table", {},
+                  el("thead", {}, el("tr", {},
+                    el("th", {}, t("col_user")), el("th", {}, t("col_club")), el("th", {}, t("col_handicap")),
+                    el("th", {}, t("col_joined")), el("th", {}, t("col_status")), el("th", { style: "text-align:right" }, t("col_actions"))
+                  )),
+                  el("tbody", { id: "users-tbody" })
+                )
+              ),
+              el("div", { style: "padding:0.75rem 1.25rem;border-top:1px solid var(--rule-light);font-size:0.78rem;color:var(--ink-2)" },
+                t("showing"), " ", el("span", { id: "showing-count" }, "0"), ` ${t("of")} `, el("span", { id: "total-count" }, "0"), ` ${t("users_unit")}`
+              )
+            )
+          ),
+
+          // ── Password Resets panel ──
+          el("section", { className: `tab-panel ${activeTab === "resets" ? "active" : ""}` },
+            el("div", { className: "panel" },
+              el("div", { className: "panel-header" },
+                el("h2", {}, `${t("resets_list")} (${resets.length})`),
+                el("button", { className: "btn-sm", onclick: async () => { await loadResets(); renderDashboard(); toast(t("resets_refreshed")); } }, t("refresh"))
+              ),
+              el("div", { style: "padding:0.85rem 1.25rem;font-size:0.8rem;color:var(--ink-2);border-bottom:1px solid var(--rule-light)" }, t("resets_hint")),
+              el("div", { className: "table-wrap" },
+                el("table", {},
+                  el("thead", {}, el("tr", {},
+                    el("th", {}, t("col_name")), el("th", {}, t("col_email")),
+                    el("th", {}, t("col_token")), el("th", {}, t("col_expires")),
+                    el("th", { style: "text-align:right" }, t("col_actions"))
+                  )),
+                  el("tbody", { id: "resets-tbody" })
+                )
+              )
+            )
+          ),
+
+          // ── AI Config panel ──
+          el("section", { className: `tab-panel ${activeTab === "ai" ? "active" : ""}` },
+            el("div", { id: "ai-stats", className: "stats-grid" }),
+            el("div", { className: "panel" },
+              el("div", { className: "panel-header" },
+                el("h2", {}, t("ai_config")),
+                el("button", { className: "btn-sm", onclick: async () => { await loadAiConfig(); renderDashboard(); toast(t("ai_refreshed")); } }, t("refresh"))
+              ),
+              el("div", { className: "info-rows", id: "ai-config-display" }),
+            )
+          ),
+
+          // ── Engine Config panel ──
+          el("section", { className: `tab-panel ${activeTab === "engine" ? "active" : ""}` },
+            el("div", { className: "panel" },
+              el("div", { className: "panel-header" },
+                el("h2", {}, t("engine_config")),
+                el("div", { className: "panel-actions" },
+                  el("button", { className: "btn-sm", onclick: async () => { await loadEngineConfig(); renderDashboard(); toast(t("config_reloaded")); } }, t("reload")),
+                  el("button", { className: "btn-sm primary", onclick: saveEngineConfig }, t("save_changes"))
+                )
+              ),
+              el("div", { className: "config-grid", id: "engine-config-container" })
+            )
+          ),
+
+          // ── Courses panel ──
+          el("section", { className: `tab-panel ${activeTab === "courses" ? "active" : ""}` },
+            el("div", { className: "panel" },
+              el("div", { className: "panel-header" },
+                el("h2", {}, `${t("nav_courses")} (${courses.length})`),
+                el("div", { className: "panel-actions" },
+                  el("button", { className: "btn-sm", onclick: async () => { await loadCourses(); renderDashboard(); toast(t("courses_refreshed")); } }, t("refresh")),
+                  el("button", { className: "add-btn", onclick: showCreateCourseModal }, t("add_course"))
+                )
+              ),
+              el("div", { className: "table-wrap" },
+                el("table", {},
+                  el("thead", {}, el("tr", {},
+                    el("th", {}, t("course_name")), el("th", {}, t("club")), el("th", {}, t("col_tees")), el("th", {}, t("col_status")), el("th", { style: "text-align:right" }, t("col_actions"))
+                  )),
+                  el("tbody", { id: "courses-tbody" })
+                )
+              )
+            )
+          ),
+
+          // ── Database panel ──
+          el("section", { className: `tab-panel ${activeTab === "database" ? "active" : ""}` },
+            el("div", { className: "panel" },
+              el("div", { className: "panel-header" },
+                el("h2", {}, t("db_ops")),
+                el("button", { className: "btn-sm", onclick: async () => { await refreshAll(); renderDashboard(); toast(t("data_refreshed")); } }, t("refresh_all"))
+              ),
+              el("div", { style: "padding:1.25rem;display:flex;flex-wrap:wrap;gap:0.75rem" },
+                el("button", { className: "btn-sm success", onclick: seedDatabase }, `🗂 ${t("seed_demo")}`),
+                el("button", { className: "btn-sm danger", onclick: clearDatabase }, `⚠ ${t("clear_data")}`),
+                el("button", { className: "btn-sm", onclick: recompute }, `🔄 ${t("recompute_cache")}`),
+                el("button", { className: "btn-sm primary", onclick: refreshPros }, `🌟 ${t("refresh_pros")}`),
+                el("button", { className: "btn-sm", onclick: refreshForecast }, `📊 ${t("calc_forecast")}`),
+                el("span", { id: "pro-refresh-status", style: "font-size:0.78rem;color:var(--ink-2);align-self:center" }, "")
+              )
+            ),
+            el("div", { className: "panel" },
+              el("div", { className: "panel-header" }, el("h2", {}, t("forecast_accuracy"))),
+              el("div", { className: "forecast-display", id: "forecast-display" })
+            )
+          ),
+
+          // ── Dev Commands panel ──
+          el("section", { className: `tab-panel ${activeTab === "commands" ? "active" : ""}` },
+            el("div", { className: "panel" },
+              el("div", { className: "panel-header" },
+                el("h2", {}, t("dev_commands")),
+                el("button", { className: "btn-sm", onclick: async () => { await loadSessions(); renderDashboard(); toast(t("sessions_refreshed")); } }, t("refresh"))
+              ),
+              el("div", { id: "cmd-grid", className: "cmd-grid" }),
+              el("div", { className: "session-list", id: "cmd-sessions" }),
+              el("div", { className: "terminal", id: "terminal" },
+                el("span", { className: "empty" }, t("terminal_empty"))
+              )
+            )
+          ),
+
+          // ── System Health panel ──
+          el("section", { className: `tab-panel ${activeTab === "health" ? "active" : ""}` },
+            el("div", { className: "stats-grid", id: "health-stats" }),
+            el("div", { className: "panel" },
+              el("div", { className: "panel-header" },
+                el("h2", {}, t("server_details")),
+                el("button", { className: "btn-sm", onclick: () => { loadStats().then(() => { renderDashboard(); toast(t("stats_refreshed")); }); } }, t("refresh"))
+              ),
+              el("div", { className: "table-wrap" },
+                el("table", {}, el("tbody", { id: "health-tbody" }))
+              )
+            )
+          )
+        )
+      );
+      app.appendChild(main);
+
+      // Post-render population
+      renderStats();
+      renderUsers();
+      if (activeTab === "resets") renderResets();
+      if (activeTab === "ai") renderAiConfig();
+      if (activeTab === "engine") renderEngineConfig();
+      if (activeTab === "courses") renderCourses();
+      if (activeTab === "commands") { renderCommands(); renderSessions(); }
+      if (activeTab === "health") renderHealth();
+      if (activeTab === "database") renderForecastDisplay();
+      healthCheck();
+    }
+
+    // ══════ Stats grids ══════
+    function renderStats() {
+      const grid = document.getElementById("stats-grid");
+      if (!grid) return;
+      const s = stats || {};
+      grid.innerHTML = "";
+      const cards = [
+        { label: t("total_users"), value: s.users ?? "—", sub: `${s.users ?? 0} ${t("registered")}` },
+        { label: t("rounds"), value: s.rounds ?? "—", sub: `${s.confirmedRounds ?? "—"} ${t("confirmed")}` },
+        { label: t("courses"), value: s.courses ?? "—", sub: t("playable_venues") },
+        { label: t("friendships"), value: s.friendships ?? "—", sub: `${s.pendingRequests ?? "—"} ${t("pending")}` },
+      ];
+      for (const c of cards) {
+        grid.appendChild(el("div", { className: "stat-card" },
+          el("div", { className: "label" }, c.label),
+          el("div", { className: "value" }, String(c.value)),
+          el("div", { className: "sub" }, c.sub)
+        ));
+      }
+
+      // AI stats
+      const aiGrid = document.getElementById("ai-stats");
+      if (aiGrid) {
+        aiGrid.innerHTML = "";
+        const ac = aiConfig || {};
+        const aiCards = [
+          { label: t("ai_status"), value: ac.enabled ? t("ai_enabled") : t("ai_disabled"), sub: ac.enabled ? t("deepseek_active") : t("rule_fallback") },
+          { label: t("model"), value: ac.model || "—", sub: ac.endpoint || "—" },
+          { label: t("api_key"), value: ac.apiKey || t("none"), sub: t("masked") },
+          { label: t("refreshed"), value: new Date().toLocaleTimeString(), sub: t("config_from_env") },
+        ];
+        for (const c of aiCards) {
+          aiGrid.appendChild(el("div", { className: "stat-card" },
+            el("div", { className: "label" }, c.label),
+            el("div", { className: "value", style: c.label === t("ai_status") ? (ac.enabled ? "color:var(--pos)" : "color:var(--neg)") : "" }, String(c.value)),
+            el("div", { className: "sub" }, c.sub)
+          ));
+        }
+      }
+    }
+
+    function renderHealth() {
+      const grid = document.getElementById("health-stats");
+      const tbody = document.getElementById("health-tbody");
+      const s = stats || {};
+      if (grid) {
+        grid.innerHTML = "";
+        const cards = [
+          { label: t("db_size"), value: s.dbSizeMb != null ? `${s.dbSizeMb} MB` : "—", sub: t("sqlite_disk") },
+          { label: t("uptime"), value: s.uptime != null ? `${Math.floor(s.uptime / 60)}m ${Math.floor(s.uptime % 60)}s` : "—", sub: `Node ${s.nodeVersion || "—"}` },
+          { label: t("pending_requests"), value: s.pendingRequests ?? "—", sub: t("friend_requests") },
+          { label: t("confirmed_rounds"), value: s.confirmedRounds ?? "—", sub: `${t("of")} ${s.rounds ?? "—"} ${t("of_total")}` },
+        ];
+        for (const c of cards) {
+          grid.appendChild(el("div", { className: "stat-card" },
+            el("div", { className: "label" }, c.label),
+            el("div", { className: "value" }, String(c.value)),
+            el("div", { className: "sub" }, c.sub)
+          ));
+        }
+      }
+      if (tbody) {
+        tbody.innerHTML = "";
+        const rows = [
+          [t("total_users"), s.users ?? "—"], [t("total_rounds"), s.rounds ?? "—"],
+          [t("confirmed_rounds"), s.confirmedRounds ?? "—"], [t("courses"), s.courses ?? "—"],
+          [t("friendships"), s.friendships ?? "—"], [t("pending_friend_req"), s.pendingRequests ?? "—"],
+          [t("db_size"), s.dbSizeMb != null ? `${s.dbSizeMb} MB` : "—"],
+          [t("uptime"), s.uptime != null ? `${Math.floor(s.uptime / 60)}m ${Math.floor(s.uptime % 60)}s` : "—"],
+          [t("node_version"), s.nodeVersion ?? "—"],
+        ];
+        for (const [k, v] of rows) {
+          tbody.appendChild(el("tr", {}, el("td", {}, k), el("td", { style: "font-weight:600" }, String(v))));
+        }
+      }
+    }
+
+    // ══════ Login screen ══════
+    function renderLogin(error) {
+      const app = document.getElementById("app");
+      app.innerHTML = "";
+      const doLogin = async () => {
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value;
+        try {
+          await login(email, password);
+          await refreshAll();
+          renderDashboard();
+          if (!healthInterval) healthInterval = setInterval(healthCheck, 30000);
+        } catch (e) { renderLogin(e.message); }
+      };
+      const card = el("div", {
+        className: "login-card",
+        style: "max-width:380px;margin:auto;padding:2rem;background:var(--surface);border:1px solid var(--rule);border-radius:var(--radius);box-shadow:var(--shadow-md);"
+      },
+        el("div", { style: "text-align:center;margin-bottom:1.5rem;" },
+          el("div", { className: "logo-mark", style: "margin:0 auto 0.75rem;width:48px;height:48px;font-size:1.25rem;" }, "F"),
+          el("h1", { style: "font-size:1.35rem;font-weight:700;" }, t("form_admin")),
+          el("p", { style: "font-size:0.85rem;color:var(--ink-2);margin-top:0.25rem;" }, t("sign_in_admin")),
+          el("button", { className: "icon-btn", onclick: toggleLang, title: t("toggle_lang"), style: "margin-top:0.5rem;" }, lang === "en" ? "中文" : "EN")
+        ),
+        error ? el("div", { style: "background:var(--neg-bg);color:var(--neg);padding:0.6rem 0.8rem;border-radius:8px;font-size:0.85rem;margin-bottom:1rem;" }, error) : null,
+        el("form", { onsubmit: (e) => { e.preventDefault(); doLogin(); } },
+          el("div", { className: "field", style: "margin-bottom:0.75rem;" },
+            el("label", { style: "display:block;font-size:0.8rem;font-weight:500;margin-bottom:0.35rem;" }, t("email")),
+            el("input", { id: "login-email", type: "email", placeholder: "admin@example.com", style: "width:100%;padding:0.65rem 0.8rem;border:1px solid var(--rule);border-radius:8px;background:transparent;" })
+          ),
+          el("div", { className: "field", style: "margin-bottom:1rem;" },
+            el("label", { style: "display:block;font-size:0.8rem;font-weight:500;margin-bottom:0.35rem;" }, t("password")),
+            el("input", { id: "login-password", type: "password", placeholder: "••••••••", style: "width:100%;padding:0.65rem 0.8rem;border:1px solid var(--rule);border-radius:8px;background:transparent;" })
+          ),
+          el("button", { type: "submit", className: "add-btn", style: "width:100%;justify-content:center;" }, t("sign_in"))
+        )
+      );
+      app.appendChild(card);
+    }
+
+    // ══════ Init ══════
+    function renderFatalError(renderErr) {
+      const app = document.getElementById("app");
+      if (app) app.innerHTML = `<div style="padding:2rem;text-align:center;color:var(--ink-2)"><h2 style="color:var(--neg)">${t("ui_failed")}</h2><p>${String(renderErr.message || renderErr)}</p><button class="add-btn" onclick="location.reload()" style="margin-top:1rem">${t("reload_page")}</button></div>`;
+    }
+
+    async function init() {
+      if (!token) {
+        try {
+          await login(ADMIN_EMAIL, ADMIN_PASSWORD);
+        } catch (e) {
+          console.error("Auto-login failed:", e);
+          renderLogin(e.message || t("auto_login_failed"));
+          return;
+        }
+      }
+      try {
+        await refreshAll();
+        try { renderDashboard(); }
+        catch (renderErr) {
+          console.error("Render failed:", renderErr);
+          renderFatalError(renderErr);
+        }
+        healthInterval = setInterval(healthCheck, 30000);
+      } catch (e) {
+        // Token expired or invalid — retry auto-login
+        token = null;
+        localStorage.removeItem("form_admin_token");
+        try {
+          await login(ADMIN_EMAIL, ADMIN_PASSWORD);
+          await refreshAll();
+          try { renderDashboard(); }
+          catch (renderErr) {
+            console.error("Render failed:", renderErr);
+            renderFatalError(renderErr);
+          }
+          healthInterval = setInterval(healthCheck, 30000);
+        } catch (e2) {
+          console.error("Auto-login retry failed:", e2);
+          renderLogin(e2.message || t("session_expired"));
+        }
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

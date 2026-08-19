@@ -1,13 +1,14 @@
 .page {
   flex: 1;
   overflow-y: auto;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
 }
 
 .loading {
-  padding: var(--space-2xl);
-  text-align: center;
-  color: var(--ink-2);
-  font-size: var(--type-subhead);
+  padding: var(--space-lg);
 }
 
 .errorWrap {
@@ -25,8 +26,7 @@
 }
 
 .header {
-  padding: var(--space-md) var(--space-xl);
-  border-bottom: 1px solid var(--rule);
+  padding: 0;
 }
 
 .backLink {
@@ -45,12 +45,15 @@
   align-items: center;
   gap: var(--space-lg);
   padding: var(--space-xl);
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .avatar {
   width: 56px;
   height: 56px;
-  border-radius: 0;
+  border-radius: var(--radius-full);
   background: var(--brass-bg);
   border: 2px solid var(--brass);
   display: flex;
@@ -102,6 +105,7 @@
   padding: var(--space-md);
   border: 1px solid var(--rule);
   background: var(--card);
+  border-radius: var(--radius-md);
 }
 
 .statVal {

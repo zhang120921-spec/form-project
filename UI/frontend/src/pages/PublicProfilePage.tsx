@@ -3,6 +3,7 @@ import { useState } from "react";
 import { usePublicProfile } from "@/hooks/useAI";
 import { api, ApiError } from "@/lib/api";
 import { t } from "@/lib/i18n";
+import { SkeletonCard } from "@/components/Skeleton";
 import styles from "./PublicProfilePage.module.css";
 
 export default function PublicProfilePage() {
@@ -13,7 +14,7 @@ export default function PublicProfilePage() {
   const [added, setAdded] = useState(false);
 
   if (loading) {
-    return <div className={styles.loading}>{t("Loading profile…")}</div>;
+    return <div className={styles.loading}><SkeletonCard /></div>;
   }
 
   if (error) {

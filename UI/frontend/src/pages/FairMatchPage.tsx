@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { computeFairMatch, phraseMatch, type MatchFormat } from "@/lib/fair-match";
 import type { PlayerState, Course, Tee, RoundRecord } from "@/lib/types";
 import { t } from "@/lib/i18n";
+import { SkeletonList } from "@/components/Skeleton";
 import styles from "./FairMatchPage.module.css";
 
 const FORMATS: { value: MatchFormat; label: string }[] = [
@@ -389,7 +390,7 @@ function CompareToPros() {
   );
 
   if (loading) {
-    return <p className={styles.empty}>{t("Loading pro players…")}</p>;
+    return <SkeletonList count={4} />;
   }
 
   if (error) {

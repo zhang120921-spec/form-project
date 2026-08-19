@@ -19,7 +19,7 @@ body {
   height: 100%;
   overflow: hidden;
   font-family: var(--font-sans);
-  background: var(--card);
+  background: var(--ground);
   color: var(--ink);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -36,6 +36,7 @@ body {
 :focus-visible {
   outline: 2px solid var(--brass);
   outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 button,
@@ -45,6 +46,7 @@ textarea {
   font: inherit;
   color: inherit;
   font-feature-settings: "tnum";
+  border-radius: var(--radius-md);
 }
 
 button {
@@ -117,7 +119,7 @@ a {
 
 ::-webkit-scrollbar-thumb {
   background: var(--rule);
-  border-radius: 0;
+  border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -125,7 +127,6 @@ a {
 }
 
 /* ═══════════════ CONFIRM-ROUND FLASH (brass) ═══════════════ */
-/* 1.2-second hold, fade-only motion — no transforms */
 @keyframes flashConfirm {
   0%, 70% { background: var(--brass-bg); }
   100% { background: transparent; }
@@ -133,4 +134,69 @@ a {
 
 .flashConfirm {
   animation: flashConfirm 1.2s ease forwards;
+}
+
+/* ═══════════════ TACTILE MOTION — hover lift / press ═══════════════ */
+/* Applied via .liftable on cards, buttons, tappable rows. Respects
+   reduced-motion by dropping to the plain color transition below. */
+
+.liftable {
+  transition: transform var(--lift-fast), box-shadow var(--lift-fast), background var(--fade-fast), border-color var(--fade-fast);
+}
+
+.liftable:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.liftable:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ═══════════════ ENTRANCE — staggered rise+fade for lists ═══════════════ */
+
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.riseIn {
+  animation: riseIn 260ms var(--ease-out) both;
+}
+
+/* ═══════════════ SKELETON — golf-ball dimple shimmer ═══════════════ */
+
+@keyframes skeletonSweep {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  position: relative;
+  background-color: var(--hover);
+  background-image: radial-gradient(circle at 25% 30%, var(--rule-light) 0.5px, transparent 0.5px),
+    radial-gradient(circle at 60% 70%, var(--rule-light) 0.5px, transparent 0.5px),
+    linear-gradient(100deg, transparent 30%, var(--rule-light) 45%, transparent 60%);
+  background-size: 10px 10px, 10px 10px, 200% 100%;
+  background-repeat: repeat, repeat, no-repeat;
+  background-position: 0 0, 5px 5px, -200% 0;
+  border-radius: var(--radius-sm);
+  animation: skeletonSweep 1.6s ease-in-out infinite;
+}
+
+/* ═══════════════ REDUCED MOTION ═══════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .liftable:hover,
+  .liftable:active {
+    transform: none;
+  }
 }

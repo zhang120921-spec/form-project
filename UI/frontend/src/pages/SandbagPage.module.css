@@ -84,7 +84,7 @@
   color: var(--ink);
   background: var(--card);
   border: 1px solid var(--rule);
-  border-radius: 0;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: background var(--fade-fast), border-color var(--fade-fast);
 }

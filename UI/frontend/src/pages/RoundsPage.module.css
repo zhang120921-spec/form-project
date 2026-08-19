@@ -1,13 +1,14 @@
 .page {
   flex: 1;
   overflow-y: auto;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
 }
 
 .loading {
-  padding: var(--space-2xl);
-  text-align: center;
-  color: var(--ink-2);
-  font-size: var(--type-subhead);
+  padding: var(--space-lg);
 }
 
 .empty {
@@ -58,7 +59,9 @@
   align-items: baseline;
   justify-content: space-between;
   padding: var(--space-md) var(--space-lg);
-  border-bottom: 1px solid var(--rule);
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }
 
 .title {
@@ -73,5 +76,8 @@
 }
 
 .timeline {
-  padding: var(--space-sm) 0;
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
 }

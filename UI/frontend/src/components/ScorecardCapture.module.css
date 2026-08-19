@@ -63,7 +63,7 @@
   color: var(--card);
   background: var(--ink);
   border: none;
-  border-radius: 0;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: background var(--fade-fast);
 }
@@ -86,7 +86,7 @@
   padding: var(--space-sm) var(--space-md);
   background: var(--card);
   border: 1px solid var(--rule);
-  border-radius: 0;
+  border-radius: var(--radius-md);
   font-size: var(--type-body);
   color: var(--ink);
   font-family: var(--font-sans);
@@ -106,7 +106,7 @@
   color: var(--card);
   background: var(--accent);
   border: none;
-  border-radius: 0;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: background var(--fade-fast);
 }
@@ -218,7 +218,7 @@
   padding: var(--space-xs) var(--space-sm);
   background: var(--card);
   border: 1px solid var(--rule);
-  border-radius: 0;
+  border-radius: var(--radius-md);
   font-size: var(--type-body);
   color: var(--ink);
   font-family: var(--font-sans);
@@ -235,7 +235,7 @@
   padding: var(--space-xs) var(--space-sm);
   background: var(--card);
   border: 1px solid var(--rule);
-  border-radius: 0;
+  border-radius: var(--radius-md);
   font-size: var(--type-body);
   color: var(--ink);
   font-family: var(--font-mono);

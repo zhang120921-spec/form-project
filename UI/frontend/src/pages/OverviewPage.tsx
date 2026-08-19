@@ -10,6 +10,9 @@ import RivalryCard from "@/components/RivalryCard";
 import FormStrip from "@/components/FormStrip";
 import ShareModal from "@/components/ShareModal";
 import InviteModal from "@/components/InviteModal";
+import { SkeletonCard, SkeletonList } from "@/components/Skeleton";
+import { useCountUp } from "@/hooks/useCountUp";
+import TierBadge from "@/components/TierBadge";
 import { buildRivalries } from "@/lib/rivalries";
 import { useFriends } from "@/hooks/useData";
 import { useState, useMemo, useRef, useCallback, useEffect } from "react";
@@ -290,8 +293,16 @@ export default function OverviewPage() {
     return map;
   }, [data]);
 
+  const rawRating = user && data ? data.players.find((p) => p.id === user.id)?.rating ?? 0 : 0;
+  const animatedRating = useCountUp(rawRating);
+
   if (loading) {
-    return <div className={styles.loading}>{t("Loading ratings...")}</div>;
+    return (
+      <div className={styles.loading}>
+        <SkeletonCard />
+        <SkeletonList count={2} />
+      </div>
+    );
   }
 
   if (!data || data.players.length === 0) {
@@ -370,10 +381,13 @@ export default function OverviewPage() {
           <div className={styles.heroSection}>
           <div className={styles.heroTop}>
             <div className={styles.heroLeft}>
-              <div className={styles.heroLabel}>{t("Your Rating")}</div>
+              <div className={styles.heroLabel}>
+                {t("Your Rating")}
+                {myRank && <TierBadge rankIndex={myRank - 1} total={sorted.length} />}
+              </div>
               <div className={styles.heroRatingRow}>
                 <div className={styles.heroRating}>
-                  {Math.round(myPlayer.rating)}
+                  {Math.round(animatedRating)}
                 </div>
               </div>
               <div className={`${styles.heroDelta} ${myDelta > 0 ? styles.pos : myDelta < 0 ? styles.neg : ""}`}>

@@ -3,15 +3,19 @@ import { readFileSync, readdirSync, statSync } from "fs";
 import { join, extname, basename } from "path";
 
 /* ────────────────────────────────────────────────────────────
-   Design System Compliance — three assertions from the spec:
+   Design System Compliance — v4 (sleek/energetic redesign):
 
    1. No body text falls below 18px outside the "Show the maths"
       layer.
-   2. No element carries a corner radius.
+   2. Corner radius only from the sanctioned scale (--radius-*),
+      not arbitrary one-off values.
    3. Every delta renders a + or − sign.
+   4. Elevation only from the sanctioned scale (--shadow-*).
+   5. Motion is real (transform allowed for tactile feedback) but
+      prefers-reduced-motion is always respected globally.
 
    These tests scan CSS files and component source code to verify
-   compliance across all new screens.
+   compliance across all screens.
    ──────────────────────────────────────────────────────────── */
 
 const cssDir = join(process.cwd(), "src");
@@ -38,11 +42,12 @@ function stripComments(src: string): string {
 const cssFiles = collectCssFiles(cssDir);
 
 // ════════════════════════════════════════════════════════════
-// 1. Border radius — zero everywhere
+// 1. Border radius — only the sanctioned scale
 // ════════════════════════════════════════════════════════════
 
-describe("Design system — no corner radius", () => {
-  it("no CSS file uses border-radius other than 0", () => {
+describe("Design system — radius from the sanctioned scale only", () => {
+  it("no CSS file hardcodes a border-radius outside --radius-* / 0 / 50%", () => {
+    const allowed = new Set(["0", "0px", "50%"]);
     const violations: { file: string; line: string }[] = [];
 
     for (const file of cssFiles) {
@@ -51,24 +56,22 @@ describe("Design system — no corner radius", () => {
 
       for (const line of lines) {
         const trimmed = line.trim();
-        // Match border-radius: <value>
         const match = trimmed.match(/border-radius\s*:\s*([^;]+)/);
         if (match) {
           const val = match[1].trim();
-          // Allow 0, 0px
-          if (val !== "0" && val !== "0px") {
-            violations.push({
-              file: file.replace(cssDir, ""),
-              line: trimmed,
-            });
-          }
+          if (allowed.has(val)) continue;
+          if (val.startsWith("var(--radius-")) continue;
+          violations.push({
+            file: file.replace(cssDir, ""),
+            line: trimmed,
+          });
         }
       }
     }
 
     if (violations.length > 0) {
       expect.fail(
-        `Border-radius violations found — design system requires zero corner radius:\n` +
+        `Border-radius violations found — use var(--radius-sm/md/lg/full), not one-off values:\n` +
         violations.map((v) => `  ${v.file}: ${v.line}`).join("\n")
       );
     }
@@ -198,11 +201,11 @@ describe("Design system — every delta renders a sign", () => {
 });
 
 // ════════════════════════════════════════════════════════════
-// 4. No box-shadow — design system forbids it
+// 4. Elevation — only the sanctioned --shadow-* scale
 // ════════════════════════════════════════════════════════════
 
-describe("Design system — no box-shadow", () => {
-  it("no CSS file uses box-shadow", () => {
+describe("Design system — shadows from the sanctioned scale only", () => {
+  it("no CSS file hardcodes a box-shadow outside var(--shadow-*) / none", () => {
     const violations: { file: string; line: string }[] = [];
 
     for (const file of cssFiles) {
@@ -211,7 +214,11 @@ describe("Design system — no box-shadow", () => {
 
       for (const line of lines) {
         const trimmed = line.trim();
-        if (trimmed.match(/box-shadow\s*:/)) {
+        const match = trimmed.match(/box-shadow\s*:\s*([^;]+)/);
+        if (match) {
+          const val = match[1].trim();
+          if (val === "none") continue;
+          if (val.startsWith("var(--shadow-")) continue;
           violations.push({
             file: file.replace(cssDir, ""),
             line: trimmed,
@@ -222,7 +229,7 @@ describe("Design system — no box-shadow", () => {
 
     if (violations.length > 0) {
       expect.fail(
-        `Box-shadow violations found — design system requires no shadows:\n` +
+        `Box-shadow violations found — use var(--shadow-sm/md/lg/focus), not one-off values:\n` +
         violations.map((v) => `  ${v.file}: ${v.line}`).join("\n")
       );
     }
@@ -438,44 +445,20 @@ describe("Design system — no sub-16px spacing at card/section level", () => {
 });
 
 // ════════════════════════════════════════════════════════════
-// 8. Fades-only motion — no transforms
+// 8. Motion — transform is allowed for tactile feedback, but
+//    prefers-reduced-motion must always be respected globally.
 // ════════════════════════════════════════════════════════════
 
-describe("Design system — fades-only motion", () => {
-  it("no CSS file uses transform in transitions or animations (drawer/toggle excepted)", () => {
-    // Mechanical UI components (drawer slide, toggle knob) use transform
-    // for physical interaction. "Fades-only" applies to content motion
-    // (cards appearing, page transitions), not mechanical controls.
-    const allowedContexts = ["drawer", "toggle", "Drawer", "Toggle", "recap", "Recap"];
-    const violations: { file: string; line: string }[] = [];
+describe("Design system — motion respects prefers-reduced-motion", () => {
+  it("global.css disables animation/transition duration under prefers-reduced-motion: reduce", () => {
+    const src = readFileSync(join(cssDir, "styles", "global.css"), "utf-8");
+    const cleaned = stripComments(src);
+    expect(cleaned).toMatch(/@media\s*\(prefers-reduced-motion:\s*reduce\)/);
 
-    for (const file of cssFiles) {
-      const src = stripComments(readFileSync(file, "utf-8"));
-      const lines = src.split("\n");
-
-      for (let i = 0; i < lines.length; i++) {
-        const trimmed = lines[i].trim();
-        // Flag transform property (not text-transform, not transform-origin)
-        if (trimmed.match(/^transform\s*:/) && !trimmed.includes("origin")) {
-          // Check if any nearby selector/context is allowed (mechanical UI or explicit animation components)
-          const context = lines.slice(Math.max(0, i - 15), i).join("\n");
-          const isAllowed = allowedContexts.some((c) => context.includes(c));
-          if (!isAllowed) {
-            violations.push({
-              file: file.replace(cssDir, ""),
-              line: trimmed,
-            });
-          }
-        }
-      }
-    }
-
-    if (violations.length > 0) {
-      expect.fail(
-        `Transform declarations found — design system allows fades only:\n` +
-        violations.map((v) => `  ${v.file}: ${v.line}`).join("\n")
-      );
-    }
+    const mediaBlock = cleaned.match(/@media\s*\(prefers-reduced-motion:\s*reduce\)\s*\{([\s\S]*)\}\s*$/);
+    expect(mediaBlock, "reduced-motion media block should be the last rule in global.css").toBeTruthy();
+    expect(mediaBlock![1]).toMatch(/animation-duration/);
+    expect(mediaBlock![1]).toMatch(/transition-duration/);
   });
 });
 

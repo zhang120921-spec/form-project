@@ -7,6 +7,7 @@ import { useState, useEffect, useMemo } from "react";
 import { buildConnectivity, getConnectivity } from "@/lib/connectivity";
 import { usePendingCounts } from "@/hooks/usePendingCounts";
 import { t } from "@/lib/i18n";
+import { SkeletonList } from "@/components/Skeleton";
 import styles from "./FriendsPage.module.css";
 
 export default function FriendsPage() {
@@ -158,7 +159,7 @@ export default function FriendsPage() {
 
       {/* Friend list */}
       {loading ? (
-        <div className={styles.loading}>{t("Loading...")}</div>
+        <div className={styles.loading}><SkeletonList count={4} /></div>
       ) : friends.length === 0 ? (
         <div className={styles.emptyState}>
           <span className={styles.emptyIcon}>♡</span>

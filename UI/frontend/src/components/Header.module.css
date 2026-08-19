@@ -45,7 +45,7 @@
   font-size: var(--type-body);
   font-weight: 600;
   color: var(--ink);
-  border-radius: 0;
+  border-radius: var(--radius-md);
   transition: background var(--fade-fast);
 }
 

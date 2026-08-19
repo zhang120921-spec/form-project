@@ -2,13 +2,14 @@ import { TIERS, tierFor } from "@engine/index.ts";
 import styles from "./TierBadge.module.css";
 import { t } from "@/lib/i18n";
 
+/* Colors echo real tee-marker colors — ascending difficulty, just like the tiers. */
 const TIER_COLORS: Record<string, string> = {
-  "First Light": "#D4A574",
-  "Long Shadow": "#E8C547",
-  "Golden Hour": "#C2853B",
-  "Afternoon": "#D4843B",
-  "Overcast": "#8B4513",
-  "Twilight": "#4A3728",
+  "First Light": "var(--tier-first)",
+  "Long Shadow": "var(--tier-shadow)",
+  "Golden Hour": "var(--tier-golden)",
+  "Afternoon": "var(--tier-afternoon)",
+  "Overcast": "var(--tier-overcast)",
+  "Twilight": "var(--tier-twilight)",
 };
 
 interface Props {

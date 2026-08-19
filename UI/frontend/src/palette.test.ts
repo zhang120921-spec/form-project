@@ -109,6 +109,12 @@ interface Finding {
   l: number;
 }
 
+// Background-fill roles are exempt: a light green wash behind content
+// (e.g. --pos-bg, --hover) isn't read as text, so WCAG text-contrast
+// doesn't apply to it — only to foreground/text-bearing tokens.
+const BG_ROLE_RE = /-bg$/;
+const BG_ROLE_NAMES = new Set(["hover", "sel", "ground", "card", "math-bg"]);
+
 const brightGreens: Finding[] = [];
 
 for (const file of cssFiles) {
@@ -118,22 +124,40 @@ for (const file of cssFiles) {
     ? stripDarkBlock(stripComments(raw))
     : stripComments(raw);
 
-  // match #RGB (not followed by another hex digit) or #RRGGBB
+  const isTokens = basename(file) === "tokens.css";
+  // In tokens.css, match "--name: #hex" so background-role tokens can be
+  // excluded by name. Elsewhere, match any hex literal directly.
+  const declRe = /--([a-z0-9-]+)\s*:\s*(#(?:[0-9a-fA-F]{3}(?![0-9a-fA-F])|[0-9a-fA-F]{6}))\b/g;
   const hexRe = /#(?:[0-9a-fA-F]{3}(?![0-9a-fA-F])|[0-9a-fA-F]{6})\b/g;
-  const matches = cleaned.match(hexRe) ?? [];
+
   const seen = new Set<string>();
 
-  for (const hex of matches) {
-    const key = hex.toUpperCase();
-    if (seen.has(key)) continue;
-    seen.add(key);
-
-    const rgb = parseHex(hex);
-    if (!rgb) continue;
-    const [h, s, l] = rgbToHsl(...rgb);
-
-    if (isGreenHue(h, s) && l > MAX_GREEN_LIGHTNESS) {
-      brightGreens.push({ hex: key, file: file.replace(cssDir, ""), h, s, l });
+  if (isTokens) {
+    for (const m of cleaned.matchAll(declRe)) {
+      const [, name, hex] = m;
+      if (BG_ROLE_RE.test(name) || BG_ROLE_NAMES.has(name)) continue;
+      const key = hex.toUpperCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const rgb = parseHex(hex);
+      if (!rgb) continue;
+      const [h, s, l] = rgbToHsl(...rgb);
+      if (isGreenHue(h, s) && l > MAX_GREEN_LIGHTNESS) {
+        brightGreens.push({ hex: key, file: file.replace(cssDir, ""), h, s, l });
+      }
+    }
+  } else {
+    const matches = cleaned.match(hexRe) ?? [];
+    for (const hex of matches) {
+      const key = hex.toUpperCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const rgb = parseHex(hex);
+      if (!rgb) continue;
+      const [h, s, l] = rgbToHsl(...rgb);
+      if (isGreenHue(h, s) && l > MAX_GREEN_LIGHTNESS) {
+        brightGreens.push({ hex: key, file: file.replace(cssDir, ""), h, s, l });
+      }
     }
   }
 }

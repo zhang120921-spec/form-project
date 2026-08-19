@@ -5,6 +5,7 @@ import { t } from "@/lib/i18n";
 import { usePublicProfiles } from "@/hooks/useAI";
 import { useAuth } from "@/hooks/useAuth";
 import CompactPlayerRow from "@/components/CompactPlayerRow";
+import { SkeletonList } from "@/components/Skeleton";
 import styles from "./RankingsPage.module.css";
 
 type FormResult = "W" | "L" | "T";
@@ -73,7 +74,7 @@ function FriendsTab() {
   }, [data]);
 
   if (loading) {
-    return <div className={styles.loading}>{t("Computing ratings…")}</div>;
+    return <div className={styles.loading}><SkeletonList count={6} /></div>;
   }
 
   if (!data || data.players.length === 0) {
@@ -142,7 +143,7 @@ function GlobalTab() {
   }, [profiles, search]);
 
   if (loading) {
-    return <div className={styles.loading}>{t("Loading leaderboard…")}</div>;
+    return <div className={styles.loading}><SkeletonList count={8} /></div>;
   }
 
   if (error) {
@@ -260,7 +261,7 @@ function ProsTab() {
   }, [pros, myPlayer, user, myRating]);
 
   if (loading) {
-    return <div className={styles.loading}>{t("Loading pro players…")}</div>;
+    return <div className={styles.loading}><SkeletonList count={6} /></div>;
   }
 
   if (error) {

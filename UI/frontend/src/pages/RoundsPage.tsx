@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import RoundTimeline from "@/components/RoundTimeline";
 import MathsOverlay from "@/components/MathsOverlay";
 import { useState } from "react";
+import { SkeletonList } from "@/components/Skeleton";
 import styles from "./RoundsPage.module.css";
 
 export default function RoundsPage() {
@@ -11,7 +12,11 @@ export default function RoundsPage() {
   const [mathsRound, setMathsRound] = useState<string | null>(null);
 
   if (loading) {
-    return <div className={styles.loading}>{t("Loading rounds...")}</div>;
+    return (
+      <div className={styles.loading}>
+        <SkeletonList count={4} withAvatar={false} />
+      </div>
+    );
   }
 
   if (!data || data.rounds.length === 0) {

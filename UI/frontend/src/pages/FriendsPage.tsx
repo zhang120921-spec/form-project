@@ -54,7 +54,7 @@ export default function FriendsPage() {
       const results = await api.get<{ id: string; display_name: string; home_club?: string }[]>(
         `/users/search?q=${encodeURIComponent(searchQuery)}`
       );
-      const friendIds = new Set(friends.map((f) => f.id ?? f.userId));
+      const friendIds = new Set(friends.map((f) => f.userId));
       setSearchResults(results.filter((u) => !friendIds.has(u.id)));
     } catch {
       setError(t("Search failed"));

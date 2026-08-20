@@ -1,6 +1,6 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useReplay, useAttestations } from "@/hooks/useData";
-import type { Attestation } from "@/lib/types";
+import type { Attestation } from "@store/interface.js";
 import { useSeasonRecap } from "@/hooks/useAI";
 import { api } from "@/lib/api";
 import { Link } from "react-router-dom";
@@ -11,6 +11,7 @@ import ShareModal from "@/components/ShareModal";
 import AttestationDetailModal from "@/components/AttestationDetailModal";
 import SeasonRecapSections from "@/components/SeasonRecapSections";
 import AiBadge from "@/components/AiBadge";
+import { SkeletonCard } from "@/components/Skeleton";
 import { buildRivalries } from "@/lib/rivalries";
 import { buildConnectivity, getConnectivity } from "@/lib/connectivity";
 import { t } from "@/lib/i18n";
@@ -212,7 +213,7 @@ export default function ProfilePage() {
             <section className={styles.section}>
               <h2 className={styles.sectionTitle}>{t("Season Recap")}</h2>
               {recapLoading ? (
-                <p className={styles.recapLoading}>{t("Loading season recap…")}</p>
+                <SkeletonCard withAvatar={false} />
               ) : recapError ? (
                 <div className={styles.recapError}>
                   <p>{t("Couldn’t load season recap: {error}", { error: recapError })}</p>

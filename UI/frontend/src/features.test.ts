@@ -3,8 +3,8 @@ import {
   parseVoiceInput,
   validateDraft,
   type ScorecardDraft,
-  type FriendInfo,
 } from "@/lib/scorecard-capture";
+import type { FriendInfo } from "@/lib/types";
 import {
   generateTemplateNarration,
   type NarrationInput,
@@ -22,8 +22,10 @@ import {
   DEFAULTS,
   type Player,
   type Round,
+  type ReplayResult,
+  type ReplayedRound,
+  type PlayerState,
 } from "@engine/index.ts";
-import type { ReplayResult, ReplayedRound, PlayerState } from "@/lib/types";
 
 // ════════════════════════════════════════════════════════════
 // Scorecard Capture tests

@@ -1,4 +1,5 @@
-import type { ReplayedRound, PlayerState } from "@/lib/types";
+import type { PlayerState } from "@engine/index.ts";
+import type { ReplayedRoundWithFlags as ReplayedRound } from "@/hooks/useData";
 import { useState } from "react";
 import styles from "./RoundTimeline.module.css";
 import { t } from "@/lib/i18n";

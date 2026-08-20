@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/components/MathsOverlay.module.css"
+        ],
+        "createdAt": "2026-08-20T02:12:21.084Z",
+        "reason": "brass bg+left-border on .narratorText marks AI-generated narration text, a sanctioned callout convention used consistently app-wide (RoundCard/OverviewPage AI callouts), not a decorative card border"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/pages/FairMatchPage.module.css"
+        ],
+        "createdAt": "2026-08-20T02:12:21.118Z",
+        "reason": "brass bg+left-border on .phraseBox marks AI-generated match phrase text, same sanctioned AI-callout convention as MathsOverlay narrator text"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/hooks/useToast.module.css"
+        ],
+        "createdAt": "2026-08-20T02:12:21.152Z",
+        "reason": "success/error/info left-borders are semantic status-color indicators on toast variants (pos/neg/brass), matching the same pattern already used on .error banners app-wide, not decorative"
+      }
+    ]
+  }
+}

@@ -102,6 +102,8 @@ export function validateRound(raw: unknown): ValidationResult {
   const course = typeof body.course === "string" ? body.course.trim() : "";
   if (!course) {
     errors.push({ field: "course", message: "Course is required" });
+  } else if (course.length > 200) {
+    errors.push({ field: "course", message: "Course name is too long" });
   }
 
   // ── holes ──

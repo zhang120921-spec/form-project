@@ -5,7 +5,7 @@
 // This module produces human-readable assessments without any
 // graph-theoretic vocabulary.
 
-import type { ReplayResult } from "@/lib/types";
+import type { ReplayResult } from "@engine/index.ts";
 import { t } from "./i18n";
 
 export interface PlayerConnectivity {

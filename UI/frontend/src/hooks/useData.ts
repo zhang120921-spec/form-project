@@ -3,17 +3,35 @@ import { useStore } from "@/hooks/useStore";
 import { useAuth } from "@/hooks/useAuth";
 import { api } from "@/lib/api";
 import type {
-  ReplayResult,
   RoundRecord,
   Course,
   Attestation,
   FriendInfo,
   PlayInvitation,
 } from "@store/interface.js";
+import type { ReplayResult, PlayerState, ReplayedRound } from "@engine/index.ts";
+
+// The server augments engine types with a few product-layer fields before
+// sending /api/replay — isPro (joined from the users table) on each player,
+// and flagged/flagReason (joined from ai_analysis, anomaly detection) on
+// each round. Neither is a core engine concept, so they're typed here at
+// the API-consumption boundary rather than on the engine's own types.
+export interface PlayerStateWithPro extends PlayerState {
+  isPro?: boolean;
+}
+export interface ReplayedRoundWithFlags extends ReplayedRound {
+  flagged?: boolean;
+  flagReason?: string;
+  narration?: string;
+}
+export interface ReplayResultWithPro extends Omit<ReplayResult, "players" | "rounds"> {
+  players: PlayerStateWithPro[];
+  rounds: ReplayedRoundWithFlags[];
+}
 
 export function useReplay() {
   const store = useStore();
-  const [data, setData] = useState<ReplayResult | null>(null);
+  const [data, setData] = useState<ReplayResultWithPro | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetch = useCallback(async () => {

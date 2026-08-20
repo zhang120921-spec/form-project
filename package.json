@@ -1,0 +1,9 @@
+{
+  "name": "form-golf-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Deploy anchor for Railway — the real app lives in server/, UI/, engine/, store/. See railway.json for build/start commands.",
+  "engines": {
+    "node": "22.x"
+  }
+}

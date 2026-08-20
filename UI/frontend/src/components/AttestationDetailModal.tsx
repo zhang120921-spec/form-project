@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { api } from "@/lib/api";
-import type { Attestation, ReplayResult } from "@/lib/types";
+import type { Attestation } from "@store/interface.js";
+import type { ReplayResult } from "@engine/index.ts";
 import { useEscapeKey } from "@/hooks/useEscapeKey";
 import styles from "./AttestationDetailModal.module.css";
 import { t } from "@/lib/i18n";
@@ -91,7 +92,7 @@ export default function AttestationDetailModal({
     async function load() {
       try {
         setLoading(true);
-        const data = await api.get<RoundDetail>(`/rounds/${attestation.roundId ?? attestation.round_id}`);
+        const data = await api.get<RoundDetail>(`/rounds/${attestation.roundId}`);
         if (cancelled) return;
         setRound(data);
         const initial: Record<string, number> = {};
@@ -108,7 +109,7 @@ export default function AttestationDetailModal({
     }
     load();
     return () => { cancelled = true; };
-  }, [attestation.roundId, attestation.round_id]);
+  }, [attestation.roundId]);
 
   const replayRound = useMemo(() => {
     if (!round || !replayData) return null;
@@ -227,7 +228,7 @@ export default function AttestationDetailModal({
                   <tbody>
                     {round.participants.map((p) => {
                       const snap = snapshotByPlayer.get(p.player_id);
-                      const isYou = p.player_id === attestation.toId || p.player_id === attestation.to_id;
+                      const isYou = p.player_id === attestation.toId;
                       return (
                         <tr key={p.player_id}>
                           <td className={styles.playerCell}>

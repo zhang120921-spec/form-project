@@ -8,8 +8,7 @@
 // rating gap via the same ratingPerStroke formula as the fair-match
 // calculator — never as a probability, always in the reader's language.
 
-import { ratingPerStroke, DEFAULTS, type EngineConfig, type PlayerState, type ReplayedRound } from "@engine/index.ts";
-import type { ReplayResult } from "@/lib/types";
+import { ratingPerStroke, DEFAULTS, type EngineConfig, type PlayerState, type ReplayedRound, type ReplayResult } from "@engine/index.ts";
 import { t } from "./i18n";
 
 export interface Meeting {

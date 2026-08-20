@@ -29,6 +29,15 @@
         ],
         "createdAt": "2026-08-18T14:07:38.714Z",
         "reason": "narration/narratorText/flagReason text callouts use border-left matching bg+text color (brass=AI-attributed text, neg=error-state text) — same sanctioned pattern as AuthPage/FriendsPage error banners, not decorative whole-card accents"
+      },
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "UI/frontend/src/pages/AuthPage.module.css"
+        ],
+        "createdAt": "2026-08-20T02:33:48.946Z",
+        "reason": "error/resetNotice/resetDone left-borders are semantic status colors (neg/brass/pos) on notice banners, the same sanctioned pattern already suppressed in useToast.module.css and used app-wide on .error banners, not decorative"
       }
     ]
   }

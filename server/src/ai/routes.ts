@@ -475,7 +475,7 @@ Rules:
 - Extract player names and scores if present. A score is usually a number 65-120 near a name.
 - "打了82杆" means a score of 82. "和小李一起" means 小李 is a player.
 - "3只小鸟" means the player had 3 birdies (not a score).
-- Common Shanghai courses: Sheshan International (佘山国际), Shanghai Links (林克司), Yintao (银涛), Qizhong (旗忠), Tomson Pudong (汤臣), Lake Malaren (美兰湖), Sun Island (太阳岛), Yingyi Anting (颖奕安亭), Binhai (滨海), Palm Beach (棕榈滩), Tianma (天马), Huakai (华凯), Xintianhong (新天鸿), Dongzhuang Coast (东庄海岸), Lanhai (览海), Shanghai International (上海国际).
+- Common Shanghai courses: Sheshan International (佘山国际), Shanghai Links (林克司), Yintao (银涛), Qizhong (旗忠), Tomson Pudong (汤臣), Lake Malaren (美兰湖), Sun Island (太阳岛), Yingyi Anting (颖奕安亭), Palm Beach (棕榈滩), Tianma (天马), Huakai (华凯), Xintianhong (新天鸿), Dongzhuang Coast (东庄海岸), PGA Anying (PGA 安瀛), Shanghai International (上海国际).
 - Map partial course names: "佘山"/"sheshan" → "Sheshan International (佘山国际)", "汤臣"/"tomson" → "Tomson Pudong (汤臣)", "美兰湖"/"malaren" → "Lake Malaren Masters (美兰湖·名人赛)", "林克司"/"links" → "Shanghai Links (林克司)".
 - Dates: look for YYYY-MM-DD, YYYY年MM月DD日, DD/MM/YYYY, or relative like "昨天", "上周六".
 - If "稳定式" or "积分" or "stableford" or "points" is mentioned, set format to "stableford".
@@ -704,8 +704,6 @@ function regexParseRound(text: string) {
     anting: "Yingyi Anting (颖奕安亭)",
     颖奕: "Yingyi Anting (颖奕安亭)",
     安亭: "Yingyi Anting (颖奕安亭)",
-    binhai: "Binhai Fairy Lake (滨海·仙湖)",
-    滨海: "Binhai Fairy Lake (滨海·仙湖)",
     "palm beach": "Palm Beach (棕榈滩)",
     棕榈滩: "Palm Beach (棕榈滩)",
     tianma: "Tianma (天马)",
@@ -716,8 +714,10 @@ function regexParseRound(text: string) {
     新天鸿: "Xintianhong (新天鸿名人)",
     dongzhuang: "Dongzhuang Coast (东庄海岸)",
     东庄: "Dongzhuang Coast (东庄海岸)",
-    lanhai: "Lanhai (览海)",
-    览海: "Lanhai (览海)",
+    lanhai: "PGA Anying (PGA 安瀛)",
+    览海: "PGA Anying (PGA 安瀛)",
+    anying: "PGA Anying (PGA 安瀛)",
+    安瀛: "PGA Anying (PGA 安瀛)",
     "shanghai international": "Shanghai International (上海国际)",
     上海国际: "Shanghai International (上海国际)",
   };

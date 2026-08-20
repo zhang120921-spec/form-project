@@ -7,17 +7,27 @@ import { t, useLang, toggleLang } from "@/lib/i18n";
 import styles from "./AuthPage.module.css";
 
 export default function AuthPage() {
-  const { user, loading, error, login, register, clearError } = useAuth();
+  const { user, loading, error, login, register, clearError, requestPasswordReset, resetPassword } = useAuth();
   const lang = useLang();
-  const [mode, setMode] = useState<"login" | "register">("login");
+  const [mode, setMode] = useState<"login" | "register" | "reset">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [homeClub, setHomeClub] = useState("");
   const [sgaHandicap, setSgaHandicap] = useState("");
+  const [showHandicap, setShowHandicap] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [localError, setLocalError] = useState("");
   const [consent, setConsent] = useState(false);
+
+  // Forgot-password flow: request a code, then redeem it for a new password.
+  // No email system in this trial — the coach looks the code up in the admin
+  // panel and hands it to the student out-of-band.
+  const [resetRequested, setResetRequested] = useState(false);
+  const [showRedeem, setShowRedeem] = useState(false);
+  const [resetToken, setResetToken] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [resetDone, setResetDone] = useState(false);
 
   const ratingPreview = useMemo(() => {
     const trimmed = sgaHandicap.trim();
@@ -39,6 +49,36 @@ export default function AuthPage() {
 
   if (user) return <Navigate to="/" replace />;
 
+  const switchMode = (next: "login" | "register" | "reset") => {
+    setMode(next);
+    clearError();
+    setLocalError("");
+    setResetRequested(false);
+    setShowRedeem(false);
+    setResetToken("");
+    setNewPassword("");
+    setResetDone(false);
+  };
+
+  const handleRequestReset = async () => {
+    if (!email.trim()) {
+      setLocalError(t("Enter your email first"));
+      return;
+    }
+    setLocalError("");
+    clearError();
+    setSubmitting(true);
+    try {
+      await requestPasswordReset(email.trim());
+      setResetRequested(true);
+      setShowRedeem(true);
+    } catch (e) {
+      setLocalError(e instanceof Error ? e.message : t("Something went wrong"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLocalError("");
@@ -46,7 +86,18 @@ export default function AuthPage() {
     setSubmitting(true);
 
     try {
-      if (mode === "login") {
+      if (mode === "reset") {
+        if (!resetToken.trim() || newPassword.length < 6) {
+          setLocalError(t("Enter your reset code and a new password (min 6 characters)"));
+          setSubmitting(false);
+          return;
+        }
+        await resetPassword(resetToken.trim(), newPassword);
+        setResetDone(true);
+        setPassword("");
+        setResetToken("");
+        setNewPassword("");
+      } else if (mode === "login") {
         await login(email, password);
       } else {
         if (displayName.trim().length < 1) {
@@ -106,14 +157,14 @@ export default function AuthPage() {
             <button
               type="button"
               className={`${styles.tab} ${mode === "login" ? styles.tabActive : ""}`}
-              onClick={() => { setMode("login"); clearError(); setLocalError(""); }}
+              onClick={() => switchMode("login")}
             >
               {t("Sign In")}
             </button>
             <button
               type="button"
               className={`${styles.tab} ${mode === "register" ? styles.tabActive : ""}`}
-              onClick={() => { setMode("register"); clearError(); setLocalError(""); }}
+              onClick={() => switchMode("register")}
             >
               {t("Register")}
             </button>
@@ -121,6 +172,17 @@ export default function AuthPage() {
 
           {displayError && <div className={styles.error}>{displayError}</div>}
 
+          {mode === "reset" && resetDone ? (
+            <>
+              <div className={styles.resetDone}>
+                {t("Password reset. Sign in with your new password.")}
+              </div>
+              <button type="button" className={styles.submit} onClick={() => switchMode("login")}>
+                {t("Back to Sign In")}
+              </button>
+            </>
+          ) : (
+            <>
           <fieldset className={styles.field}>
             <label className={styles.label}>{t("Email")}</label>
             <input
@@ -131,6 +193,7 @@ export default function AuthPage() {
               placeholder={t("you@example.com")}
               required
               autoComplete="email"
+              disabled={mode === "reset" && showRedeem}
             />
           </fieldset>
 
@@ -159,25 +222,45 @@ export default function AuthPage() {
                 />
               </fieldset>
 
-              <fieldset className={styles.field}>
-                <label className={styles.label}>{t("Handicap Index")}</label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  className={styles.input}
-                  value={sgaHandicap}
-                  onChange={(e) => setSgaHandicap(e.target.value)}
-                  placeholder={t("e.g. 12.4 or +2")}
-                />
-                <small className={styles.hint}>
-                  {t("Seeds your starting rating. A scratch golfer starts ~2438, an 18-handicap at 1500. Use + for plus-handicaps (e.g. +2).")}
-                </small>
-                <div className={styles.ratingPreview}>
-                  {ratingPreview != null
-                    ? t("You'll start around {rating}", { rating: ratingPreview })
-                    : t("Enter your index and we'll show your starting rating.")}
-                </div>
-              </fieldset>
+              {showHandicap ? (
+                <fieldset className={styles.field}>
+                  <div className={styles.fieldHeader}>
+                    <label className={styles.label}>{t("Handicap Index (optional)")}</label>
+                    <button
+                      type="button"
+                      className={styles.toggleLink}
+                      onClick={() => { setShowHandicap(false); setSgaHandicap(""); }}
+                    >
+                      {t("Hide")}
+                    </button>
+                  </div>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    className={styles.input}
+                    value={sgaHandicap}
+                    onChange={(e) => setSgaHandicap(e.target.value)}
+                    placeholder={t("e.g. 12.4 or +2")}
+                    autoFocus
+                  />
+                  <small className={styles.hint}>
+                    {t("Optional — lets you start closer to your real level. Use + for plus-handicaps (e.g. +2).")}
+                  </small>
+                  {ratingPreview != null && (
+                    <div className={styles.ratingPreview}>
+                      {t("You'll start around {rating}", { rating: ratingPreview })}
+                    </div>
+                  )}
+                </fieldset>
+              ) : (
+                <button
+                  type="button"
+                  className={styles.toggleLink}
+                  onClick={() => setShowHandicap(true)}
+                >
+                  {t("Already have a handicap index? Add it →")}
+                </button>
+              )}
 
               <label className={styles.consent}>
                 <input
@@ -192,29 +275,98 @@ export default function AuthPage() {
             </>
           )}
 
-          <fieldset className={styles.field}>
-            <label className={styles.label}>{t("Password")}</label>
-            <input
-              type="password"
-              className={styles.input}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={mode === "register" ? t("Min 6 characters") : t("Your password")}
-              required
-              minLength={6}
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-            />
-          </fieldset>
+          {mode !== "reset" && (
+            <fieldset className={styles.field}>
+              <label className={styles.label}>{t("Password")}</label>
+              <input
+                type="password"
+                className={styles.input}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={mode === "register" ? t("Min 6 characters") : t("Your password")}
+                required
+                minLength={6}
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
+              />
+            </fieldset>
+          )}
 
-          <button type="submit" className={styles.submit} disabled={submitting}>
+          {mode === "login" && (
+            <button type="button" className={styles.toggleLink} onClick={() => switchMode("reset")}>
+              {t("Forgot password?")}
+            </button>
+          )}
+
+          {mode === "reset" && (
+            <>
+              {resetRequested && (
+                <div className={styles.resetNotice}>
+                  {t("If that email is registered, a reset code has been generated — ask your coach for it.")}
+                </div>
+              )}
+
+              {showRedeem ? (
+                <>
+                  <fieldset className={styles.field}>
+                    <label className={styles.label}>{t("Reset Code")}</label>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      value={resetToken}
+                      onChange={(e) => setResetToken(e.target.value)}
+                      placeholder={t("Code from your coach")}
+                      autoFocus
+                    />
+                  </fieldset>
+                  <fieldset className={styles.field}>
+                    <label className={styles.label}>{t("New Password")}</label>
+                    <input
+                      type="password"
+                      className={styles.input}
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder={t("Min 6 characters")}
+                      minLength={6}
+                      autoComplete="new-password"
+                    />
+                  </fieldset>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  className={styles.toggleLink}
+                  onClick={() => setShowRedeem(true)}
+                >
+                  {t("Already have a reset code? Enter it →")}
+                </button>
+              )}
+            </>
+          )}
+
+          <button
+            type={mode === "reset" && !showRedeem ? "button" : "submit"}
+            className={styles.submit}
+            disabled={submitting}
+            onClick={mode === "reset" && !showRedeem ? handleRequestReset : undefined}
+          >
             {submitting
               ? mode === "login"
                 ? t("Signing in...")
-                : t("Creating account...")
+                : mode === "register"
+                ? t("Creating account...")
+                : showRedeem
+                ? t("Resetting...")
+                : t("Sending...")
               : mode === "login"
               ? t("Sign In")
-              : t("Create Account")}
+              : mode === "register"
+              ? t("Create Account")
+              : showRedeem
+              ? t("Reset Password")
+              : t("Send Reset Code")}
           </button>
+            </>
+          )}
         </form>
 
         <p className={styles.footer}>

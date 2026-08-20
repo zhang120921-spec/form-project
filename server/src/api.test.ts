@@ -1101,35 +1101,35 @@ describe("AI OCR Scorecard", () => {
 // ═══════════════ AI PARSE ROUND ═══════════════
 
 describe("AI Parse Round", () => {
-  it("POST /api/ai/parse-round — parses 'Shot 82 with Darren at Sentosa'", async () => {
+  it("POST /api/ai/parse-round — parses 'Shot 82 with Darren at Sheshan'", async () => {
     const { status, json } = await fetch("/api/ai/parse-round", {
       token: aliceToken,
-      body: { text: "Shot 82 with Darren at Sentosa" },
+      body: { text: "Shot 82 with Darren at Sheshan" },
     });
     expect(status).toBe(200);
     expect(json.players).toBeDefined();
     expect(json.players.length).toBeGreaterThan(0);
-    expect(json.course).toBe("Sentosa (Serapong)");
+    expect(json.course).toBe("Sheshan International (佘山国际)");
     expect(json.confidence).toBeDefined();
   });
 
   it("POST /api/ai/parse-round — detects course from partial name", async () => {
     const { status, json } = await fetch("/api/ai/parse-round", {
       token: aliceToken,
-      body: { text: "Played at Laguna, shot 78" },
+      body: { text: "Played at Yintao, shot 78" },
     });
     expect(status).toBe(200);
-    expect(json.course).toBe("Laguna National (Classic)");
+    expect(json.course).toBe("Yintao (银涛)");
   });
 
   it("POST /api/ai/parse-round — detects stableford format", async () => {
     const { status, json } = await fetch("/api/ai/parse-round", {
       token: aliceToken,
-      body: { text: "36 points stableford at Tanah Merah" },
+      body: { text: "36 points stableford at Sun Island" },
     });
     expect(status).toBe(200);
     expect(json.format).toBe("stableford");
-    expect(json.course).toBe("Tanah Merah (Tampines)");
+    expect(json.course).toBe("Sun Island (太阳岛)");
   });
 
   it("POST /api/ai/parse-round — handles empty input gracefully", async () => {

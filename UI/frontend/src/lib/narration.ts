@@ -16,7 +16,7 @@
 // is an optional enhancement that calls an LLM endpoint when
 // available.
 
-import type { ReplayedRound, PlayerState } from "@/lib/types";
+import type { ReplayedRound, PlayerState } from "@engine/index.ts";
 import { DEFAULTS, type EngineConfig } from "@engine/index.ts";
 import { t } from "./i18n";
 

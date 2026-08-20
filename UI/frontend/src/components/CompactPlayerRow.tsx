@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import type { PlayerState } from "@/lib/types";
+import type { PlayerState } from "@engine/index.ts";
 import FormStrip from "./FormStrip";
 import styles from "./CompactPlayerRow.module.css";
 import { t } from "@/lib/i18n";

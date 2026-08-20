@@ -1,10 +1,10 @@
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useReplay, useCourses, useRounds } from "@/hooks/useData";
+import { useReplay, useCourses, useRounds, type PlayerStateWithPro } from "@/hooks/useData";
 import { usePublicProfiles } from "@/hooks/useAI";
 import { useAuth } from "@/hooks/useAuth";
 import { computeFairMatch, phraseMatch, type MatchFormat } from "@/lib/fair-match";
-import type { PlayerState, Course, Tee, RoundRecord } from "@/lib/types";
+import type { Course, Tee, RoundRecord } from "@store/interface.js";
 import { t } from "@/lib/i18n";
 import { SkeletonList } from "@/components/Skeleton";
 import styles from "./FairMatchPage.module.css";
@@ -82,7 +82,7 @@ function FairMatchCalculator() {
     return ids;
   }, [rounds, userId]);
 
-  const players: PlayerState[] = useMemo(
+  const players: PlayerStateWithPro[] = useMemo(
     () => (replay?.players ?? []).filter((p) => eligiblePlayerIds.has(p.id) && !p.isPro),
     [replay?.players, eligiblePlayerIds]
   );
@@ -121,7 +121,7 @@ function FairMatchCalculator() {
         format,
         holes,
         undefined,
-        strokeOverride
+        strokeOverride ?? undefined
       );
     } catch {
       return null;

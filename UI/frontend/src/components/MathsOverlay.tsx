@@ -1,4 +1,4 @@
-import type { ReplayedRound, PlayerState } from "@/lib/types";
+import type { ReplayedRound, PlayerState } from "@engine/index.ts";
 import { t } from "@/lib/i18n";
 import { useNarrator } from "@/hooks/useAI";
 import { useEscapeKey } from "@/hooks/useEscapeKey";

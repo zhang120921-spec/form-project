@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { bodyLimit } from "hono/body-limit";
 import { z } from "zod";
 import { hash, verify } from "argon2";
 import crypto from "crypto";
@@ -20,8 +21,49 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = new Hono<AppEnv>();
 const PORT = parseInt(process.env.PORT || "3001");
 
-// CORS — allow dev server origins + null (for standalone file:// builds)
-app.use("*", cors({ origin: ["http://localhost:5173", "http://localhost:4173", "http://localhost:3000", "null"], credentials: true }));
+// CORS — dev server origins + null (standalone file:// builds) + Railway's
+// assigned *.up.railway.app / *.railway.app domain + any explicit extra
+// origin from EXTRA_CORS_ORIGIN (e.g. a custom domain). Same-origin requests
+// (the deployed frontend calling its own /api) never hit this at all — it
+// only matters for admin.html or cross-origin dev testing against prod.
+const devOrigins = ["http://localhost:5173", "http://localhost:4173", "http://localhost:3000", "null"];
+const extraOrigin = process.env.EXTRA_CORS_ORIGIN;
+app.use("*", cors({
+  origin: (origin) => {
+    if (!origin) return undefined;
+    if (devOrigins.includes(origin)) return origin;
+    if (extraOrigin && origin === extraOrigin) return origin;
+    try {
+      const hostname = new URL(origin).hostname;
+      if (hostname.endsWith(".railway.app")) return origin;
+    } catch {
+      // not a parseable URL (e.g. "null") — already handled by devOrigins
+    }
+    return undefined;
+  },
+  credentials: true,
+}));
+
+// Global body-size cap — defense in depth against memory exhaustion from a
+// huge request body. 15MB covers the OCR endpoint's 10MB image plus
+// base64/JSON overhead; every route is authenticated so this isn't the
+// primary defense, just a cheap backstop.
+app.use("*", bodyLimit({
+  maxSize: 15 * 1024 * 1024,
+  onError: (c) => c.json({ error: "Request body too large" }, 413),
+}));
+
+// Global error boundary. Without this, an uncaught exception (malformed
+// JSON body, an unexpected value type reaching better-sqlite3, etc.) falls
+// through to Hono's default handler, which returns a plain-text response —
+// but the frontend's api.ts always does `await res.json()` on every
+// response, so a plain-text error body throws a *second*, unrelated
+// SyntaxError that masks the real one and can surface as a silent/blank
+// failure in the UI. Every error path must return valid JSON.
+app.onError((err, c) => {
+  console.error("[unhandled]", err);
+  return c.json({ error: "Something went wrong. Please try again." }, 500);
+});
 
 // Run migrations on startup
 runMigrations();
@@ -30,13 +72,13 @@ const uid = () => crypto.randomUUID();
 
 // ═══════════════ AUTH ═══════════════
 
-app.post("/api/auth/register", async (c) => {
+app.post("/api/auth/register", rateLimit(20, 15 * 60_000), async (c) => {
   const body = await c.req.json();
   const schema = z.object({
     email: z.string().email(),
     password: z.string().min(6),
-    displayName: z.string().min(1).max(100),
-    homeClub: z.string().max(100).optional(),
+    displayName: z.string().trim().min(1, "Display name is required").max(100),
+    homeClub: z.string().trim().max(100).optional(),
     sgaHandicap: z.number().min(-10).max(54).optional(),
     // PIPL (China Personal Information Protection Law) — explicit consent required
     consent: z.literal(true, { errorMap: () => ({ message: "You must agree to the privacy policy to create an account" }) }),
@@ -132,7 +174,7 @@ app.post("/api/auth/change-password", authMiddleware, async (c) => {
 });
 
 // Forgot password — request a reset token (public, doesn't leak user existence)
-app.post("/api/auth/forgot-password", async (c) => {
+app.post("/api/auth/forgot-password", rateLimit(10, 15 * 60_000), async (c) => {
   const body = await c.req.json();
   const schema = z.object({ email: z.string().email() });
   const parsed = schema.safeParse(body);
@@ -181,7 +223,7 @@ app.get("/api/admin/password-resets", authMiddleware, adminMiddleware, (c) => {
 });
 
 // Reset password — validate token and update password (public)
-app.post("/api/auth/reset-password", async (c) => {
+app.post("/api/auth/reset-password", rateLimit(10, 15 * 60_000), async (c) => {
   const body = await c.req.json();
   const schema = z.object({
     token: z.string().min(1),
@@ -242,9 +284,9 @@ app.patch("/api/profile", authMiddleware, async (c) => {
   const userId = c.get("userId");
   const body = await c.req.json();
   const schema = z.object({
-    displayName: z.string().min(1).max(100).optional(),
-    homeClub: z.string().max(100).optional(),
-    region: z.string().max(100).optional(),
+    displayName: z.string().trim().min(1, "Display name is required").max(100).optional(),
+    homeClub: z.string().trim().max(100).optional(),
+    region: z.string().trim().max(100).optional(),
     sgaHandicap: z.number().min(-10).max(54).optional(),
     isPublic: z.boolean().optional(),
   });
@@ -1001,6 +1043,18 @@ app.post("/api/attestations/:id/dispute", authMiddleware, async (c) => {
       const round = db.prepare("SELECT format FROM rounds WHERE id = ?").get(a.round_id) as any;
       if (!round) throw new Error("Round not found");
 
+      // Same bounds as the original round validator (engine/validation.ts) —
+      // this path writes to the same columns and must not let an
+      // unvalidated string/NaN/out-of-range value reach the DB, since
+      // ratings are recomputed fresh from all historical rounds on every
+      // request: one corrupted score here poisons every connected player's
+      // rating, not just the disputer's.
+      const finiteInRange = (v: unknown, min: number, max: number): number | null => {
+        const n = typeof v === "number" ? v : typeof v === "string" && v.trim() !== "" ? Number(v) : NaN;
+        if (!Number.isFinite(n) || n < min || n > max) return null;
+        return n;
+      };
+
       for (const p of body.participants) {
         if (!p.playerId) continue;
         const existing = db.prepare("SELECT id FROM round_participants WHERE round_id = ? AND player_id = ?")
@@ -1008,14 +1062,20 @@ app.post("/api/attestations/:id/dispute", authMiddleware, async (c) => {
         if (!existing) continue;
 
         if (round.format === "match") {
+          const holesWon = finiteInRange(p.holesWon, -18, 18);
+          if (holesWon === null) throw new Error(`Invalid holesWon for participant ${p.playerId}`);
           db.prepare("UPDATE round_participants SET holes_won = ? WHERE round_id = ? AND player_id = ?")
-            .run(p.holesWon ?? 0, a.round_id, p.playerId);
+            .run(holesWon, a.round_id, p.playerId);
         } else if (round.format === "stableford") {
+          const points = finiteInRange(p.points, 0, 200);
+          if (points === null) throw new Error(`Invalid points for participant ${p.playerId}`);
           db.prepare("UPDATE round_participants SET points = ? WHERE round_id = ? AND player_id = ?")
-            .run(p.points ?? 0, a.round_id, p.playerId);
+            .run(points, a.round_id, p.playerId);
         } else {
+          const ags = finiteInRange(p.ags, 18, 200);
+          if (ags === null) throw new Error(`Invalid score for participant ${p.playerId}`);
           db.prepare("UPDATE round_participants SET ags = ? WHERE round_id = ? AND player_id = ?")
-            .run(p.ags ?? 0, a.round_id, p.playerId);
+            .run(ags, a.round_id, p.playerId);
         }
       }
     }
@@ -1183,8 +1243,8 @@ app.post("/api/admin/users", authMiddleware, adminMiddleware, async (c) => {
   const schema = z.object({
     email: z.string().email(),
     password: z.string().min(6),
-    displayName: z.string().min(1).max(100),
-    homeClub: z.string().max(100).optional(),
+    displayName: z.string().trim().min(1, "Display name is required").max(100),
+    homeClub: z.string().trim().max(100).optional(),
     sgaHandicap: z.number().min(-10).max(54).optional(),
     isAdmin: z.boolean().optional(),
   });

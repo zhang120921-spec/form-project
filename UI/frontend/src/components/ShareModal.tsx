@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { PlayerState } from "@/lib/types";
+import type { PlayerState } from "@engine/index.ts";
 import FormStrip from "./FormStrip";
 import { t } from "@/lib/i18n";
 import { useEscapeKey } from "@/hooks/useEscapeKey";

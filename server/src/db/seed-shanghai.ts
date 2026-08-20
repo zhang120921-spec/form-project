@@ -141,30 +141,6 @@ const courses: Course[] = [
     ],
   },
   {
-    name: "Binhai Fairy Lake (滨海·仙湖)",
-    club: "上海滨海高尔夫俱乐部",
-    verified: false,
-    source: "trial-import",
-    tees: [
-      { name: "Black", colour: "Black", yardage: 7100, par: 72, cr: 74.5, slope: 131 },
-      { name: "Blue", colour: "Blue", yardage: 6650, par: 72, cr: 72.9, slope: 128 },
-      { name: "White", colour: "White", yardage: 6150, par: 72, cr: 70.8, slope: 123 },
-      { name: "Red", colour: "Red", yardage: 5450, par: 72, cr: 68.3, slope: 117 },
-    ],
-  },
-  {
-    name: "Binhai Forest (滨海·森林)",
-    club: "上海滨海高尔夫俱乐部",
-    verified: false,
-    source: "trial-import",
-    tees: [
-      { name: "Black", colour: "Black", yardage: 6900, par: 72, cr: 73.8, slope: 130 },
-      { name: "Blue", colour: "Blue", yardage: 6500, par: 72, cr: 72.3, slope: 127 },
-      { name: "White", colour: "White", yardage: 6050, par: 72, cr: 70.6, slope: 122 },
-      { name: "Red", colour: "Red", yardage: 5400, par: 72, cr: 68.1, slope: 116 },
-    ],
-  },
-  {
     name: "Palm Beach (棕榈滩)",
     club: "上海棕榈滩海景高尔夫俱乐部",
     verified: false,
@@ -201,8 +177,8 @@ const courses: Course[] = [
     ],
   },
   {
-    name: "Lanhai (览海)",
-    club: "上海览海国际高尔夫俱乐部",
+    name: "PGA Anying (PGA 安瀛)",
+    club: "PGA安瀛高尔夫俱乐部",
     verified: false,
     source: "trial-import",
     tees: [

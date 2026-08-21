@@ -55,6 +55,7 @@ export default function LogRoundForm({ friends, courses, currentUserId, currentU
   const [format, setFormat] = useState<Format>("stroke");
   const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
   const [courseId, setCourseId] = useState("");
+  const [teeIdx, setTeeIdx] = useState(0);
   const [holes, setHoles] = useState(18);
   const [nine, setNine] = useState<"front" | "back" | "18">("18");
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
@@ -63,7 +64,7 @@ export default function LogRoundForm({ friends, courses, currentUserId, currentU
   const [error, setError] = useState("");
 
   const course = courses.find((c) => c.id === courseId);
-  const tee = course?.tees[0];
+  const tee = course?.tees[teeIdx];
 
   const togglePlayer = (id: string) => {
     setSelectedPlayers((prev) =>
@@ -433,7 +434,7 @@ export default function LogRoundForm({ friends, courses, currentUserId, currentU
         <select
           className={styles.input}
           value={courseId}
-          onChange={(e) => setCourseId(e.target.value)}
+          onChange={(e) => { setCourseId(e.target.value); setTeeIdx(0); }}
           required
         >
           <option value="">{t("Select course...")}</option>
@@ -445,12 +446,39 @@ export default function LogRoundForm({ friends, courses, currentUserId, currentU
             </option>
           ))}
         </select>
-        {tee && (
-          <div className={styles.teeInfo}>
-            {tee.name} · {t("Par {n}", { n: tee.par })} · {t("CR {n}", { n: tee.cr })} · {t("Slope {n}", { n: tee.slope })}
-          </div>
-        )}
       </fieldset>
+
+      {/* Tee — different tees have very different course rating/slope, so
+          this can't default silently to whichever tee happens to be
+          listed first (that was the bug: every round was scored as if
+          played from the back tees regardless of what was actually played). */}
+      {course && course.tees.length > 0 && (
+        <fieldset className={styles.field}>
+          <legend className={styles.legend}>{t("Tee")}</legend>
+          <select
+            className={styles.input}
+            value={teeIdx}
+            onChange={(e) => setTeeIdx(Number(e.target.value))}
+            required
+          >
+            {course.tees.map((tee, i) => (
+              <option key={i} value={i}>
+                {t("{name} — Par {par}, CR {cr}, Slope {slope}", {
+                  name: tee.name,
+                  par: tee.par,
+                  cr: tee.cr,
+                  slope: tee.slope,
+                })}
+              </option>
+            ))}
+          </select>
+          {tee && (
+            <div className={styles.teeInfo}>
+              {tee.name} · {t("Par {n}", { n: tee.par })} · {t("CR {n}", { n: tee.cr })} · {t("Slope {n}", { n: tee.slope })}
+            </div>
+          )}
+        </fieldset>
+      )}
 
       {/* Players */}
       <fieldset className={styles.field}>
